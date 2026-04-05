@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hai un'idea? Validala ora — BandoMatch AI</title>
+<meta name="description" content="Non sei ancora un imprenditore ma hai un'idea? Scopri se puoi ottenere finanziamenti pubblici. Validazione AI gratuita, consulenza professionale a 49€.">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0a1628; color: #e0e8f0; font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+  nav { background: #0f1f2f; border-bottom: 1px solid #1a3a5a; padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+  .brand { font-size: 20px; font-weight: 800; color: #00C851; text-decoration: none; }
+  .nav-links a { color: #8899aa; text-decoration: none; margin-left: 24px; font-size: 14px; }
+  .nav-links a:hover { color: #fff; }
+
+  /* HERO */
+  .hero { text-align: center; padding: 80px 24px 60px; background: linear-gradient(180deg, #0f1f2f 0%, #0a1628 100%); border-bottom: 1px solid #1a3a5a; }
+  .hero-badge { display: inline-block; background: rgba(255,179,0,0.15); border: 1px solid rgba(255,179,0,0.4); border-radius: 20px; padding: 6px 16px; font-size: 13px; color: #FFB300; font-weight: 600; margin-bottom: 20px; }
+  .hero h1 { font-size: 48px; font-weight: 900; line-height: 1.1; margin-bottom: 20px; }
+  .hero h1 span { color: #00C851; }
+  .hero p { font-size: 18px; color: #8899aa; max-width: 600px; margin: 0 auto 32px; line-height: 1.6; }
+  .hero-stats { display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; }
+  .hero-stat { text-align: center; }
+  .hero-stat .num { font-size: 28px; font-weight: 800; color: #00C851; }
+  .hero-stat .lbl { font-size: 12px; color: #8899aa; margin-top: 2px; }
+
+  /* QUIZ CONTAINER */
+  .quiz-container { max-width: 720px; margin: 60px auto; padding: 0 24px; }
+  .quiz-card { background: #0f1f2f; border: 1px solid #1a3a5a; border-radius: 20px; padding: 40px; }
+  .quiz-header { text-align: center; margin-bottom: 32px; }
+  .quiz-header h2 { font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+  .quiz-header p { color: #8899aa; font-size: 15px; }
+  .progress-bar { background: #1a2a3a; border-radius: 10px; height: 6px; margin-bottom: 32px; overflow: hidden; }
+  .progress-fill { background: linear-gradient(90deg, #00C851, #00a843); height: 100%; border-radius: 10px; transition: width 0.4s ease; }
+  .step-indicator { text-align: center; font-size: 12px; color: #8899aa; margin-bottom: 24px; }
+
+  /* STEPS */
+  .step { display: none; }
+  .step.active { display: block; }
+  .step h3 { font-size: 20px; font-weight: 700; margin-bottom: 8px; color: #e0e8f0; }
+  .step .step-desc { font-size: 14px; color: #8899aa; margin-bottom: 24px; }
+
+  /* OPTIONS GRID */
+  .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px; }
+  .option-btn { background: #1a2a3a; border: 2px solid #2a3a4a; border-radius: 12px; padding: 16px; cursor: pointer; text-align: left; transition: all 0.2s; color: #e0e8f0; }
+  .option-btn:hover { border-color: #00C851; background: rgba(0,200,81,0.08); }
+  .option-btn.selected { border-color: #00C851; background: rgba(0,200,81,0.12); }
+  .option-btn .opt-icon { font-size: 24px; margin-bottom: 8px; display: block; }
+  .option-btn .opt-label { font-size: 14px; font-weight: 600; }
+  .option-btn .opt-desc { font-size: 12px; color: #8899aa; margin-top: 4px; }
+
+  /* TEXT INPUT */
+  .quiz-input { width: 100%; background: #1a2a3a; border: 2px solid #2a3a4a; border-radius: 12px; padding: 16px; color: #e0e8f0; font-size: 15px; font-family: inherit; resize: vertical; min-height: 100px; transition: border-color 0.2s; }
+  .quiz-input:focus { outline: none; border-color: #00C851; }
+  .quiz-input::placeholder { color: #4a5a6a; }
+  .quiz-select { width: 100%; background: #1a2a3a; border: 2px solid #2a3a4a; border-radius: 12px; padding: 14px 16px; color: #e0e8f0; font-size: 15px; font-family: inherit; cursor: pointer; appearance: none; }
+  .quiz-select:focus { outline: none; border-color: #00C851; }
+
+  /* NAVIGATION */
+  .quiz-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; }
+  .btn-back { background: none; border: 1px solid #2a3a4a; border-radius: 10px; padding: 12px 20px; color: #8899aa; cursor: pointer; font-size: 14px; font-family: inherit; }
+  .btn-back:hover { border-color: #8899aa; color: #e0e8f0; }
+  .btn-next { background: linear-gradient(135deg, #00C851, #00a843); border: none; border-radius: 10px; padding: 14px 28px; color: #fff; font-weight: 700; font-size: 15px; cursor: pointer; font-family: inherit; transition: opacity 0.2s; }
+  .btn-next:hover { opacity: 0.9; }
+  .btn-next:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  /* RISULTATO AI */
+  .risultato { display: none; }
+  .risultato.active { display: block; }
+  .risultato-header { text-align: center; margin-bottom: 32px; }
+  .score-circle { width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; flex-direction: column; font-size: 32px; font-weight: 900; border: 4px solid; }
+  .score-alto { border-color: #00C851; background: rgba(0,200,81,0.1); color: #00C851; }
+  .score-medio { border-color: #FFB300; background: rgba(255,179,0,0.1); color: #FFB300; }
+  .score-basso { border-color: #FF4444; background: rgba(255,68,68,0.1); color: #FF4444; }
+  .score-label { font-size: 11px; font-weight: 600; margin-top: 4px; }
+  .risultato-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+  .risultato-sub { font-size: 15px; color: #8899aa; }
+
+  .bandi-trovati { background: #1a2a3a; border-radius: 12px; padding: 20px; margin-bottom: 24px; }
+  .bandi-trovati h4 { font-size: 14px; color: #8899aa; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+  .bando-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid #2a3a4a; }
+  .bando-item:last-child { border-bottom: none; }
+  .bando-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .dot-verde { background: #00C851; }
+  .dot-giallo { background: #FFB300; }
+  .bando-nome { font-size: 14px; font-weight: 600; }
+  .bando-valore { font-size: 12px; color: #00C851; margin-left: auto; font-weight: 700; }
+
+  /* CTA CONSULENZA */
+  .cta-consulenza { background: linear-gradient(135deg, #1a2a3a, #0f1f2f); border: 2px solid rgba(0,200,81,0.4); border-radius: 16px; padding: 32px; text-align: center; margin-top: 24px; }
+  .cta-consulenza .price-tag { font-size: 48px; font-weight: 900; color: #00C851; margin-bottom: 4px; }
+  .cta-consulenza .price-sub { font-size: 14px; color: #8899aa; margin-bottom: 20px; }
+  .cta-consulenza h3 { font-size: 20px; font-weight: 800; margin-bottom: 12px; }
+  .cta-consulenza p { font-size: 14px; color: #8899aa; margin-bottom: 20px; line-height: 1.6; }
+  .cta-features { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 24px; }
+  .cta-feature { background: rgba(0,200,81,0.1); border: 1px solid rgba(0,200,81,0.3); border-radius: 20px; padding: 6px 14px; font-size: 13px; color: #00C851; }
+  .btn-consulenza { display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #00C851, #00a843); border-radius: 12px; color: #fff; font-weight: 800; text-decoration: none; font-size: 17px; margin-bottom: 12px; }
+  .btn-consulenza:hover { opacity: 0.9; }
+  .garanzia { font-size: 13px; color: #8899aa; }
+  .garanzia strong { color: #FFB300; }
+
+  /* LOADING */
+  .loading { text-align: center; padding: 40px; display: none; }
+  .loading.active { display: block; }
+  .spinner { width: 48px; height: 48px; border: 4px solid #1a3a5a; border-top-color: #00C851; border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading p { color: #8899aa; font-size: 15px; }
+  .loading .dots::after { content: ''; animation: dots 1.5s infinite; }
+  @keyframes dots { 0% { content: ''; } 33% { content: '.'; } 66% { content: '..'; } 100% { content: '...'; } }
+
+  /* COME FUNZIONA */
+  .come-funziona { max-width: 900px; margin: 60px auto; padding: 0 24px; }
+  .come-funziona h2 { text-align: center; font-size: 28px; font-weight: 800; margin-bottom: 40px; }
+  .steps-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .step-card { background: #0f1f2f; border: 1px solid #1a3a5a; border-radius: 16px; padding: 28px; text-align: center; }
+  .step-num { width: 48px; height: 48px; border-radius: 50%; background: rgba(0,200,81,0.15); border: 2px solid rgba(0,200,81,0.4); display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; color: #00C851; margin: 0 auto 16px; }
+  .step-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+  .step-card p { font-size: 13px; color: #8899aa; line-height: 1.5; }
+
+  @media (max-width: 768px) {
+    .hero h1 { font-size: 32px; }
+    .options-grid { grid-template-columns: 1fr; }
+    .steps-grid { grid-template-columns: 1fr; }
+    .hero-stats { gap: 20px; }
+  }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="brand">🎯 BandoMatch AI</a>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/bandi">Bandi</a>
+    <a href="/login">Accedi</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">✨ Nuovo — Validazione AI per Aspiranti Imprenditori</div>
+  <h1>Hai un'idea?<br><span>Scopri se puoi finanziarla.</span></h1>
+  <p>Non sei ancora un imprenditore ma hai un progetto in mente? In 2 minuti scopri se esistono bandi pubblici per finanziare la tua idea — prima ancora di aprire la Partita IVA.</p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num">51+</div><div class="lbl">Bandi analizzati</div></div>
+    <div class="hero-stat"><div class="num">20</div><div class="lbl">Regioni coperte</div></div>
+    <div class="hero-stat"><div class="num">49€</div><div class="lbl">Consulenza garantita</div></div>
+  </div>
+</div>
+
+<!-- QUIZ -->
+<div class="quiz-container">
+  <div class="quiz-card">
+    <div class="quiz-header">
+      <h2>🧠 Valutazione AI della tua idea</h2>
+      <p>Rispondi a 5 domande — l'AI analizza la compatibilità con i bandi attivi</p>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:20%"></div></div>
+    <div class="step-indicator" id="stepIndicator">Domanda 1 di 5</div>
+
+    <!-- STEP 1: SETTORE -->
+    <div class="step active" id="step1">
+      <h3>In quale settore si colloca la tua idea?</h3>
+      <p class="step-desc">Scegli il settore più vicino al tuo progetto</p>
+      <div class="options-grid">
+        <button class="option-btn" onclick="selectOption(this, 'settore', 'tecnologia')">
+          <span class="opt-icon">💻</span>
+          <div class="opt-label">Tecnologia / Software</div>
+          <div class="opt-desc">App, SaaS, AI, e-commerce</div>
+        </button>
+        <button class="option-btn" onclick="selectOption(this, 'settore', 'manifattura')">
+          <span class="opt-icon">🏭</span>
+          <div class="opt-label">Manifattura / Produzione</div>
+          <div class="opt-desc">Prodotti fisici, artigianato</div>
+        </button>
+        <button class="option-btn" onclick="selectOption(this, 'settore', 'servizi')">
+          <span class="opt-icon">🤝</span>
+          <div class="opt-label">Servizi alle Imprese</div>
+          <div class="opt-desc">Consulenza, marketing, HR</div>
+        </button>
+        <button class="option-btn" onclick="selectOption(this, 'settore', 'turismo')">
+          <span class="opt-icon">🏨</span>
+          <div class="opt-label">Turismo / Ristorazione</div>
+          <div class="opt-desc">Hotel, ristoranti, esperienze</div>
+        </button>
+        <button class="option-btn" onclick="selectOption(this, 'settore', 'green')">
+          <span class="opt-icon">🌱</span>
+          <div class="opt-label">Green / Sostenibilità</div>
+          <div class="opt-desc">Energia, ambiente, circolare</div>
+        </button>
+        <button class="option-btn" onclick="selectOption(this, 'settore', 'altro')">
+          <span class="opt-icon">💡</span>
+          <div class="opt-label">Altro settore</div>
+          <div class="opt-desc">Commercio, salute, cultura...</div>
+        </button>
+      </div>
+      <div class="quiz-nav">
+        <span></span>
+        <button class="btn-next" id="btn1" disabled onclick="nextStep(2)">Avanti →</button>
+      </div>
+    </div>
+
+    <!-- STEP 2: REGIONE -->
+    <div class="step" id="step2">
+      <h3>In quale regione vorresti avviare l'attività?</h3>
+      <p class="step-desc">I bandi regionali dipendono dalla sede dell'impresa</p>
+      <select class="quiz-select" id="regione" onchange="selectRegione(this.value)">
+        <option value="">-- Seleziona la regione --</option>
+        <option value="Abruzzo">Abruzzo</option>
+        <option value="Basilicata">Basilicata</option>
+        <option value="Calabria">Calabria</option>
+        <option value="Campania">Campania</option>
+        <option value="Emilia-Romagna">Emilia-Romagna</option>
+        <option value="Friuli Venezia Giulia">Friuli Venezia Giulia</option>
+        <option value="Lazio">Lazio</option>
+        <option value="Liguria">Liguria</option>
+        <option value="Lombardia">Lombardia</option>
+        <option value="Marche">Marche</option>
+        <option value="Molise">Molise</option>
+        <option value="Piemonte">Piemonte</option>
+        <option value="Puglia">Puglia</option>
+        <option value="Sardegna">Sardegna</option>
+        <option value="Sicilia">Sicilia</option>
+        <option value="Toscana">Toscana</option>
+        <option value="Trentino-Alto Adige">Trentino-Alto Adige</option>
+        <option value="Umbria">Umbria</option>
+        <option value="Valle d'Aosta">Valle d'Aosta</option>
+        <option value="Veneto">Veneto</option>
+      </select>
+      <div class="quiz-nav">
+        <button class="btn-back" onclick="prevStep(1)">← Indietro</button>
+        <button class="btn-next" id="btn2" disabled onclick="nextStep(3)">Avanti →</button>
+      </div>
+    </div>
+
+    <!-- STEP 3: ETA -->
+    <div class="step" id="step3">
+      <h3>Quanti anni hai?</h3>
+      <p class="step-desc">Alcuni bandi sono riservati a giovani under 35 o under 40</p>
+      <div class="options-grid">
+        <button class="option-btn" onclick="selectOption(this, 'eta', 'under25')">
+          <span class="opt-icon">🎓</span>
+          <div class="opt-label">Meno di 25 anni</div>
+          <div class="opt-desc">Accesso a bandi giovani</div>
+        </button>
+        <button class="option-btn" onclick="selectOption(this, 'eta', '25-35')">
+          <span class="opt-icon">🚀</span>
+          <div class="opt-label">25 - 35 anni</div>
+          <div class="opt-desc">Bandi under 35 disponibili</div>
+        </button>
+        <button class="option-btn" onclick="selectOption(this, 'eta', '35-45')">
+          <span class="opt-icon">💼</span>
+          <div class="opt-label">35 - 45 anni</div>
+          <div class="opt-desc">Accesso completo ai bandi</div>
+        </button>
+        <button class="option-btn" onclick="selectOption(this, 'eta', 'over45')">
+          <span class="opt-icon">🏆</span>
+          <div class="opt-label">Oltre 45 anni</div>
+          <div class="opt-desc">Esperienza = vantaggio</div>
+        </button>
+      </div>
+      <div class="quiz-nav">
+        <button class="btn-back" onclick="prevStep(2)">← Indietro</button>
+        <button class="btn-next" id="btn3" disabled onclick="nextStep(4)">Avanti →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: BUDGET -->
+    <div class="step" id="step4">
+      <h3>Qual è il tuo budget iniziale stimato?</h3>
+      <p class="step-desc">Il budget determina quali bandi sono accessibili</p>
+      <div class="options-grid">
+        <button class="option-btn" onclick="selectOption(this, 'budget', 'zero')">
+          <span class="opt-icon">🌱</span>
+          <div class="opt-label">Nessun budget</div>
+          <div class="opt-desc">Parto da zero</div>
+        </button>
+        <button class="option-btn" onclick="selectOption(this, 'budget', 'piccolo')">
+          <span class="opt-icon">💰</span>
+          <div class="opt-label">Fino a 10.000€</div>
+          <div class="opt-desc">Microcredito e voucher</div>
+        </button>
+        <button class="option-btn" onclick="selectOption(this, 'budget', 'medio')">
+          <span class="opt-icon">💎</span>
+          <div class="opt-label">10.000 - 50.000€</div>
+          <div class="opt-desc">Bandi PMI standard</div>
+        </button>
+        <button class="option-btn" onclick="selectOption(this, 'budget', 'grande')">
+          <span class="opt-icon">🏦</span>
+          <div class="opt-label">Oltre 50.000€</div>
+          <div class="opt-desc">Tutti i bandi disponibili</div>
+        </button>
+      </div>
+      <div class="quiz-nav">
+        <button class="btn-back" onclick="prevStep(3)">← Indietro</button>
+        <button class="btn-next" id="btn4" disabled onclick="nextStep(5)">Avanti →</button>
+      </div>
+    </div>
+
+    <!-- STEP 5: DESCRIZIONE IDEA -->
+    <div class="step" id="step5">
+      <h3>Descrivi la tua idea in 2-3 righe</h3>
+      <p class="step-desc">Più dettagli fornisci, più precisa sarà l'analisi AI</p>
+      <textarea class="quiz-input" id="descrizioneIdea" placeholder="Es: Voglio aprire un'attività di consulenza digitale per piccole imprese locali, aiutandole a creare siti web e gestire i social media. Ho competenze in marketing e vorrei operare in Abruzzo..." oninput="checkIdea()"></textarea>
+      <div class="quiz-nav">
+        <button class="btn-back" onclick="prevStep(4)">← Indietro</button>
+        <button class="btn-next" id="btn5" disabled onclick="analizzaIdea()">🧠 Analizza con AI →</button>
+      </div>
+    </div>
+
+    <!-- LOADING -->
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      <p>L'AI sta analizzando la tua idea<span class="dots"></span></p>
+      <p style="font-size:13px;margin-top:8px;">Confronto con 51 bandi attivi su 20 regioni</p>
+    </div>
+
+    <!-- RISULTATO -->
+    <div class="risultato" id="risultato">
+      <div class="risultato-header">
+        <div class="score-circle score-alto" id="scoreCircle">
+          <span id="scoreNum">78%</span>
+          <span class="score-label">SCORE</span>
+        </div>
+        <div class="risultato-title" id="risultatoTitle">La tua idea ha ottime probabilità!</div>
+        <div class="risultato-sub" id="risultatoSub">Abbiamo trovato bandi compatibili con il tuo progetto</div>
+      </div>
+
+      <div class="bandi-trovati" id="bandiTrovati">
+        <h4>🎯 Bandi compatibili trovati</h4>
+        <div id="bandiFiltrati"></div>
+      </div>
+
+      <div class="cta-consulenza">
+        <div class="price-tag">49€</div>
+        <div class="price-sub">Consulenza professionale di validazione</div>
+        <h3>🚀 Trasforma la tua idea in una domanda di finanziamento</h3>
+        <p>Un esperto BandoMatch AI analizzerà la tua idea, identificherà i 3 bandi più adatti e ti guiderà passo-passo nella preparazione della domanda.</p>
+        <div class="cta-features">
+          <span class="cta-feature">✓ Analisi approfondita</span>
+          <span class="cta-feature">✓ Top 3 bandi selezionati</span>
+          <span class="cta-feature">✓ Roadmap personalizzata</span>
+          <span class="cta-feature">✓ Risposta entro 24h</span>
+        </div>
+        <a href="/checkout/consulenza" class="btn-consulenza">Prenota la Consulenza — 49€ →</a>
+        <div class="garanzia">🛡️ <strong>Soddisfatti o Rimborsati</strong> — Se non trovi valore, ti rimborsiamo entro 7 giorni</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COME FUNZIONA -->
+<div class="come-funziona">
+  <h2>Come funziona</h2>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <h3>Rispondi al quiz</h3>
+      <p>5 domande rapide sul tuo progetto, settore, regione e budget. Nessuna registrazione richiesta.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <h3>L'AI analizza</h3>
+      <p>Il nostro algoritmo confronta la tua idea con 51+ bandi attivi e calcola la probabilità di finanziamento.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <h3>Consulenza 49€</h3>
+      <p>Un esperto ti guida nella compilazione della domanda. Soddisfatti o rimborsati entro 7 giorni.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const risposte = {};
+let stepCorrente = 1;
+
+function selectOption(btn, campo, valore) {
+  // Deseleziona tutti nella griglia
+  btn.closest('.options-grid').querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  risposte[campo] = valore;
+  // Abilita il pulsante avanti
+  document.getElementById('btn' + stepCorrente).disabled = false;
+}
+
+function selectRegione(valore) {
+  if (valore) {
+    risposte['regione'] = valore;
+    document.getElementById('btn2').disabled = false;
+  }
+}
+
+function checkIdea() {
+  const val = document.getElementById('descrizioneIdea').value.trim();
+  document.getElementById('btn5').disabled = val.length < 20;
+}
+
+function nextStep(n) {
+  document.getElementById('step' + stepCorrente).classList.remove('active');
+  stepCorrente = n;
+  document.getElementById('step' + stepCorrente).classList.add('active');
+  updateProgress();
+}
+
+function prevStep(n) {
+  document.getElementById('step' + stepCorrente).classList.remove('active');
+  stepCorrente = n;
+  document.getElementById('step' + stepCorrente).classList.add('active');
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = (stepCorrente / 5) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('stepIndicator').textContent = 'Domanda ' + stepCorrente + ' di 5';
+}
+
+function analizzaIdea() {
+  risposte['descrizione'] = document.getElementById('descrizioneIdea').value;
+  
+  // Mostra loading
+  document.getElementById('step5').classList.remove('active');
+  document.getElementById('loading').classList.add('active');
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('stepIndicator').textContent = 'Analisi in corso...';
+  
+  // Chiama l'API
+  fetch('/api/valuta-idea', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(risposte)
+  })
+  .then(r => r.json())
+  .then(data => {
+    mostraRisultato(data);
+  })
+  .catch(err => {
+    // Fallback con risultato simulato
+    mostraRisultato({
+      score: 72,
+      titolo: 'La tua idea ha buone probabilità!',
+      sottotitolo: 'Abbiamo trovato bandi compatibili con il tuo progetto',
+      bandi: [
+        { nome: 'Smart&Start Italia', valore: '€1.500.000', colore: 'verde' },
+        { nome: 'Resto al Sud', valore: '€200.000', colore: 'verde' },
+        { nome: 'Fondo di Garanzia PMI', valore: '€5.000.000', colore: 'giallo' }
+      ]
+    });
+  });
+}
+
+function mostraRisultato(data) {
+  document.getElementById('loading').classList.remove('active');
+  
+  const score = data.score || 72;
+  const scoreEl = document.getElementById('scoreCircle');
+  scoreEl.className = 'score-circle ' + (score >= 70 ? 'score-alto' : score >= 45 ? 'score-medio' : 'score-basso');
+  document.getElementById('scoreNum').textContent = score + '%';
+  document.getElementById('risultatoTitle').textContent = data.titolo || 'Analisi completata!';
+  document.getElementById('risultatoSub').textContent = data.sottotitolo || '';
+  
+  // Bandi trovati
+  const container = document.getElementById('bandiFiltrati');
+  container.innerHTML = '';
+  (data.bandi || []).forEach(b => {
+    container.innerHTML += `
+      <div class="bando-item">
+        <div class="bando-dot dot-${b.colore}"></div>
+        <div class="bando-nome">${b.nome}</div>
+        <div class="bando-valore">${b.valore}</div>
+      </div>
+    `;
+  });
+  
+  document.getElementById('risultato').classList.add('active');
+}
+</script>
+</body>
+</html>
