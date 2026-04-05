@@ -16,9 +16,9 @@ logger = logging.getLogger(__name__)
 
 # ── Configurazione Stripe ──────────────────────────────────────────────────────
 # In produzione: impostare STRIPE_SECRET_KEY e STRIPE_WEBHOOK_SECRET come env vars
-STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "sk_test_PLACEHOLDER")
-STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "whsec_PLACEHOLDER")
-STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "pk_test_PLACEHOLDER")
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "sk_test_51SrD9MCxZA5DFsrWTFfVuSicosDwTzP2WWpMumcYhlgyq8wWFQNpjjVb6eGgn7evkjnHfid5S4xb9Ttao656nIXt00NYcfn6Pq")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "whsec_NSWJCHcYaalCwO2FZmWlXNbaxgoK00WE")
+STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "pk_test_51SrD9MCxZA5DFsrWXBHE2b3STz7RU95VxE9DYudzxGWvLpmhaHTYgk2B7GsmC4lbWxrO0b9bofUJhDSTdkiibocJ002WKJofHX")
 
 stripe.api_key = STRIPE_SECRET_KEY
 
@@ -26,7 +26,7 @@ stripe.api_key = STRIPE_SECRET_KEY
 # In produzione: sostituire con i Price ID reali dal dashboard Stripe
 STRIPE_PRICES = {
     "premium": {
-        "price_id": os.environ.get("STRIPE_PRICE_PREMIUM", "price_premium_990"),
+        "price_id": os.environ.get("STRIPE_PRICE_PREMIUM", "price_1TImgTCxZA5DFsrWBxwuIuzf"),
         "amount": 990,        # €9,90 in centesimi
         "name": "BandoMatch AI Premium",
         "interval": "month",
@@ -39,7 +39,7 @@ STRIPE_PRICES = {
         ]
     },
     "pro": {
-        "price_id": os.environ.get("STRIPE_PRICE_PRO", "price_pro_2990"),
+        "price_id": os.environ.get("STRIPE_PRICE_PRO", "price_1TImgTCxZA5DFsrWb9vWXWjS"),
         "amount": 2990,       # €29,90 in centesimi
         "name": "BandoMatch AI Pro",
         "interval": "month",
@@ -53,7 +53,7 @@ STRIPE_PRICES = {
         ]
     },
     "consulenza": {
-        "price_id": os.environ.get("STRIPE_PRICE_CONSULENZA", "price_consulenza_4900"),
+        "price_id": os.environ.get("STRIPE_PRICE_CONSULENZA", "price_1TImgUCxZA5DFsrWyk9yHEHd"),
         "amount": 4900,       # €49,00 una tantum
         "name": "Consulenza Esperto BandoMatch",
         "interval": None,     # Una tantum
