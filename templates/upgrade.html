@@ -220,10 +220,8 @@
 
 <script>
 function avviaPagamento(piano) {
-  const prezzi = { premium: '€9,90/mese', pro: '€29,90/mese', consulenza: '€49 una tantum' };
-  const prezzo = prezzi[piano] || '';
-  // In produzione: integrazione Stripe Checkout
-  alert('🚧 Sistema di pagamento in configurazione.\n\nPiano selezionato: ' + piano.toUpperCase() + ' — ' + prezzo + '\n\nPer attivare subito, contatta:\ninfo@bandomatch.ai\n\nL\'integrazione Stripe sarà operativa a breve!');
+  // Redirect all'endpoint Flask che gestisce Stripe Checkout
+  window.location.href = '/checkout/' + piano;
 }
 </script>
 </body>
