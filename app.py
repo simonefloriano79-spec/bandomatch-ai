@@ -1266,31 +1266,36 @@ except Exception as _e:
 @login_required
 def checkout(piano):
     """Avvia il checkout Stripe per il piano selezionato."""
-    if not STRIPE_DISPONIBILE:
-        flash("Sistema di pagamento temporaneamente non disponibile.", "warning")
-        return redirect(url_for('upgrade'))
+    import traceback as _tb
+    try:
+        if not STRIPE_DISPONIBILE:
+            flash("Sistema di pagamento temporaneamente non disponibile.", "warning")
+            return redirect(url_for('upgrade'))
 
-    user_id = session['user_id']
-    conn = get_db()
-    user = conn.execute("SELECT email FROM utenti WHERE id=?", (user_id,)).fetchone()
-    conn.close()
-    if not user:
-        flash("Utente non trovato.", "danger")
-        return redirect(url_for('upgrade'))
-    base_url = request.host_url.rstrip('/')
-    risultato = crea_checkout_session(user_id, user['email'], piano, base_url)
+        user_id = session['user_id']
+        conn = get_db()
+        user = conn.execute("SELECT email FROM utenti WHERE id=?", (user_id,)).fetchone()
+        conn.close()
+        if not user:
+            flash("Utente non trovato.", "danger")
+            return redirect(url_for('upgrade'))
+        base_url = request.host_url.rstrip('/')
+        risultato = crea_checkout_session(user_id, user['email'], piano, base_url)
 
-    if risultato.get("demo_mode"):
-        # Modalità demo: attiva il piano direttamente
-        attiva_piano_demo(user_id, piano)
-        flash(f"Piano {piano.upper()} attivato in modalità demo! Valido 30 giorni.", "success")
-        return redirect(url_for('dashboard'))
+        if risultato.get("demo_mode"):
+            attiva_piano_demo(user_id, piano)
+            flash(f"Piano {piano.upper()} attivato in modalità demo! Valido 30 giorni.", "success")
+            return redirect(url_for('dashboard'))
 
-    if risultato.get("error"):
-        flash(f"Errore pagamento: {risultato['error']}", "danger")
-        return redirect(url_for('upgrade'))
+        if risultato.get("error"):
+            flash(f"Errore pagamento: {risultato['error']}", "danger")
+            return redirect(url_for('upgrade'))
 
-    return redirect(risultato["checkout_url"])
+        return redirect(risultato["checkout_url"])
+    except Exception as _e:
+        _err = _tb.format_exc()
+        app.logger.error(f"CHECKOUT 500: {_err}")
+        return f"<pre style='color:red'>CHECKOUT ERROR (debug):\n{_err}\n\nSTRIPE_DISPONIBILE={STRIPE_DISPONIBILE}\nPiano={piano}</pre>", 500
 
 
 @app.route('/pagamento/successo')
