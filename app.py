@@ -1569,6 +1569,91 @@ def valuta_idea():
 
 
 # ─────────────────────────────────────────────
+# SEED BANDI (endpoint admin per popolare il DB live)
+# ─────────────────────────────────────────────
+@app.route('/admin/seed-bandi', methods=['POST'])
+def seed_bandi():
+    """Popola il DB con bandi reali italiani - solo admin"""
+    if not session.get('is_admin'):
+        return jsonify({'error': 'Non autorizzato'}), 403
+    
+    bandi = [
+        # NAZIONALI
+        {'nome': 'Resto al Sud 2.0', 'ente': 'Invitalia', 'regione': 'Nazionale', 'categoria': 'Startup', 'massimale': 200000, 'descrizione': 'Finanziamento a fondo perduto e prestito per under 55 nel Mezzogiorno. Copre avvio e sviluppo impresa.', 'url': 'https://www.invitalia.it/cosa-facciamo/creiamo-nuove-aziende/resto-al-sud', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Abruzzo','Basilicata','Calabria','Campania','Molise','Puglia','Sardegna','Sicilia'])},
+        {'nome': 'Smart&Start Italia', 'ente': 'Invitalia', 'regione': 'Nazionale', 'categoria': 'Startup', 'massimale': 1500000, 'descrizione': 'Finanziamento agevolato per startup innovative. Fino a 1,5 milioni con quota a fondo perduto.', 'url': 'https://www.invitalia.it/cosa-facciamo/creiamo-nuove-aziende/smart-start-italia', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Tutte'])},
+        {'nome': 'Nuova Sabatini', 'ente': 'MIMIT', 'regione': 'Nazionale', 'categoria': 'Investimenti', 'massimale': 4000000, 'descrizione': 'Contributo in conto impianti per acquisto macchinari, attrezzature, impianti e beni strumentali.', 'url': 'https://www.mise.gov.it/index.php/it/incentivi/impresa/nuova-sabatini', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Tutte'])},
+        {'nome': 'Fondo di Garanzia PMI', 'ente': 'Mediocredito Centrale', 'regione': 'Nazionale', 'categoria': 'Credito', 'massimale': 5000000, 'descrizione': 'Garanzia pubblica sui finanziamenti bancari per PMI. Riduce il rischio per le banche e facilita l accesso al credito.', 'url': 'https://www.fondidigaranzia.it', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Tutte'])},
+        {'nome': "Credito d'Imposta R&S", 'ente': 'Agenzia delle Entrate', 'regione': 'Nazionale', 'categoria': 'Ricerca', 'massimale': 5000000, 'descrizione': 'Credito d imposta del 20% sulle spese in ricerca e sviluppo, design e innovazione tecnologica.', 'url': 'https://www.agenziaentrate.gov.it', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Tutte'])},
+        {'nome': 'Industria 4.0 - Beni Strumentali', 'ente': 'MIMIT', 'regione': 'Nazionale', 'categoria': 'Digitalizzazione', 'massimale': 2000000, 'descrizione': 'Credito d imposta per acquisto beni strumentali 4.0. Aliquote dal 20% al 40% sul costo di acquisto.', 'url': 'https://www.mise.gov.it', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Tutte'])},
+        {'nome': 'PNRR - Transizione 5.0', 'ente': 'GSE', 'regione': 'Nazionale', 'categoria': 'Sostenibilità', 'massimale': 3000000, 'descrizione': 'Credito d imposta per investimenti in efficienza energetica e autoproduzione da fonti rinnovabili.', 'url': 'https://www.gse.it/transizione-5-0', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Tutte'])},
+        {'nome': 'Decontribuzione Sud', 'ente': 'INPS', 'regione': 'Nazionale', 'categoria': 'Lavoro', 'massimale': 0, 'descrizione': 'Esonero contributivo del 30% per imprese con sede nelle regioni del Mezzogiorno. Risparmio fino al 30% sul costo del lavoro.', 'url': 'https://www.inps.it', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Abruzzo','Basilicata','Calabria','Campania','Molise','Puglia','Sardegna','Sicilia'])},
+        {'nome': 'Contratti di Sviluppo', 'ente': 'Invitalia', 'regione': 'Nazionale', 'categoria': 'Investimenti', 'massimale': 50000000, 'descrizione': 'Agevolazioni per grandi programmi di investimento industriale. Contributi a fondo perduto e finanziamenti agevolati.', 'url': 'https://www.invitalia.it/cosa-facciamo/rafforziamo-le-imprese/contratti-di-sviluppo', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Tutte'])},
+        {'nome': 'Brevetti+', 'ente': 'UIBM/MIMIT', 'regione': 'Nazionale', 'categoria': 'Innovazione', 'massimale': 140000, 'descrizione': 'Contributo a fondo perduto per valorizzazione brevetti italiani. Fino a 140.000 euro per PMI innovative.', 'url': 'https://uibm.mise.gov.it', 'scadenza': '2025-06-30', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Tutte'])},
+        # ABRUZZO
+        {'nome': 'PR FESR Abruzzo - Digitalizzazione PMI', 'ente': 'Regione Abruzzo', 'regione': 'Abruzzo', 'categoria': 'Digitalizzazione', 'massimale': 150000, 'descrizione': 'Contributi a fondo perduto per digitalizzazione PMI abruzzesi. Fino al 50% delle spese ammissibili.', 'url': 'https://www.regione.abruzzo.it/fesr', 'scadenza': '2025-09-30', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Abruzzo'])},
+        {'nome': 'Abruzzo Micro Prestiti', 'ente': 'FIRA Abruzzo', 'regione': 'Abruzzo', 'categoria': 'Credito', 'massimale': 80000, 'descrizione': 'Microcredito a tasso zero per micro e piccole imprese abruzzesi. Fino a 80.000 euro senza garanzie reali.', 'url': 'https://www.fira.it', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Abruzzo'])},
+        {'nome': 'Abruzzo Turismo Sostenibile', 'ente': 'Regione Abruzzo', 'regione': 'Abruzzo', 'categoria': 'Turismo', 'massimale': 200000, 'descrizione': 'Contributi per strutture ricettive e agriturismo. Fino al 60% per interventi di sostenibilità ambientale.', 'url': 'https://www.regione.abruzzo.it', 'scadenza': '2025-10-31', 'ateco_compatibili': json.dumps(['55', '56']), 'regioni_ammesse': json.dumps(['Abruzzo'])},
+        # LOMBARDIA
+        {'nome': 'Bando Innovazione Lombardia', 'ente': 'Regione Lombardia', 'regione': 'Lombardia', 'categoria': 'Innovazione', 'massimale': 500000, 'descrizione': 'Contributi a fondo perduto per progetti di innovazione tecnologica. Fino al 40% per PMI lombarde.', 'url': 'https://www.regione.lombardia.it', 'scadenza': '2025-11-30', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Lombardia'])},
+        {'nome': 'Finlombarda - Fondo PMI', 'ente': 'Finlombarda', 'regione': 'Lombardia', 'categoria': 'Credito', 'massimale': 1000000, 'descrizione': 'Finanziamenti agevolati per PMI lombarde. Tasso agevolato e cofinanziamento fino al 50%.', 'url': 'https://www.finlombarda.it', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Lombardia'])},
+        # CAMPANIA
+        {'nome': 'FESR Campania - Competitività PMI', 'ente': 'Regione Campania', 'regione': 'Campania', 'categoria': 'Investimenti', 'massimale': 300000, 'descrizione': 'Contributi per ammodernamento e sviluppo PMI campane. Fino al 50% delle spese per macchinari e tecnologie.', 'url': 'https://www.regione.campania.it', 'scadenza': '2025-09-30', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Campania'])},
+        {'nome': 'Campania Startup', 'ente': 'Sviluppo Campania', 'regione': 'Campania', 'categoria': 'Startup', 'massimale': 200000, 'descrizione': 'Supporto finanziario per startup innovative campane. Fondo perduto fino a 200.000 euro.', 'url': 'https://www.sviluppocampania.it', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Campania'])},
+        # SICILIA
+        {'nome': 'FESR Sicilia - Imprenditorialità', 'ente': 'Regione Sicilia', 'regione': 'Sicilia', 'categoria': 'Startup', 'massimale': 250000, 'descrizione': 'Incentivi per nuove imprese e startup in Sicilia. Contributi a fondo perduto fino al 60%.', 'url': 'https://www.regione.sicilia.it', 'scadenza': '2025-10-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Sicilia'])},
+        {'nome': 'Sicilia Digitale', 'ente': 'Regione Sicilia', 'regione': 'Sicilia', 'categoria': 'Digitalizzazione', 'massimale': 100000, 'descrizione': 'Voucher digitali per PMI siciliane. Fino a 100.000 euro per e-commerce, cybersecurity e cloud.', 'url': 'https://www.regione.sicilia.it', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Sicilia'])},
+        # PUGLIA
+        {'nome': 'FESR Puglia - Competitività', 'ente': 'Regione Puglia', 'regione': 'Puglia', 'categoria': 'Investimenti', 'massimale': 400000, 'descrizione': 'Contributi per investimenti produttivi PMI pugliesi. Fino al 45% per macchinari e digitalizzazione.', 'url': 'https://www.regione.puglia.it', 'scadenza': '2025-11-30', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Puglia'])},
+        {'nome': 'Puglia Turismo 2025', 'ente': 'Puglia Promozione', 'regione': 'Puglia', 'categoria': 'Turismo', 'massimale': 300000, 'descrizione': 'Contributi per strutture ricettive e ristorazione in Puglia. Focus su sostenibilità e innovazione.', 'url': 'https://www.pugliapromozione.com', 'scadenza': '2025-09-30', 'ateco_compatibili': json.dumps(['55', '56']), 'regioni_ammesse': json.dumps(['Puglia'])},
+        # LAZIO
+        {'nome': 'Lazio Innova - Voucher Digitali', 'ente': 'Lazio Innova', 'regione': 'Lazio', 'categoria': 'Digitalizzazione', 'massimale': 50000, 'descrizione': 'Voucher per acquisto servizi digitali per PMI laziali. Fino a 50.000 euro per e-commerce e cloud.', 'url': 'https://www.lazioinnova.it', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Lazio'])},
+        {'nome': 'Lazio Startup', 'ente': 'Lazio Innova', 'regione': 'Lazio', 'categoria': 'Startup', 'massimale': 300000, 'descrizione': 'Finanziamenti per startup innovative nel Lazio. Contributo a fondo perduto fino al 70%.', 'url': 'https://www.lazioinnova.it', 'scadenza': '2025-10-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Lazio'])},
+        # VENETO
+        {'nome': 'Veneto PMI - Bando Crescita', 'ente': 'Regione Veneto', 'regione': 'Veneto', 'categoria': 'Investimenti', 'massimale': 500000, 'descrizione': 'Contributi per crescita e internazionalizzazione PMI venete. Fino al 40% delle spese ammissibili.', 'url': 'https://www.regione.veneto.it', 'scadenza': '2025-11-30', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Veneto'])},
+        {'nome': 'Veneto Agri 2025', 'ente': 'AVEPA Veneto', 'regione': 'Veneto', 'categoria': 'Agricoltura', 'massimale': 200000, 'descrizione': 'PSR Veneto - contributi per ammodernamento aziende agricole e agriturismi. Fino al 50%.', 'url': 'https://www.avepa.it', 'scadenza': '2025-09-30', 'ateco_compatibili': json.dumps(['01', '02']), 'regioni_ammesse': json.dumps(['Veneto'])},
+        # EMILIA ROMAGNA
+        {'nome': 'ER Imprese - Bando Innovazione', 'ente': 'Regione Emilia-Romagna', 'regione': 'Emilia-Romagna', 'categoria': 'Innovazione', 'massimale': 600000, 'descrizione': 'Contributi per R&S e innovazione PMI emiliane. Fino al 50% per progetti con università.', 'url': 'https://www.regione.emilia-romagna.it', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Emilia-Romagna'])},
+        # TOSCANA
+        {'nome': 'Toscana Digitale', 'ente': 'Regione Toscana', 'regione': 'Toscana', 'categoria': 'Digitalizzazione', 'massimale': 200000, 'descrizione': 'Voucher e contributi per digitalizzazione PMI toscane. Fino al 50% per software e automazione.', 'url': 'https://www.regione.toscana.it', 'scadenza': '2025-10-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Toscana'])},
+        # PIEMONTE
+        {'nome': 'Piemonte Competitivo', 'ente': 'Finpiemonte', 'regione': 'Piemonte', 'categoria': 'Investimenti', 'massimale': 400000, 'descrizione': 'Finanziamenti agevolati per PMI piemontesi. Tasso zero per investimenti produttivi e innovazione.', 'url': 'https://www.finpiemonte.it', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Piemonte'])},
+        # CALABRIA
+        {'nome': 'FESR Calabria - Imprenditorialità', 'ente': 'Regione Calabria', 'regione': 'Calabria', 'categoria': 'Startup', 'massimale': 200000, 'descrizione': 'Incentivi per nuove imprese e startup in Calabria. Fondo perduto fino al 65%.', 'url': 'https://www.regione.calabria.it', 'scadenza': '2025-11-30', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Calabria'])},
+        # SARDEGNA
+        {'nome': 'Sardegna Competitiva', 'ente': 'Regione Sardegna', 'regione': 'Sardegna', 'categoria': 'Investimenti', 'massimale': 300000, 'descrizione': 'Contributi per PMI sarde. Fino al 50% per macchinari, digitalizzazione e sostenibilità.', 'url': 'https://www.regione.sardegna.it', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Sardegna'])},
+        # ALTRI
+        {'nome': 'Marche Startup 2025', 'ente': 'Regione Marche', 'regione': 'Marche', 'categoria': 'Startup', 'massimale': 150000, 'descrizione': 'Contributi per startup e nuove imprese nelle Marche. Fondo perduto fino al 60%.', 'url': 'https://www.regione.marche.it', 'scadenza': '2025-10-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Marche'])},
+        {'nome': 'Umbria Innovazione', 'ente': 'Regione Umbria', 'regione': 'Umbria', 'categoria': 'Innovazione', 'massimale': 200000, 'descrizione': 'Contributi per innovazione e digitalizzazione PMI umbre. Fino al 45%.', 'url': 'https://www.regione.umbria.it', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Umbria'])},
+        {'nome': 'Basilicata Imprese', 'ente': 'Regione Basilicata', 'regione': 'Basilicata', 'categoria': 'Investimenti', 'massimale': 250000, 'descrizione': 'Incentivi per PMI lucane. Contributi a fondo perduto per investimenti produttivi.', 'url': 'https://www.regione.basilicata.it', 'scadenza': '2025-11-30', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Basilicata'])},
+        {'nome': 'Molise Sviluppo', 'ente': 'Regione Molise', 'regione': 'Molise', 'categoria': 'Investimenti', 'massimale': 200000, 'descrizione': 'Contributi per PMI molisane. Fino al 50% per investimenti in macchinari e tecnologie.', 'url': 'https://www.regione.molise.it', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Molise'])},
+        {'nome': 'Friuli Innova', 'ente': 'Regione FVG', 'regione': 'Friuli-Venezia Giulia', 'categoria': 'Innovazione', 'massimale': 300000, 'descrizione': 'Contributi per R&S e innovazione in FVG. Fino al 50% per PMI innovative.', 'url': 'https://www.regione.fvg.it', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Friuli-Venezia Giulia'])},
+        {'nome': 'Liguria Competitiva', 'ente': 'Regione Liguria', 'regione': 'Liguria', 'categoria': 'Investimenti', 'massimale': 200000, 'descrizione': 'Bando per PMI liguri. Contributi per digitalizzazione e sostenibilità.', 'url': 'https://www.regione.liguria.it', 'scadenza': '2025-10-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Liguria'])},
+        {'nome': 'Trentino Startup Hub', 'ente': 'PAT Trento', 'regione': 'Trentino-Alto Adige', 'categoria': 'Startup', 'massimale': 500000, 'descrizione': 'Finanziamenti per startup innovative in Trentino. Fino a 500.000 euro con mentoring incluso.', 'url': 'https://www.provincia.tn.it', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(['Trentino-Alto Adige'])},
+        {'nome': 'Valle d Aosta PMI', 'ente': 'Regione VdA', 'regione': "Valle d'Aosta", 'categoria': 'Investimenti', 'massimale': 150000, 'descrizione': 'Contributi per PMI valdostane. Fino al 40% per investimenti produttivi e innovazione.', 'url': 'https://www.regione.vda.it', 'scadenza': '2025-12-31', 'ateco_compatibili': json.dumps([]), 'regioni_ammesse': json.dumps(["Valle d'Aosta"])},
+    ]
+    
+    conn = get_db()
+    c = conn.cursor()
+    inseriti = 0
+    aggiornati = 0
+    for b in bandi:
+        # Controlla se esiste già
+        existing = c.execute('SELECT id FROM bandi WHERE nome = ?', (b['nome'],)).fetchone()
+        if existing:
+            c.execute('''UPDATE bandi SET ente=?, regione=?, categoria=?, massimale=?, descrizione=?, url=?, scadenza=?, ateco_compatibili=?, regioni_ammesse=? WHERE nome=?''',
+                     (b['ente'], b['regione'], b['categoria'], b['massimale'], b['descrizione'], b['url'], b['scadenza'], b['ateco_compatibili'], b['regioni_ammesse'], b['nome']))
+            aggiornati += 1
+        else:
+            c.execute('''INSERT INTO bandi (nome, ente, regione, categoria, massimale, descrizione, url, scadenza, ateco_compatibili, regioni_ammesse, attivo, data_inserimento)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, datetime('now'))''',
+                     (b['nome'], b['ente'], b['regione'], b['categoria'], b['massimale'], b['descrizione'], b['url'], b['scadenza'], b['ateco_compatibili'], b['regioni_ammesse']))
+            inseriti += 1
+    conn.commit()
+    conn.close()
+    return jsonify({'success': True, 'inseriti': inseriti, 'aggiornati': aggiornati, 'totale': inseriti + aggiornati})
+
+
+# ─────────────────────────────────────────────
 # INIZIALIZZAZIONE (eseguita da Gunicorn e da __main__)
 # ─────────────────────────────────────────────
 try:
