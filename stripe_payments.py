@@ -15,15 +15,19 @@ from flask import request, jsonify, redirect, url_for, session
 logger = logging.getLogger(__name__)
 
 # ── Configurazione Stripe ──────────────────────────────────────────────────────
-# In produzione: impostare STRIPE_SECRET_KEY e STRIPE_WEBHOOK_SECRET come env vars
 STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
 STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
 STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "")
 
-stripe.api_key = STRIPE_SECRET_KEY
+def get_stripe_client():
+    """Inizializzazione lazy del client Stripe."""
+    key = os.environ.get("STRIPE_SECRET_KEY", "")
+    if not key:
+        raise ValueError("STRIPE_SECRET_KEY non configurata")
+    stripe.api_key = key
+    return stripe
 
-# ── Prezzi Stripe (da creare nel dashboard Stripe) ────────────────────────────
-# In produzione: sostituire con i Price ID reali dal dashboard Stripe
+# ── Prezzi Stripe ────────────────────────────────────────────────────────────
 STRIPE_PRICES = {
     "premium": {
         "price_id": os.environ.get("STRIPE_PRICE_PREMIUM", "price_1TIoKY2doi6GhwDG3SOorEFZ"),
@@ -78,6 +82,7 @@ def get_db():
 def init_stripe_tables():
     """Crea le tabelle Stripe nel database se non esistono."""
     conn = get_db()
+    # Nota: usa utenti (non users) come tabella principale
     conn.execute("""
         CREATE TABLE IF NOT EXISTS stripe_sessions (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -88,8 +93,7 @@ def init_stripe_tables():
             stripe_customer_id TEXT,
             stripe_subscription_id TEXT,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id)
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
     conn.execute("""
@@ -102,10 +106,14 @@ def init_stripe_tables():
             stripe_payment_intent TEXT,
             stripe_invoice_id TEXT,
             stato TEXT DEFAULT 'pending',
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(id)
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     """)
+    # Aggiungi colonna piano_scadenza a utenti se non esiste
+    try:
+        conn.execute("ALTER TABLE utenti ADD COLUMN piano_scadenza TEXT")
+    except Exception:
+        pass  # Colonna già esistente
     conn.commit()
     conn.close()
     logger.info("Tabelle Stripe inizializzate.")
@@ -123,15 +131,17 @@ def crea_checkout_session(user_id: int, user_email: str, piano: str, base_url: s
     is_subscription = prezzo["interval"] is not None
 
     try:
+        s = get_stripe_client()
+
         # Modalità: subscription per piani mensili, payment per una tantum
         mode = "subscription" if is_subscription else "payment"
 
-        # Costruisci i line_items
-        if prezzo["price_id"].startswith("price_") and not prezzo["price_id"].endswith("_PLACEHOLDER") and not prezzo["price_id"].endswith("990") and not prezzo["price_id"].endswith("2990") and not prezzo["price_id"].endswith("4900"):
-            # Usa Price ID reale da Stripe
-            line_items = [{"price": prezzo["price_id"], "quantity": 1}]
+        # Costruisci i line_items usando il Price ID reale
+        price_id = prezzo["price_id"]
+        if price_id.startswith("price_"):
+            line_items = [{"price": price_id, "quantity": 1}]
         else:
-            # Crea price inline (per test/sviluppo senza Price ID reale)
+            # Crea price inline (fallback)
             price_data = {
                 "currency": "eur",
                 "unit_amount": prezzo["amount"],
@@ -166,23 +176,26 @@ def crea_checkout_session(user_id: int, user_email: str, piano: str, base_url: s
                 "metadata": {"user_id": str(user_id), "piano": piano}
             }
 
-        session_stripe = stripe.checkout.Session.create(**checkout_params)
+        session_stripe = s.checkout.Session.create(**checkout_params)
 
-        # Salva la sessione nel DB
-        conn = get_db()
-        conn.execute("""
-            INSERT OR REPLACE INTO stripe_sessions 
-            (user_id, session_id, piano, stato)
-            VALUES (?, ?, ?, 'pending')
-        """, (user_id, session_stripe.id, piano))
-        conn.commit()
-        conn.close()
+        # Salva la sessione nel DB (tabella stripe_sessions)
+        try:
+            conn = get_db()
+            conn.execute("""
+                INSERT OR REPLACE INTO stripe_sessions 
+                (user_id, session_id, piano, stato)
+                VALUES (?, ?, ?, 'pending')
+            """, (user_id, session_stripe.id, piano))
+            conn.commit()
+            conn.close()
+        except Exception as db_err:
+            logger.warning(f"Impossibile salvare sessione Stripe nel DB: {db_err}")
 
         logger.info(f"Checkout session creata: {session_stripe.id} per user {user_id} piano {piano}")
         return {
             "checkout_url": session_stripe.url,
             "session_id": session_stripe.id,
-            "publishable_key": STRIPE_PUBLISHABLE_KEY
+            "publishable_key": os.environ.get("STRIPE_PUBLISHABLE_KEY", "")
         }
 
     except stripe.error.AuthenticationError:
@@ -203,8 +216,9 @@ def verifica_webhook(payload: bytes, sig_header: str) -> dict | None:
     Restituisce l'evento se valido, None altrimenti.
     """
     try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, STRIPE_WEBHOOK_SECRET
+        s = get_stripe_client()
+        event = s.Webhook.construct_event(
+            payload, sig_header, os.environ.get("STRIPE_WEBHOOK_SECRET", "")
         )
         return event
     except stripe.error.SignatureVerificationError:
@@ -218,6 +232,7 @@ def verifica_webhook(payload: bytes, sig_header: str) -> dict | None:
 def processa_evento_stripe(event: dict) -> bool:
     """
     Processa gli eventi Stripe e aggiorna il DB di conseguenza.
+    Usa la tabella 'utenti' (non 'users').
     """
     event_type = event["type"]
     data = event["data"]["object"]
@@ -238,10 +253,10 @@ def processa_evento_stripe(event: dict) -> bool:
                 WHERE session_id=?
             """, (customer_id, subscription_id, session_id))
 
-            # Aggiorna piano utente
-            scadenza = (datetime.now() + timedelta(days=37)).isoformat()  # 30 giorni + 7 trial
+            # Aggiorna piano utente (tabella utenti)
+            scadenza = (datetime.now() + timedelta(days=37)).isoformat()
             conn.execute("""
-                UPDATE users SET piano=?, piano_scadenza=? WHERE id=?
+                UPDATE utenti SET piano=?, abbonamento_attivo=1, piano_scadenza=? WHERE id=?
             """, (piano, scadenza, user_id))
 
             # Registra pagamento
@@ -259,7 +274,7 @@ def processa_evento_stripe(event: dict) -> bool:
             customer_id = data.get("customer")
             # Downgrade a free
             conn.execute("""
-                UPDATE users SET piano='free', piano_scadenza=NULL 
+                UPDATE utenti SET piano='free', abbonamento_attivo=0, piano_scadenza=NULL 
                 WHERE id IN (SELECT user_id FROM stripe_sessions WHERE stripe_customer_id=?)
             """, (customer_id,))
             conn.commit()
@@ -269,12 +284,14 @@ def processa_evento_stripe(event: dict) -> bool:
         elif event_type == "invoice.payment_failed":
             customer_id = data.get("customer")
             logger.warning(f"Pagamento fallito per customer {customer_id}")
-            # Invia email di avviso (gestita dall'app principale)
             return True
 
     except Exception as e:
         logger.error(f"Errore processamento evento {event_type}: {e}")
-        conn.rollback()
+        try:
+            conn.rollback()
+        except Exception:
+            pass
         return False
     finally:
         conn.close()
@@ -285,18 +302,20 @@ def processa_evento_stripe(event: dict) -> bool:
 def attiva_piano_demo(user_id: int, piano: str) -> bool:
     """
     Attiva un piano in modalità demo (senza Stripe reale).
-    Usato per test e sviluppo.
     """
     conn = get_db()
     try:
         scadenza = (datetime.now() + timedelta(days=30)).isoformat()
         conn.execute("""
-            UPDATE users SET piano=?, piano_scadenza=? WHERE id=?
+            UPDATE utenti SET piano=?, abbonamento_attivo=1, piano_scadenza=? WHERE id=?
         """, (piano, scadenza, user_id))
-        conn.execute("""
-            INSERT INTO pagamenti (user_id, piano, importo, stripe_payment_intent, stato)
-            VALUES (?, ?, ?, 'demo_payment', 'demo')
-        """, (user_id, piano, STRIPE_PRICES.get(piano, {}).get("amount", 0)))
+        try:
+            conn.execute("""
+                INSERT INTO pagamenti (user_id, piano, importo, stripe_payment_intent, stato)
+                VALUES (?, ?, ?, 'demo_payment', 'demo')
+            """, (user_id, piano, STRIPE_PRICES.get(piano, {}).get("amount", 0)))
+        except Exception:
+            pass
         conn.commit()
         logger.info(f"Piano demo attivato: user {user_id} → {piano}")
         return True
@@ -310,24 +329,29 @@ def attiva_piano_demo(user_id: int, piano: str) -> bool:
 def get_stato_abbonamento(user_id: int) -> dict:
     """
     Restituisce lo stato completo dell'abbonamento di un utente.
+    Usa la tabella 'utenti'.
     """
     conn = get_db()
     try:
         user = conn.execute("""
-            SELECT piano, piano_scadenza FROM users WHERE id=?
+            SELECT piano, piano_scadenza, abbonamento_attivo FROM utenti WHERE id=?
         """, (user_id,)).fetchone()
 
         if not user:
             return {"piano": "free", "attivo": False, "scadenza": None}
 
         piano = user["piano"] or "free"
-        scadenza_str = user["piano_scadenza"]
+        scadenza_str = user.get("piano_scadenza") if hasattr(user, 'get') else None
+        try:
+            scadenza_str = user["piano_scadenza"]
+        except Exception:
+            scadenza_str = None
 
         if piano == "free":
             return {"piano": "free", "attivo": True, "scadenza": None, "features": []}
 
         # Verifica scadenza
-        attivo = True
+        attivo = bool(user["abbonamento_attivo"])
         if scadenza_str:
             try:
                 scadenza = datetime.fromisoformat(scadenza_str)
