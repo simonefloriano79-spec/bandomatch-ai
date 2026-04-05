@@ -31,6 +31,17 @@
   .nav-links a:hover { color: var(--text); }
   .nav-cta { background: var(--accent); color: white !important; padding: 0.5rem 1.2rem; border-radius: 8px; font-weight: 600; transition: background 0.2s !important; }
   .nav-cta:hover { background: var(--accent2) !important; }
+  /* HAMBURGER MOBILE */
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
+  .hamburger span { display: block; width: 24px; height: 2px; background: #e0e0e0; border-radius: 2px; transition: all 0.3s; }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .mobile-menu { display: none; position: fixed; top: 60px; left: 0; right: 0; background: rgba(10,14,26,0.98); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); z-index: 99; padding: 1rem 0; flex-direction: column; }
+  .mobile-menu.open { display: flex; }
+  .mobile-menu a { color: var(--text2); text-decoration: none; font-size: 1rem; padding: 0.9rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); transition: color 0.2s, background 0.2s; }
+  .mobile-menu a:hover { color: #fff; background: rgba(255,255,255,0.04); }
+  .mobile-menu .nav-cta { background: var(--accent); color: white !important; margin: 0.8rem 2rem; border-radius: 8px; text-align: center; padding: 0.8rem 1.2rem; border-bottom: none; font-weight: 700; }
 
   /* HERO */
   .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 8rem 2rem 4rem; position: relative; overflow: hidden; }
@@ -186,6 +197,7 @@
 
   @media (max-width: 768px) {
     .nav-links { display: none; }
+    .hamburger { display: flex; }
     h1 { font-size: 2rem; }
     .hero-stats { gap: 1.5rem; }
     .plans { grid-template-columns: 1fr; }
@@ -205,7 +217,20 @@
     <a href="/login">Accedi</a>
     <a href="/register" class="nav-cta">Registrati gratis</a>
   </div>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+
+<!-- MENU MOBILE -->
+<div class="mobile-menu" id="mobile-menu">
+  <a href="/bandi" onclick="closeMenu()">Bandi Attivi</a>
+  <a href="/upgrade" onclick="closeMenu()">Costi</a>
+  <a href="/consulenza" onclick="closeMenu()">Consulenza</a>
+  <a href="/faq" onclick="closeMenu()">FAQ</a>
+  <a href="/login" onclick="closeMenu()">Accedi</a>
+  <a href="/register" class="nav-cta" onclick="closeMenu()">Registrati gratis</a>
+</div>
 
 <!-- TICKER -->
 <div class="ticker" style="margin-top: 60px;">
@@ -596,6 +621,26 @@ function toggleFaq(el) {
 // Chiudi modal cliccando fuori
 document.getElementById('paywall-modal').addEventListener('click', function(e) {
   if (e.target === this) closePaywall();
+});
+
+// ── MENU HAMBURGER MOBILE ──────────────────────
+function toggleMenu() {
+  const menu = document.getElementById('mobile-menu');
+  const btn = document.getElementById('hamburger');
+  menu.classList.toggle('open');
+  btn.classList.toggle('open');
+}
+function closeMenu() {
+  document.getElementById('mobile-menu').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+}
+// Chiudi menu mobile cliccando fuori
+document.addEventListener('click', function(e) {
+  const menu = document.getElementById('mobile-menu');
+  const btn = document.getElementById('hamburger');
+  if (menu.classList.contains('open') && !menu.contains(e.target) && !btn.contains(e.target)) {
+    closeMenu();
+  }
 });
 </script>
 </body>
