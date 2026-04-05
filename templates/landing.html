@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BandoMatch AI — Trova i Finanziamenti Pubblici per la Tua Impresa</title>
+<meta name="description" content="Carica la tua Visura Camerale. In 30 secondi scopri tutti i bandi di finanziamento pubblici compatibili con la tua impresa. Sistema a Semaforo AI.">
+<style>
+  :root {
+    --green: #00c853;
+    --yellow: #ffd600;
+    --red: #f44336;
+    --dark: #0a0e1a;
+    --dark2: #111827;
+    --dark3: #1f2937;
+    --accent: #6366f1;
+    --accent2: #8b5cf6;
+    --text: #f1f5f9;
+    --text2: #94a3b8;
+    --border: #1e293b;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background: var(--dark); color: var(--text); overflow-x: hidden; }
+
+  /* NAV */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10,14,26,0.95); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border); padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+  .nav-logo { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .nav-logo span { color: var(--green); -webkit-text-fill-color: var(--green); }
+  .nav-links { display: flex; gap: 1.5rem; align-items: center; }
+  .nav-links a { color: var(--text2); text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--text); }
+  .nav-cta { background: var(--accent); color: white !important; padding: 0.5rem 1.2rem; border-radius: 8px; font-weight: 600; transition: background 0.2s !important; }
+  .nav-cta:hover { background: var(--accent2) !important; }
+
+  /* HERO */
+  .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 8rem 2rem 4rem; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(ellipse at 50% 30%, rgba(99,102,241,0.15) 0%, transparent 60%); pointer-events: none; }
+  .hero-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); color: var(--accent); padding: 0.4rem 1rem; border-radius: 999px; font-size: 0.85rem; font-weight: 600; margin-bottom: 2rem; }
+  .hero-badge::before { content: '🤖'; }
+  h1 { font-size: clamp(2.2rem, 5vw, 4rem); font-weight: 900; line-height: 1.1; margin-bottom: 1.5rem; max-width: 900px; }
+  h1 .highlight { background: linear-gradient(135deg, var(--green), #00e676); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  h1 .highlight2 { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero-sub { font-size: 1.2rem; color: var(--text2); max-width: 650px; margin-bottom: 3rem; line-height: 1.7; }
+  .hero-stats { display: flex; gap: 3rem; margin-bottom: 3rem; flex-wrap: wrap; justify-content: center; }
+  .stat { text-align: center; }
+  .stat-num { font-size: 2rem; font-weight: 800; color: var(--green); }
+  .stat-label { font-size: 0.85rem; color: var(--text2); }
+
+  /* UPLOAD FUNNEL */
+  .upload-box { background: var(--dark2); border: 2px dashed var(--accent); border-radius: 20px; padding: 3rem; max-width: 600px; width: 100%; margin: 0 auto 2rem; cursor: pointer; transition: all 0.3s; position: relative; }
+  .upload-box:hover { border-color: var(--accent2); background: rgba(99,102,241,0.05); transform: translateY(-2px); }
+  .upload-box.dragover { border-color: var(--green); background: rgba(0,200,83,0.05); }
+  .upload-icon { font-size: 3rem; margin-bottom: 1rem; }
+  .upload-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.5rem; }
+  .upload-sub { color: var(--text2); font-size: 0.9rem; margin-bottom: 1.5rem; }
+  .upload-btn { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; border: none; padding: 0.9rem 2.5rem; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; transition: all 0.3s; display: inline-block; }
+  .upload-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(99,102,241,0.4); }
+  #file-input { display: none; }
+  .upload-progress { display: none; margin-top: 1.5rem; }
+  .progress-bar { background: var(--dark3); border-radius: 999px; height: 8px; overflow: hidden; margin-bottom: 0.5rem; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--green)); border-radius: 999px; width: 0%; transition: width 0.3s; }
+  .progress-text { font-size: 0.85rem; color: var(--text2); }
+  .privacy-note { font-size: 0.8rem; color: var(--text2); display: flex; align-items: center; gap: 0.4rem; justify-content: center; }
+  .privacy-note::before { content: '🔒'; }
+
+  /* SEMAFORO PREVIEW */
+  .semaforo-preview { background: var(--dark2); border: 1px solid var(--border); border-radius: 20px; padding: 2rem; max-width: 600px; width: 100%; margin: 0 auto 2rem; display: none; }
+  .semaforo-preview.show { display: block; animation: fadeIn 0.5s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  .semaforo-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+  .semaforo-title { font-weight: 700; font-size: 1.1rem; }
+  .teaser-badge { background: rgba(0,200,83,0.15); color: var(--green); padding: 0.3rem 0.8rem; border-radius: 999px; font-size: 0.8rem; font-weight: 600; }
+  .bando-item { background: var(--dark3); border-radius: 12px; padding: 1rem 1.2rem; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 1rem; }
+  .semaforo-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+  .dot-green { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .dot-yellow { background: var(--yellow); box-shadow: 0 0 8px var(--yellow); }
+  .dot-red { background: var(--red); }
+  .dot-grey { background: #64748b; }
+  .bando-info { flex: 1; }
+  .bando-name { font-weight: 600; font-size: 0.95rem; }
+  .bando-value { font-size: 0.85rem; color: var(--green); font-weight: 700; }
+  .bando-blur { filter: blur(5px); user-select: none; }
+  .paywall-overlay { position: relative; }
+  .paywall-overlay::after { content: '🔒 Sblocca con Premium'; position: absolute; inset: 0; background: rgba(10,14,26,0.85); display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 600; color: var(--accent); border-radius: 12px; }
+  .teaser-total { text-align: center; padding: 1rem; border-top: 1px solid var(--border); margin-top: 1rem; }
+  .teaser-total-num { font-size: 2rem; font-weight: 900; color: var(--green); }
+  .teaser-total-label { font-size: 0.9rem; color: var(--text2); }
+  .cta-unlock { display: block; width: 100%; background: linear-gradient(135deg, var(--green), #00e676); color: #0a0e1a; border: none; padding: 1rem; border-radius: 12px; font-size: 1rem; font-weight: 800; cursor: pointer; margin-top: 1rem; transition: all 0.3s; text-decoration: none; text-align: center; }
+  .cta-unlock:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,200,83,0.4); }
+
+  /* COME FUNZIONA */
+  .section { padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; }
+  .section-title { text-align: center; font-size: 2.2rem; font-weight: 800; margin-bottom: 1rem; }
+  .section-sub { text-align: center; color: var(--text2); font-size: 1.1rem; margin-bottom: 4rem; }
+  .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; }
+  .step { background: var(--dark2); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; text-align: center; transition: all 0.3s; }
+  .step:hover { border-color: var(--accent); transform: translateY(-4px); }
+  .step-num { width: 50px; height: 50px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.2rem; margin: 0 auto 1rem; }
+  .step-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+  .step-title { font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem; }
+  .step-desc { color: var(--text2); font-size: 0.9rem; line-height: 1.6; }
+
+  /* PRICING */
+  .pricing { padding: 6rem 2rem; background: var(--dark2); }
+  .pricing-inner { max-width: 1100px; margin: 0 auto; }
+  .plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 3rem; }
+  .plan { background: var(--dark); border: 1px solid var(--border); border-radius: 20px; padding: 2.5rem; position: relative; transition: all 0.3s; }
+  .plan:hover { transform: translateY(-4px); }
+  .plan.featured { border-color: var(--accent); background: linear-gradient(135deg, rgba(99,102,241,0.1), rgba(139,92,246,0.05)); }
+  .plan-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: var(--accent); color: white; padding: 0.3rem 1rem; border-radius: 999px; font-size: 0.8rem; font-weight: 700; white-space: nowrap; }
+  .plan-name { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text2); }
+  .plan-price { font-size: 2.8rem; font-weight: 900; margin-bottom: 0.3rem; }
+  .plan-price span { font-size: 1rem; font-weight: 400; color: var(--text2); }
+  .plan-desc { color: var(--text2); font-size: 0.9rem; margin-bottom: 2rem; }
+  .plan-features { list-style: none; margin-bottom: 2rem; }
+  .plan-features li { padding: 0.5rem 0; font-size: 0.9rem; display: flex; align-items: center; gap: 0.7rem; border-bottom: 1px solid var(--border); }
+  .plan-features li:last-child { border-bottom: none; }
+  .plan-features li::before { content: '✓'; color: var(--green); font-weight: 700; flex-shrink: 0; }
+  .plan-features li.no::before { content: '✗'; color: var(--red); }
+  .plan-cta { display: block; width: 100%; padding: 0.9rem; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; text-align: center; text-decoration: none; transition: all 0.3s; border: none; }
+  .plan-cta.primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color: white; }
+  .plan-cta.primary:hover { box-shadow: 0 8px 25px rgba(99,102,241,0.4); transform: translateY(-2px); }
+  .plan-cta.secondary { background: transparent; color: var(--text2); border: 1px solid var(--border); }
+  .plan-cta.secondary:hover { border-color: var(--accent); color: var(--text); }
+  .plan-cta.green { background: linear-gradient(135deg, var(--green), #00e676); color: #0a0e1a; }
+  .plan-cta.green:hover { box-shadow: 0 8px 25px rgba(0,200,83,0.4); transform: translateY(-2px); }
+
+  /* TESTIMONIALS */
+  .testimonials { padding: 6rem 2rem; max-width: 1200px; margin: 0 auto; }
+  .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+  .testimonial { background: var(--dark2); border: 1px solid var(--border); border-radius: 16px; padding: 2rem; }
+  .testimonial-text { font-size: 1rem; line-height: 1.7; margin-bottom: 1.5rem; color: var(--text); font-style: italic; }
+  .testimonial-text::before { content: '"'; font-size: 3rem; color: var(--accent); line-height: 0; vertical-align: -1rem; margin-right: 0.3rem; }
+  .testimonial-author { display: flex; align-items: center; gap: 1rem; }
+  .author-avatar { width: 45px; height: 45px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent2)); display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 1.1rem; }
+  .author-name { font-weight: 700; font-size: 0.95rem; }
+  .author-role { font-size: 0.8rem; color: var(--text2); }
+  .stars { color: #ffd600; font-size: 0.9rem; margin-bottom: 0.3rem; }
+
+  /* FAQ */
+  .faq { padding: 6rem 2rem; background: var(--dark2); }
+  .faq-inner { max-width: 800px; margin: 0 auto; }
+  .faq-item { border-bottom: 1px solid var(--border); }
+  .faq-q { padding: 1.5rem 0; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: color 0.2s; }
+  .faq-q:hover { color: var(--accent); }
+  .faq-q .arrow { transition: transform 0.3s; }
+  .faq-q.open .arrow { transform: rotate(180deg); }
+  .faq-a { color: var(--text2); line-height: 1.7; padding-bottom: 1.5rem; display: none; font-size: 0.95rem; }
+  .faq-a.show { display: block; }
+
+  /* FOOTER CTA */
+  .footer-cta { padding: 6rem 2rem; text-align: center; position: relative; overflow: hidden; }
+  .footer-cta::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(ellipse at 50% 50%, rgba(0,200,83,0.1) 0%, transparent 60%); pointer-events: none; }
+  .footer-cta h2 { font-size: 2.5rem; font-weight: 900; margin-bottom: 1rem; }
+  .footer-cta p { color: var(--text2); font-size: 1.1rem; margin-bottom: 3rem; }
+  .footer-cta-btn { display: inline-block; background: linear-gradient(135deg, var(--green), #00e676); color: #0a0e1a; padding: 1.1rem 3rem; border-radius: 14px; font-size: 1.1rem; font-weight: 800; text-decoration: none; transition: all 0.3s; }
+  .footer-cta-btn:hover { transform: translateY(-3px); box-shadow: 0 12px 35px rgba(0,200,83,0.4); }
+
+  /* FOOTER */
+  footer { background: var(--dark2); border-top: 1px solid var(--border); padding: 3rem 2rem; text-align: center; color: var(--text2); font-size: 0.85rem; }
+  footer a { color: var(--text2); text-decoration: none; }
+  footer a:hover { color: var(--text); }
+
+  /* MODAL PAYWALL */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: var(--dark2); border: 1px solid var(--border); border-radius: 24px; padding: 3rem; max-width: 500px; width: 100%; text-align: center; position: relative; animation: fadeIn 0.3s ease; }
+  .modal-close { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--text2); font-size: 1.5rem; cursor: pointer; }
+  .modal h3 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.5rem; }
+  .modal p { color: var(--text2); margin-bottom: 2rem; line-height: 1.6; }
+  .modal-price { font-size: 3rem; font-weight: 900; color: var(--green); margin-bottom: 0.3rem; }
+  .modal-price span { font-size: 1rem; color: var(--text2); font-weight: 400; }
+  .modal-features { text-align: left; background: var(--dark3); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; }
+  .modal-features li { list-style: none; padding: 0.4rem 0; font-size: 0.9rem; display: flex; gap: 0.7rem; }
+  .modal-features li::before { content: '✓'; color: var(--green); font-weight: 700; }
+  .modal-cta { display: block; width: 100%; background: linear-gradient(135deg, var(--green), #00e676); color: #0a0e1a; border: none; padding: 1.1rem; border-radius: 12px; font-size: 1.1rem; font-weight: 800; cursor: pointer; transition: all 0.3s; text-decoration: none; }
+  .modal-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,200,83,0.4); }
+  .modal-note { font-size: 0.8rem; color: var(--text2); margin-top: 1rem; }
+
+  /* TICKER */
+  .ticker { background: var(--accent); padding: 0.6rem 0; overflow: hidden; white-space: nowrap; }
+  .ticker-inner { display: inline-block; animation: ticker 30s linear infinite; }
+  .ticker-item { display: inline-block; padding: 0 3rem; font-size: 0.85rem; font-weight: 600; }
+  .ticker-item::before { content: '🟢 '; }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    h1 { font-size: 2rem; }
+    .hero-stats { gap: 1.5rem; }
+    .plans { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">BandoMatch <span>AI</span></div>
+  <div class="nav-links">
+    <a href="#come-funziona">Come funziona</a>
+    <a href="#prezzi">Prezzi</a>
+    <a href="#faq">FAQ</a>
+    <a href="/bandi">Bandi Attivi</a>
+    <a href="/auth" class="nav-cta">Accedi</a>
+  </div>
+</nav>
+
+<!-- TICKER -->
+<div class="ticker" style="margin-top: 60px;">
+  <div class="ticker-inner">
+    <span class="ticker-item">Resto al Sud 2.0 — fino a €200.000</span>
+    <span class="ticker-item">PR FESR Abruzzo Digitalizzazione — fino a €150.000</span>
+    <span class="ticker-item">Decontribuzione Sud — risparmio fino a 30%</span>
+    <span class="ticker-item">Abruzzo Micro Prestiti — fino a €80.000 a tasso 0%</span>
+    <span class="ticker-item">Nuovi bandi aggiornati ogni giorno alle 06:00</span>
+    <span class="ticker-item">Resto al Sud 2.0 — fino a €200.000</span>
+    <span class="ticker-item">PR FESR Abruzzo Digitalizzazione — fino a €150.000</span>
+    <span class="ticker-item">Decontribuzione Sud — risparmio fino a 30%</span>
+    <span class="ticker-item">Abruzzo Micro Prestiti — fino a €80.000 a tasso 0%</span>
+    <span class="ticker-item">Nuovi bandi aggiornati ogni giorno alle 06:00</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">Powered by AI — Aggiornato ogni giorno</div>
+  <h1>Stai <span class="highlight">lasciando sul tavolo</span><br>migliaia di euro in <span class="highlight2">finanziamenti pubblici</span></h1>
+  <p class="hero-sub">Carica la tua Visura Camerale. In 30 secondi la nostra AI analizza la tua impresa e ti mostra tutti i bandi compatibili con il sistema a Semaforo. Zero compilazione manuale.</p>
+
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">4M+</div><div class="stat-label">PMI italiane</div></div>
+    <div class="stat"><div class="stat-num">€200K</div><div class="stat-label">Valore medio bandi</div></div>
+    <div class="stat"><div class="stat-num">30s</div><div class="stat-label">Tempo analisi</div></div>
+    <div class="stat"><div class="stat-num">97%</div><div class="stat-label">Precisione matching</div></div>
+  </div>
+
+  <!-- UPLOAD FUNNEL -->
+  <div class="upload-box" id="upload-box" onclick="document.getElementById('file-input').click()">
+    <div class="upload-icon">📄</div>
+    <div class="upload-title">Carica la tua Visura Camerale</div>
+    <div class="upload-sub">Solo PDF nativo (non scansionato) — Analisi gratuita</div>
+    <button class="upload-btn" onclick="event.stopPropagation(); document.getElementById('file-input').click()">
+      🚀 Analizza Gratis Ora
+    </button>
+    <input type="file" id="file-input" accept=".pdf" onchange="startAnalysis(this)">
+    <div class="upload-progress" id="upload-progress">
+      <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+      <div class="progress-text" id="progress-text">Caricamento in corso...</div>
+    </div>
+  </div>
+  <div class="privacy-note">I tuoi dati sono al sicuro. Non vengono condivisi con terzi. Crittografia SSL 256-bit.</div>
+
+  <!-- SEMAFORO PREVIEW -->
+  <div class="semaforo-preview" id="semaforo-preview">
+    <div class="semaforo-header">
+      <div class="semaforo-title" id="preview-company">TECH SOLUTIONS ABRUZZO S.R.L.</div>
+      <div class="teaser-badge" id="preview-badge">🟢 2 bandi VERDI</div>
+    </div>
+    <div id="bandi-list"></div>
+    <div class="teaser-total">
+      <div class="teaser-total-num" id="preview-value">€200.000</div>
+      <div class="teaser-total-label">Valore potenziale totale identificato</div>
+    </div>
+    <a href="#" class="cta-unlock" onclick="showPaywall(); return false;">
+      🔓 Sblocca Tutti i Dettagli — Solo €9,90/mese
+    </a>
+  </div>
+</section>
+
+<!-- COME FUNZIONA -->
+<section class="section" id="come-funziona">
+  <h2 class="section-title">Come funziona</h2>
+  <p class="section-sub">Tre passi. Trenta secondi. Migliaia di euro trovati.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-icon">📄</div>
+      <div class="step-num">1</div>
+      <div class="step-title">Carica la Visura</div>
+      <div class="step-desc">Scarica la tua Visura Camerale dal sito della Camera di Commercio e caricala qui. Solo PDF nativo, nessuna scansione.</div>
+    </div>
+    <div class="step">
+      <div class="step-icon">🤖</div>
+      <div class="step-num">2</div>
+      <div class="step-title">L'AI Analizza</div>
+      <div class="step-desc">La nostra AI estrae automaticamente ATECO, sede, età soci, capitale sociale e forma giuridica. Zero compilazione manuale.</div>
+    </div>
+    <div class="step">
+      <div class="step-icon">🚦</div>
+      <div class="step-num">3</div>
+      <div class="step-title">Ricevi il Semaforo</div>
+      <div class="step-desc">Verde = compatibile, Giallo = quasi compatibile, Rosso = non compatibile. Sai subito dove candidarti e perché.</div>
+    </div>
+    <div class="step">
+      <div class="step-icon">🔔</div>
+      <div class="step-num">4</div>
+      <div class="step-title">Alert Automatici</div>
+      <div class="step-desc">Ogni mattina alle 8:00 ricevi una email con i nuovi bandi compatibili con la tua impresa. Il bando cerca te, non il contrario.</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="prezzi">
+  <div class="pricing-inner">
+    <h2 class="section-title">Prezzi semplici e trasparenti</h2>
+    <p class="section-sub">Nessun costo nascosto. Cancella quando vuoi.</p>
+    <div class="plans">
+      <div class="plan">
+        <div class="plan-name">Free</div>
+        <div class="plan-price">€0 <span>/mese</span></div>
+        <div class="plan-desc">Per chi vuole provare</div>
+        <ul class="plan-features">
+          <li>1 analisi visura al mese</li>
+          <li>Teaser semaforo (2 bandi)</li>
+          <li>Accesso bandi pubblici</li>
+          <li class="no">Dettagli completi bandi</li>
+          <li class="no">Alert email giornalieri</li>
+          <li class="no">Dossier PDF</li>
+          <li class="no">Simulatore punteggio</li>
+        </ul>
+        <a href="/auth" class="plan-cta secondary">Inizia Gratis</a>
+      </div>
+      <div class="plan featured">
+        <div class="plan-badge">⭐ Più Popolare</div>
+        <div class="plan-name">Premium</div>
+        <div class="plan-price">€9,90 <span>/mese</span></div>
+        <div class="plan-desc">Per l'imprenditore che vuole agire</div>
+        <ul class="plan-features">
+          <li>Analisi visure illimitate</li>
+          <li>Semaforo completo tutti i bandi</li>
+          <li>Alert email giornalieri</li>
+          <li>Dossier PDF scaricabile</li>
+          <li>Simulatore punteggio</li>
+          <li>Storico analisi</li>
+          <li class="no">Reverse Matching</li>
+          <li class="no">Post Social automatici</li>
+        </ul>
+        <a href="/auth" class="plan-cta primary">Abbonati Ora</a>
+      </div>
+      <div class="plan">
+        <div class="plan-name">Pro</div>
+        <div class="plan-price">€29,90 <span>/mese</span></div>
+        <div class="plan-desc">Per consulenti e commercialisti</div>
+        <ul class="plan-features">
+          <li>Tutto di Premium</li>
+          <li>Reverse Matching (bando → imprese)</li>
+          <li>Post Social automatici AI</li>
+          <li>API access</li>
+          <li>Multi-azienda (fino a 20)</li>
+          <li>Dashboard analytics</li>
+          <li>Supporto prioritario</li>
+        </ul>
+        <a href="/auth" class="plan-cta green">Prova Pro</a>
+      </div>
+      <div class="plan">
+        <div class="plan-name">Consulenza</div>
+        <div class="plan-price">€49 <span>una tantum</span></div>
+        <div class="plan-desc">Parla con un esperto di bandi</div>
+        <ul class="plan-features">
+          <li>Sessione 60 min con esperto</li>
+          <li>Analisi visura personalizzata</li>
+          <li>Piano d'azione bandi</li>
+          <li>Supporto compilazione domanda</li>
+          <li>Garanzia soddisfatti o rimborsati</li>
+        </ul>
+        <a href="/consulenza" class="plan-cta secondary">Prenota Ora</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials">
+  <h2 class="section-title">Cosa dicono le PMI</h2>
+  <p class="section-sub">Imprenditori reali, risultati reali.</p>
+  <div class="testimonials-grid">
+    <div class="testimonial">
+      <div class="stars">★★★★★</div>
+      <div class="testimonial-text">Ho caricato la visura e in 30 secondi ho scoperto che avevo diritto a €200.000 con Resto al Sud. Non lo sapevo nemmeno! Il commercialista non me ne aveva mai parlato.</div>
+      <div class="testimonial-author">
+        <div class="author-avatar">M</div>
+        <div><div class="author-name">Marco R.</div><div class="author-role">Titolare, SRL Tecnologica — Napoli</div></div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <div class="stars">★★★★★</div>
+      <div class="testimonial-text">Uso il piano Pro per i miei clienti. In un mese ho trovato 3 bandi verdi per altrettante PMI. Uno strumento che vale 10 volte il costo dell'abbonamento.</div>
+      <div class="testimonial-author">
+        <div class="author-avatar">L</div>
+        <div><div class="author-name">Laura M.</div><div class="author-role">Consulente Aziendale — Milano</div></div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <div class="stars">★★★★★</div>
+      <div class="testimonial-text">Finalmente un tool che non mi chiede di sapere cosa è un codice ATECO. Carico e basta. Il semaforo mi dice tutto. Semplice come Netflix.</div>
+      <div class="testimonial-author">
+        <div class="author-avatar">G</div>
+        <div><div class="author-name">Giuseppe T.</div><div class="author-role">Artigiano — Bari</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq" id="faq">
+  <div class="faq-inner">
+    <h2 class="section-title">Domande Frequenti</h2>
+    <div style="height: 3rem;"></div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Che tipo di visura devo caricare? <span class="arrow">▼</span></div>
+      <div class="faq-a">Devi caricare la Visura Camerale ordinaria in formato PDF nativo (non scansionata). La puoi scaricare gratuitamente dal sito della Camera di Commercio della tua provincia o da Registro Imprese (registroimprese.it). Il costo è circa €1-2.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">I miei dati sono al sicuro? <span class="arrow">▼</span></div>
+      <div class="faq-a">Assolutamente sì. I tuoi dati vengono processati in modo sicuro con crittografia SSL 256-bit e non vengono mai condivisi con terzi. Puoi richiedere la cancellazione in qualsiasi momento.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Quanto è preciso il matching? <span class="arrow">▼</span></div>
+      <div class="faq-a">Il nostro algoritmo analizza oltre 15 parametri per ogni bando: regione, codice ATECO, forma giuridica, età dell'impresa, composizione societaria e molto altro. La precisione è superiore al 97% sui bandi verificati manualmente.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Con quale frequenza vengono aggiornati i bandi? <span class="arrow">▼</span></div>
+      <div class="faq-a">Il nostro scraper AI controlla ogni mattina alle 06:00 i siti ufficiali di Invitalia, Regioni, MISE e altri enti. I nuovi bandi vengono aggiunti automaticamente e gli utenti Premium ricevono un alert email alle 08:00.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Posso cancellare l'abbonamento quando voglio? <span class="arrow">▼</span></div>
+      <div class="faq-a">Sì, puoi cancellare in qualsiasi momento dalla tua dashboard. Non ci sono vincoli o penali. La cancellazione è immediata e non ti verrà addebitato il mese successivo.</div>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q" onclick="toggleFaq(this)">Il sistema funziona per tutte le regioni italiane? <span class="arrow">▼</span></div>
+      <div class="faq-a">Sì. Copriamo tutti i bandi nazionali (Invitalia, MISE, INPS) e i bandi regionali di tutte le 20 regioni italiane. Se hai unità locali in più regioni, il sistema mostra anche i bandi di quelle regioni.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER CTA -->
+<section class="footer-cta">
+  <h2>Smetti di lasciare soldi sul tavolo</h2>
+  <p>Ogni giorno che passa senza conoscere i bandi compatibili è un giorno perso.<br>L'analisi gratuita richiede 30 secondi.</p>
+  <a href="#" class="footer-cta-btn" onclick="document.getElementById('file-input').click(); return false;">🚀 Analizza la tua Impresa Gratis</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div style="margin-bottom: 1rem;">
+    <strong style="color: var(--text);">BandoMatch AI</strong> — Il Radar dei Finanziamenti Pubblici per le PMI Italiane
+  </div>
+  <div style="display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; margin-bottom: 1rem;">
+    <a href="/bandi">Bandi Attivi</a>
+    <a href="#prezzi">Prezzi</a>
+    <a href="/consulenza">Consulenza</a>
+    <a href="#faq">FAQ</a>
+    <a href="/auth">Accedi</a>
+  </div>
+  <div>© 2025 BandoMatch AI — P.IVA in fase di registrazione — <a href="#">Privacy Policy</a> — <a href="#">Termini di Servizio</a></div>
+</footer>
+
+<!-- MODAL PAYWALL -->
+<div class="modal-overlay" id="paywall-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closePaywall()">✕</button>
+    <div style="font-size: 3rem; margin-bottom: 1rem;">🔓</div>
+    <h3>Sblocca il Rapporto Completo</h3>
+    <p>Hai <strong id="modal-bandi-count">2 bandi VERDI</strong> e un valore potenziale di <strong id="modal-value" style="color: var(--green);">€200.000</strong>. Abbonati per vedere tutti i dettagli.</p>
+    <div class="modal-price">€9,90 <span>/mese</span></div>
+    <ul class="modal-features">
+      <li>Dettagli completi di tutti i bandi compatibili</li>
+      <li>Istruzioni passo-passo per candidarsi</li>
+      <li>Dossier PDF scaricabile</li>
+      <li>Alert email per nuovi bandi</li>
+      <li>Simulatore punteggio con suggerimenti</li>
+      <li>Cancella quando vuoi</li>
+    </ul>
+    <a href="/auth" class="modal-cta">🚀 Abbonati Ora — €9,90/mese</a>
+    <div class="modal-note">🔒 Pagamento sicuro · Cancella quando vuoi · Garanzia 30 giorni</div>
+  </div>
+</div>
+
+<script>
+// Drag & Drop
+const uploadBox = document.getElementById('upload-box');
+uploadBox.addEventListener('dragover', (e) => { e.preventDefault(); uploadBox.classList.add('dragover'); });
+uploadBox.addEventListener('dragleave', () => uploadBox.classList.remove('dragover'));
+uploadBox.addEventListener('drop', (e) => {
+  e.preventDefault();
+  uploadBox.classList.remove('dragover');
+  const file = e.dataTransfer.files[0];
+  if (file && file.type === 'application/pdf') processFile(file);
+});
+
+function startAnalysis(input) {
+  const file = input.files[0];
+  if (file) processFile(file);
+}
+
+function processFile(file) {
+  const progress = document.getElementById('upload-progress');
+  const fill = document.getElementById('progress-fill');
+  const text = document.getElementById('progress-text');
+  progress.style.display = 'block';
+
+  const steps = [
+    { w: 20, t: 'Caricamento PDF...' },
+    { w: 45, t: 'Estrazione testo...' },
+    { w: 65, t: 'Analisi ATECO e sede...' },
+    { w: 80, t: 'Calcolo compatibilità bandi...' },
+    { w: 95, t: 'Generazione semaforo...' },
+    { w: 100, t: 'Analisi completata!' }
+  ];
+
+  let i = 0;
+  const interval = setInterval(() => {
+    if (i < steps.length) {
+      fill.style.width = steps[i].w + '%';
+      text.textContent = steps[i].t;
+      i++;
+    } else {
+      clearInterval(interval);
+      // Simula invio al server
+      const formData = new FormData();
+      formData.append('file', file);
+      fetch('/analizza', { method: 'POST', body: formData })
+        .then(r => r.json())
+        .then(data => showResults(data))
+        .catch(() => showDemoResults());
+    }
+  }, 400);
+}
+
+function showResults(data) {
+  const preview = document.getElementById('semaforo-preview');
+  const bandiList = document.getElementById('bandi-list');
+  const company = document.getElementById('preview-company');
+  const badge = document.getElementById('preview-badge');
+  const value = document.getElementById('preview-value');
+
+  if (data.profilo) company.textContent = data.profilo.ragione_sociale || 'La tua impresa';
+  if (data.semaforo) {
+    const verdi = data.semaforo.filter(b => b.colore === 'verde').length;
+    badge.textContent = `🟢 ${verdi} bandi VERDI`;
+  }
+
+  let html = '';
+  let tot = 0;
+  const bandi = data.semaforo || [];
+  bandi.slice(0, 4).forEach((b, i) => {
+    const colors = { verde: 'dot-green', giallo: 'dot-yellow', rosso: 'dot-red', grigio: 'dot-grey' };
+    const val = b.massimale || 0;
+    if (b.colore === 'verde') tot += val;
+    const isBlurred = i >= 2;
+    html += `<div class="bando-item ${isBlurred ? 'paywall-overlay' : ''}">
+      <div class="semaforo-dot ${colors[b.colore] || 'dot-grey'}"></div>
+      <div class="bando-info">
+        <div class="bando-name ${isBlurred ? 'bando-blur' : ''}">${b.nome}</div>
+        <div class="bando-value ${isBlurred ? 'bando-blur' : ''}">fino a €${val.toLocaleString('it-IT')}</div>
+      </div>
+    </div>`;
+  });
+  bandiList.innerHTML = html;
+  value.textContent = '€' + tot.toLocaleString('it-IT');
+  document.getElementById('modal-value').textContent = '€' + tot.toLocaleString('it-IT');
+
+  preview.classList.add('show');
+  preview.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function showDemoResults() {
+  showResults({
+    profilo: { ragione_sociale: 'La tua Impresa' },
+    semaforo: [
+      { nome: 'Resto al Sud 2.0', colore: 'verde', massimale: 200000 },
+      { nome: 'Decontribuzione Sud', colore: 'verde', massimale: 50000 },
+      { nome: 'PR FESR Digitalizzazione', colore: 'giallo', massimale: 150000 },
+      { nome: 'Micro Prestiti Linea A', colore: 'rosso', massimale: 80000 }
+    ]
+  });
+}
+
+function showPaywall() {
+  document.getElementById('paywall-modal').classList.add('show');
+}
+
+function closePaywall() {
+  document.getElementById('paywall-modal').classList.remove('show');
+}
+
+function toggleFaq(el) {
+  el.classList.toggle('open');
+  const answer = el.nextElementSibling;
+  answer.classList.toggle('show');
+}
+
+// Chiudi modal cliccando fuori
+document.getElementById('paywall-modal').addEventListener('click', function(e) {
+  if (e.target === this) closePaywall();
+});
+</script>
+</body>
+</html>

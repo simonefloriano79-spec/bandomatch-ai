@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento Confermato — BandoMatch AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background: #0f172a; color: #f1f5f9; font-family: 'Inter', sans-serif; }
+        .confetti { animation: fall 3s ease-in-out forwards; }
+        @keyframes fall { 0% { transform: translateY(-100px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+        .pulse-green { animation: pulse-g 2s infinite; }
+        @keyframes pulse-g { 0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 50% { box-shadow: 0 0 0 20px rgba(16, 185, 129, 0); } }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-lg w-full text-center">
+        <!-- Icona successo -->
+        <div class="w-24 h-24 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-6 pulse-green">
+            <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+            </svg>
+        </div>
+
+        <h1 class="text-3xl font-bold text-white mb-2">Benvenuto nel futuro!</h1>
+        <p class="text-purple-300 text-lg mb-6">Il tuo piano <strong class="text-purple-400 uppercase">{{ piano }}</strong> è attivo</p>
+
+        <!-- Features sbloccate -->
+        <div class="bg-gray-800 rounded-2xl p-6 mb-6 text-left">
+            <h2 class="text-white font-bold mb-4 text-center">✨ Hai sbloccato:</h2>
+            {% for feature in features %}
+            <div class="flex items-center gap-3 mb-3">
+                <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+                <span class="text-gray-300">{{ feature }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- CTA -->
+        <div class="flex flex-col gap-3">
+            <a href="/dashboard" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-8 rounded-xl text-lg transition-all transform hover:scale-105">
+                🚀 Vai alla Dashboard
+            </a>
+            <a href="/" class="text-gray-400 hover:text-white text-sm transition-colors">
+                Torna alla home
+            </a>
+        </div>
+
+        <p class="text-gray-500 text-xs mt-6">
+            Riceverai una email di conferma a breve. Per assistenza: support@bandomatch.ai
+        </p>
+    </div>
+
+    <!-- Particelle celebrative -->
+    <script>
+        for (let i = 0; i < 20; i++) {
+            const div = document.createElement('div');
+            div.style.cssText = `position:fixed;top:-20px;left:${Math.random()*100}%;width:8px;height:8px;background:${['#7C3AED','#10B981','#F59E0B','#EF4444'][Math.floor(Math.random()*4)]};border-radius:50%;animation:fall ${2+Math.random()*3}s ease-in ${Math.random()*2}s forwards;pointer-events:none;z-index:9999`;
+            document.body.appendChild(div);
+        }
+    </script>
+</body>
+</html>

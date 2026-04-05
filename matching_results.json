@@ -1,0 +1,311 @@
+{
+  "profilo_impresa": {
+    "ragione_sociale": "TECH SOLUTIONS ABRUZZO S.R.L.",
+    "regione": "Abruzzo",
+    "ateco_primario": "62.01.00",
+    "forma_giuridica": "SRL"
+  },
+  "statistiche": {
+    "totale_bandi_analizzati": 5,
+    "verde": 2,
+    "giallo": 1,
+    "grigio": 0,
+    "rosso": 2,
+    "valore_potenziale_massimo": 200000
+  },
+  "risultati": [
+    {
+      "bando_id": "resto_al_sud_2_0",
+      "bando_nome": "Resto al Sud 2.0 (Investire al Sud)",
+      "ente": "Invitalia",
+      "semaforo": "VERDE",
+      "score": 100,
+      "motivo_principale": "✅ Tutti i requisiti verificati soddisfatti",
+      "checks": {
+        "regione": {
+          "ok": true,
+          "motivo": "Regione Abruzzo ammessa"
+        },
+        "ateco": {
+          "ok": true,
+          "motivo": "Codice ATECO 62.01.00 ammesso"
+        },
+        "forma_giuridica": {
+          "ok": true,
+          "motivo": "Forma giuridica SRL ammessa"
+        },
+        "eta_impresa": {
+          "ok": true,
+          "motivo": "Nessun limite di età impresa per questo bando"
+        },
+        "eta_soci": {
+          "ok": true,
+          "motivo": "2 socio/i con età ≤ 34 anni"
+        },
+        "stato_bando": {
+          "ok": true,
+          "motivo": "Bando attivo"
+        }
+      },
+      "semaforo_dettaglio": {
+        "colore": "VERDE",
+        "score": 100,
+        "bloccanti_falliti": [],
+        "dati_mancanti": [],
+        "warning": [],
+        "ok_count": 6,
+        "total_count": 6
+      },
+      "agevolazioni": {
+        "voucher_avvio": 40000,
+        "voucher_avvio_maggiorato": 50000,
+        "percentuale_fondo_perduto_fino_120k": 75,
+        "percentuale_fondo_perduto_120k_200k": 70,
+        "massimale_investimento": 200000
+      },
+      "descrizione": "Incentivo per l'avvio di nuove attività imprenditoriali nelle regioni del Mezzogiorno. Voucher fino a 50.000€ + contributo a fondo perduto fino al 75% per investimenti fino a 200.000€.",
+      "url": "https://www.invitalia.it/incentivi-e-strumenti/resto-al-sud-20",
+      "stato_bando": "ATTIVO",
+      "form_integrativo_richiesto": [
+        "condizione_occupazionale",
+        "eta_soci_confermata"
+      ]
+    },
+    {
+      "bando_id": "decontribuzione_sud",
+      "bando_nome": "Decontribuzione Sud",
+      "ente": "INPS / Governo Italiano",
+      "semaforo": "VERDE",
+      "score": 100,
+      "motivo_principale": "✅ Tutti i requisiti verificati soddisfatti",
+      "checks": {
+        "regione": {
+          "ok": true,
+          "motivo": "Regione Abruzzo ammessa"
+        },
+        "ateco": {
+          "ok": true,
+          "motivo": "Codice ATECO 62.01.00 ammesso"
+        },
+        "forma_giuridica": {
+          "ok": true,
+          "motivo": "Tutte le forme giuridiche ammesse"
+        },
+        "eta_impresa": {
+          "ok": true,
+          "motivo": "Nessun limite di età impresa per questo bando"
+        },
+        "eta_soci": {
+          "ok": true,
+          "motivo": "Nessun requisito di età soci per questo bando"
+        },
+        "stato_bando": {
+          "ok": true,
+          "motivo": "Bando attivo"
+        }
+      },
+      "semaforo_dettaglio": {
+        "colore": "VERDE",
+        "score": 100,
+        "bloccanti_falliti": [],
+        "dati_mancanti": [],
+        "warning": [],
+        "ok_count": 6,
+        "total_count": 6
+      },
+      "agevolazioni": {
+        "tipologia": "Sgravio contributivo",
+        "percentuale_sgravio": 30,
+        "note": "Sgravio del 30% sui contributi previdenziali per dipendenti nelle regioni del Mezzogiorno"
+      },
+      "descrizione": "Sgravio contributivo del 30% per imprese con dipendenti nelle regioni del Mezzogiorno. Valido fino al 2029.",
+      "url": "https://www.inps.it/",
+      "stato_bando": "ATTIVO",
+      "form_integrativo_richiesto": []
+    },
+    {
+      "bando_id": "abruzzo_digitalizzazione_pmi",
+      "bando_nome": "PR FESR Abruzzo — Digitalizzazione PMI (Azione 1.2.2.1)",
+      "ente": "Regione Abruzzo / FiRA",
+      "semaforo": "GIALLO",
+      "score": 100.0,
+      "motivo_principale": "⚠️ stato_bando: Bando in preparazione — data apertura non ancora definita",
+      "checks": {
+        "regione": {
+          "ok": true,
+          "motivo": "Regione Abruzzo ammessa"
+        },
+        "ateco": {
+          "ok": true,
+          "motivo": "Codice ATECO 62.01.00 ammesso"
+        },
+        "forma_giuridica": {
+          "ok": true,
+          "motivo": "Forma giuridica SRL ammessa"
+        },
+        "eta_impresa": {
+          "ok": true,
+          "motivo": "Nessun limite di età impresa per questo bando"
+        },
+        "eta_soci": {
+          "ok": true,
+          "motivo": "Nessun requisito di età soci per questo bando"
+        },
+        "stato_bando": {
+          "ok": true,
+          "motivo": "Bando in preparazione — data apertura non ancora definita",
+          "warning": true
+        }
+      },
+      "semaforo_dettaglio": {
+        "colore": "GIALLO",
+        "score": 100.0,
+        "bloccanti_falliti": [],
+        "dati_mancanti": [],
+        "warning": [
+          "⚠️ stato_bando: Bando in preparazione — data apertura non ancora definita"
+        ],
+        "ok_count": 6,
+        "total_count": 6
+      },
+      "agevolazioni": {
+        "percentuale_fondo_perduto": 70,
+        "anticipo_possibile": 40,
+        "regime_aiuti": "de minimis (Reg. UE 2023/2831)"
+      },
+      "descrizione": "Contributo a fondo perduto fino al 70% per digitalizzazione PMI abruzzesi: e-commerce, cybersecurity, marketing digitale, software gestionale.",
+      "url": "https://www.fira.it/abruzzo-coesione-pubblicata-la-scheda-tecnica-del-bando-fesr-per-la-digitalizzazione-delle-pmi/",
+      "stato_bando": "IN_PREPARAZIONE",
+      "form_integrativo_richiesto": []
+    },
+    {
+      "bando_id": "abruzzo_micro_prestiti_giovani",
+      "bando_nome": "Abruzzo Micro Prestiti — Linea A (Giovani)",
+      "ente": "FiRA S.p.A. - Regione Abruzzo",
+      "semaforo": "ROSSO",
+      "score": 0,
+      "motivo_principale": "❌ eta_impresa: Impresa troppo vecchia: 36 mesi (limite: 24 mesi)",
+      "checks": {
+        "regione": {
+          "ok": true,
+          "motivo": "Regione Abruzzo ammessa"
+        },
+        "ateco": {
+          "ok": true,
+          "motivo": "Codice ATECO 62.01.00 ammesso"
+        },
+        "forma_giuridica": {
+          "ok": true,
+          "motivo": "Forma giuridica SRL ammessa"
+        },
+        "eta_impresa": {
+          "ok": false,
+          "motivo": "Impresa troppo vecchia: 36 mesi (limite: 24 mesi)",
+          "bloccante": true
+        },
+        "eta_soci": {
+          "ok": true,
+          "motivo": "100.0% quote detenute da soci under 35 (minimo: 70.0%)"
+        },
+        "stato_bando": {
+          "ok": true,
+          "motivo": "Bando apre tra 39 giorni (2026-05-12)",
+          "warning": true
+        }
+      },
+      "semaforo_dettaglio": {
+        "colore": "ROSSO",
+        "score": 0,
+        "bloccanti_falliti": [
+          "❌ eta_impresa: Impresa troppo vecchia: 36 mesi (limite: 24 mesi)"
+        ],
+        "dati_mancanti": [],
+        "warning": [
+          "⚠️ stato_bando: Bando apre tra 39 giorni (2026-05-12)"
+        ],
+        "ok_count": 5,
+        "total_count": 6
+      },
+      "agevolazioni": {
+        "micro_prestito_min": 10000,
+        "micro_prestito_max": 80000,
+        "tasso_interesse": 0,
+        "fondo_perduto_percentuale": 30,
+        "fondo_perduto_max": 24000,
+        "spesa_progetto_min": 13000,
+        "spesa_progetto_max": 104000,
+        "garanzie": "Nessuna"
+      },
+      "descrizione": "Micro-prestito a tasso zero (10-80k€) + 30% fondo perduto per giovani under 35 che avviano nuove imprese in Abruzzo. Nessuna garanzia richiesta.",
+      "url": "https://www.fira.it/fira-avviso-unico-abruzzo-micro-prestiti-apertura-maggio-2026chiusura-fino-a-esaurimento-risorse/",
+      "stato_bando": "IN_APERTURA",
+      "form_integrativo_richiesto": []
+    },
+    {
+      "bando_id": "abruzzo_micro_prestiti_donne",
+      "bando_nome": "Abruzzo Micro Prestiti — Linea B (Donne)",
+      "ente": "FiRA S.p.A. - Regione Abruzzo",
+      "semaforo": "ROSSO",
+      "score": 0,
+      "motivo_principale": "❌ eta_impresa: Impresa troppo vecchia: 36 mesi (limite: 24 mesi)",
+      "checks": {
+        "regione": {
+          "ok": true,
+          "motivo": "Regione Abruzzo ammessa"
+        },
+        "ateco": {
+          "ok": true,
+          "motivo": "Codice ATECO 62.01.00 ammesso"
+        },
+        "forma_giuridica": {
+          "ok": true,
+          "motivo": "Forma giuridica SRL ammessa"
+        },
+        "eta_impresa": {
+          "ok": false,
+          "motivo": "Impresa troppo vecchia: 36 mesi (limite: 24 mesi)",
+          "bloccante": true
+        },
+        "eta_soci": {
+          "ok": true,
+          "motivo": "Nessun requisito di età soci per questo bando"
+        },
+        "stato_bando": {
+          "ok": true,
+          "motivo": "Bando apre tra 39 giorni (2026-05-12)",
+          "warning": true
+        }
+      },
+      "semaforo_dettaglio": {
+        "colore": "ROSSO",
+        "score": 0,
+        "bloccanti_falliti": [
+          "❌ eta_impresa: Impresa troppo vecchia: 36 mesi (limite: 24 mesi)"
+        ],
+        "dati_mancanti": [],
+        "warning": [
+          "⚠️ stato_bando: Bando apre tra 39 giorni (2026-05-12)"
+        ],
+        "ok_count": 5,
+        "total_count": 6
+      },
+      "agevolazioni": {
+        "micro_prestito_min": 10000,
+        "micro_prestito_max": 80000,
+        "tasso_interesse": 0,
+        "fondo_perduto_percentuale": 30,
+        "fondo_perduto_max": 24000,
+        "spesa_progetto_min": 13000,
+        "spesa_progetto_max": 104000,
+        "garanzie": "Nessuna"
+      },
+      "descrizione": "Micro-prestito a tasso zero (10-80k€) + 30% fondo perduto per imprese a prevalenza femminile (≥70% quote) in Abruzzo. Nessuna garanzia richiesta.",
+      "url": "https://www.fira.it/fira-avviso-unico-abruzzo-micro-prestiti-apertura-maggio-2026chiusura-fino-a-esaurimento-risorse/",
+      "stato_bando": "IN_APERTURA",
+      "form_integrativo_richiesto": [
+        "genere_soci_confermato"
+      ]
+    }
+  ],
+  "timestamp": "2026-04-03T19:50:07.047843"
+}

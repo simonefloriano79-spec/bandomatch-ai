@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — BandoMatch AI</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0D1B2A; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; }
+  nav { background: #1a2a3a; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a3a4a; }
+  nav .brand { font-size: 20px; font-weight: 800; color: #00C851; }
+  nav .nav-links a { color: #8899aa; text-decoration: none; margin-left: 20px; font-size: 14px; }
+  nav .nav-links a:hover { color: #fff; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+  h1 { font-size: 28px; color: #fff; margin-bottom: 8px; }
+  .subtitle { color: #8899aa; margin-bottom: 32px; }
+  .piano-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-left: 12px; }
+  .piano-free { background: #2a3a4a; color: #8899aa; }
+  .piano-premium { background: rgba(0,200,81,0.2); color: #00C851; }
+  .piano-admin { background: rgba(255,179,0,0.2); color: #FFB300; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 40px; }
+  .stat-card { background: #1a2a3a; border-radius: 12px; padding: 24px; text-align: center; border: 1px solid #2a3a4a; }
+  .stat-card .number { font-size: 36px; font-weight: 800; color: #00C851; }
+  .stat-card .label { font-size: 13px; color: #8899aa; margin-top: 4px; }
+  .section-title { font-size: 18px; color: #fff; font-weight: 700; margin-bottom: 16px; }
+  .btn-primary { display: inline-block; padding: 12px 24px; background: linear-gradient(135deg, #00C851, #00a843); border-radius: 8px; color: #fff; font-weight: 700; text-decoration: none; font-size: 15px; margin-bottom: 32px; }
+  .btn-secondary { display: inline-block; padding: 10px 20px; background: #2a3a4a; border-radius: 8px; color: #8899aa; font-weight: 600; text-decoration: none; font-size: 14px; margin-left: 12px; }
+  .storico-table { width: 100%; border-collapse: collapse; }
+  .storico-table th { background: #1a2a3a; padding: 12px 16px; text-align: left; font-size: 12px; color: #8899aa; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #2a3a4a; }
+  .storico-table td { padding: 14px 16px; border-bottom: 1px solid #1a2a3a; font-size: 14px; }
+  .storico-table tr:hover td { background: #1a2a3a; }
+  .semaforo-verde { color: #00C851; font-weight: 700; }
+  .semaforo-giallo { color: #FFB300; font-weight: 700; }
+  .semaforo-rosso { color: #FF4444; font-weight: 700; }
+  .valore { color: #00C851; font-weight: 700; }
+  .btn-dossier { padding: 6px 14px; background: rgba(0,200,81,0.15); border: 1px solid #00C851; border-radius: 6px; color: #00C851; font-size: 12px; text-decoration: none; font-weight: 600; }
+  .upgrade-banner { background: linear-gradient(135deg, #1a2a3a, #0f1f2f); border: 1px solid #FFB300; border-radius: 12px; padding: 24px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center; }
+  .upgrade-banner .text h3 { color: #FFB300; font-size: 18px; margin-bottom: 6px; }
+  .upgrade-banner .text p { color: #8899aa; font-size: 14px; }
+  .btn-upgrade { padding: 12px 24px; background: linear-gradient(135deg, #FFB300, #ff8c00); border-radius: 8px; color: #fff; font-weight: 700; text-decoration: none; font-size: 15px; white-space: nowrap; }
+  .empty-state { text-align: center; padding: 60px 20px; color: #4a5a6a; }
+  .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="brand">🎯 BandoMatch AI</div>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/bandi">Bandi</a>
+    {% if utente.piano == 'admin' %}<a href="/admin" style="color:#FFB300">Admin</a>{% endif %}
+    <a href="/logout">Esci</a>
+  </div>
+</nav>
+
+<div class="container">
+  <h1>Ciao, {{ utente.nome or utente.email.split('@')[0] }}!
+    <span class="piano-badge piano-{{ utente.piano }}">{{ utente.piano|upper }}</span>
+  </h1>
+  <p class="subtitle">Benvenuto nella tua area personale BandoMatch AI</p>
+
+  {% if utente.piano == 'free' %}
+  <div class="upgrade-banner">
+    <div class="text">
+      <h3>🚀 Passa a Premium — €9,90/mese</h3>
+      <p>Sblocca tutti i bandi, il PDF Dossier di Affinità e gli alert email automatici</p>
+    </div>
+    <a href="/upgrade" class="btn-upgrade">Upgrade ora →</a>
+  </div>
+  {% endif %}
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="number">{{ storico|length }}</div>
+      <div class="label">Analisi effettuate</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">
+        {% if storico %}{{ storico[0].bandi_verdi + storico[0].bandi_gialli }}{% else %}0{% endif %}
+      </div>
+      <div class="label">Bandi compatibili (ultima analisi)</div>
+    </div>
+    <div class="stat-card">
+      <div class="number">
+        {% if storico %}€{{ "{:,.0f}".format(storico[0].valore_potenziale) }}{% else %}€0{% endif %}
+      </div>
+      <div class="label">Valore potenziale (ultima analisi)</div>
+    </div>
+  </div>
+
+  <a href="/" class="btn-primary">+ Nuova Analisi</a>
+  <a href="/bandi" class="btn-secondary">Esplora Bandi</a>
+
+  <div class="section-title">📋 Storico Analisi</div>
+
+  {% if storico %}
+  <table class="storico-table">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Azienda</th>
+        <th>ATECO</th>
+        <th>Regione</th>
+        <th>🟢 Verdi</th>
+        <th>🟡 Gialli</th>
+        <th>🔴 Rossi</th>
+        <th>Valore</th>
+        <th>Dossier</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for a in storico %}
+      <tr>
+        <td>{{ a.data_analisi[:10] }}</td>
+        <td>{{ a.ragione_sociale or 'N/D' }}</td>
+        <td>{{ (a.ateco or 'N/D')[:15] }}</td>
+        <td>{{ a.regione or 'N/D' }}</td>
+        <td class="semaforo-verde">{{ a.bandi_verdi }}</td>
+        <td class="semaforo-giallo">{{ a.bandi_gialli }}</td>
+        <td class="semaforo-rosso">{{ a.bandi_rossi }}</td>
+        <td class="valore">€{{ "{:,.0f}".format(a.valore_potenziale) }}</td>
+        <td>
+          {% if utente.piano in ('premium', 'admin') or utente.abbonamento_attivo %}
+          <a href="/dossier/{{ a.id }}" class="btn-dossier">📄 PDF</a>
+          {% else %}
+          <a href="/upgrade" class="btn-dossier" style="opacity:0.5">🔒 PDF</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">
+    <div class="icon">🔍</div>
+    <p>Nessuna analisi ancora. <a href="/" style="color:#00C851">Carica la tua prima visura!</a></p>
+  </div>
+  {% endif %}
+</div>
+</body>
+</html>

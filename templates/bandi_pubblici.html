@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Bandi Attivi — BandoMatch AI</title>
+<meta name="description" content="Lista completa dei bandi di finanziamento pubblico attivi per PMI italiane. Aggiornata ogni giorno.">
+<style>
+* { margin:0;padding:0;box-sizing:border-box; }
+body { background:#0D1B2A;color:#e0e0e0;font-family:'Segoe UI',sans-serif; }
+nav { background:#1a2a3a;padding:16px 32px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2a3a4a; }
+nav .brand { font-size:20px;font-weight:800;color:#00C851; }
+nav a { color:#8899aa;text-decoration:none;margin-left:20px;font-size:14px; }
+.container { max-width:1100px;margin:0 auto;padding:40px 24px; }
+h1 { font-size:32px;color:#fff;font-weight:900;margin-bottom:8px; }
+.subtitle { color:#8899aa;margin-bottom:32px; }
+.bandi-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px; }
+.bando-card { background:#1a2a3a;border-radius:12px;padding:24px;border:1px solid #2a3a4a;transition:transform 0.2s; }
+.bando-card:hover { transform:translateY(-4px);border-color:#00C851; }
+.bando-tipo { font-size:11px;color:#8899aa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px; }
+.bando-nome { font-size:16px;color:#fff;font-weight:700;margin-bottom:4px; }
+.bando-ente { font-size:13px;color:#8899aa;margin-bottom:12px; }
+.bando-massimale { font-size:22px;color:#00C851;font-weight:800;margin-bottom:8px; }
+.bando-stato { display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;margin-bottom:12px; }
+.stato-attivo { background:rgba(0,200,81,0.2);color:#00C851; }
+.stato-scaduto { background:rgba(255,68,68,0.2);color:#FF4444; }
+.btn-dettaglio { display:block;text-align:center;padding:10px;background:rgba(0,200,81,0.1);border:1px solid #00C851;border-radius:8px;color:#00C851;text-decoration:none;font-weight:600;font-size:14px; }
+.cta-box { background:linear-gradient(135deg,#1a2a3a,#0f1f2f);border:1px solid #00C851;border-radius:16px;padding:32px;text-align:center;margin-bottom:40px; }
+.cta-box h2 { color:#fff;font-size:22px;margin-bottom:8px; }
+.cta-box p { color:#8899aa;margin-bottom:20px; }
+.btn-cta { display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#00C851,#00a843);border-radius:8px;color:#fff;font-weight:700;text-decoration:none;font-size:16px; }
+.empty { text-align:center;padding:60px;color:#4a5a6a; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="brand">🎯 BandoMatch AI</div>
+  <div><a href="/">Home</a><a href="/login">Accedi</a><a href="/register">Registrati</a></div>
+</nav>
+<div class="container">
+  <h1>📋 Bandi Attivi</h1>
+  <p class="subtitle">Database aggiornato automaticamente ogni giorno. {{ bandi|length }} bandi monitorati.</p>
+
+  <div class="cta-box">
+    <h2>🎯 Vuoi sapere quali bandi sono compatibili con la TUA azienda?</h2>
+    <p>Carica la visura camerale e in 30 secondi ottieni il tuo report personalizzato con semafori di compatibilità.</p>
+    <a href="/" class="btn-cta">Analizza la mia azienda gratis →</a>
+  </div>
+
+  {% if bandi %}
+  <div class="bandi-grid">
+    {% for b in bandi %}
+    <div class="bando-card">
+      <div class="bando-tipo">{{ b.tipo or 'Nazionale' }} | {{ b.ente or 'N/D' }}</div>
+      <div class="bando-nome">{{ b.nome[:80] }}</div>
+      <div class="bando-ente">{{ b.ente or '' }}</div>
+      {% if b.massimale %}<div class="bando-massimale">€{{ "{:,.0f}".format(b.massimale) }}</div>{% endif %}
+      <span class="bando-stato stato-{{ b.stato or 'attivo' }}">{{ (b.stato or 'ATTIVO')|upper }}</span>
+      <a href="/bandi/{{ b.id }}" class="btn-dettaglio">Vedi dettagli →</a>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty">
+    <p>Nessun bando ancora nel database. Lo scraper automatico aggiornerà la lista ogni giorno alle 06:00.</p>
+    <br><a href="/" style="color:#00C851">← Torna alla home e analizza la tua azienda</a>
+  </div>
+  {% endif %}
+</div>
+</body>
+</html>

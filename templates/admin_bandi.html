@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Gestione Bandi — Admin BandoMatch AI</title>
+<style>
+* { margin:0;padding:0;box-sizing:border-box; }
+body { background:#0D1B2A;color:#e0e0e0;font-family:'Segoe UI',sans-serif; }
+nav { background:#1a2a3a;padding:16px 32px;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #FFB300; }
+nav .brand { font-size:20px;font-weight:800;color:#FFB300; }
+nav a { color:#8899aa;text-decoration:none;margin-left:20px;font-size:14px; }
+.container { max-width:1200px;margin:0 auto;padding:40px 24px; }
+h1 { font-size:28px;color:#FFB300;margin-bottom:24px; }
+table { width:100%;border-collapse:collapse; }
+th { background:#1a2a3a;padding:10px 14px;text-align:left;font-size:11px;color:#8899aa;text-transform:uppercase;border-bottom:1px solid #2a3a4a; }
+td { padding:12px 14px;border-bottom:1px solid #1a2a3a;font-size:13px; }
+tr:hover td { background:#1a2a3a; }
+.badge { display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700; }
+.badge-attivo { background:rgba(0,200,81,0.2);color:#00C851; }
+.badge-scaduto { background:rgba(255,68,68,0.2);color:#FF4444; }
+.badge-preparazione { background:rgba(255,179,0,0.2);color:#FFB300; }
+.empty { text-align:center;padding:60px;color:#4a5a6a; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="brand">⚡ BandoMatch AI — Gestione Bandi</div>
+  <div><a href="/admin">← Admin</a><a href="/logout">Esci</a></div>
+</nav>
+<div class="container">
+  <h1>📋 Database Bandi ({{ bandi|length }} totali)</h1>
+  {% if bandi %}
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Nome</th><th>Ente</th><th>Tipo</th><th>Stato</th><th>Massimale</th><th>Aggiornato</th><th>Fonte</th></tr>
+    </thead>
+    <tbody>
+      {% for b in bandi %}
+      <tr>
+        <td>#{{ b.id }}</td>
+        <td>{{ (b.nome or 'N/D')[:60] }}</td>
+        <td>{{ b.ente or '—' }}</td>
+        <td>{{ b.tipo or '—' }}</td>
+        <td><span class="badge badge-{{ b.stato or 'attivo' }}">{{ (b.stato or 'attivo')|upper }}</span></td>
+        <td>{% if b.massimale %}€{{ "{:,.0f}".format(b.massimale) }}{% else %}—{% endif %}</td>
+        <td>{{ (b.data_aggiornamento or '—')[:10] }}</td>
+        <td style="font-size:11px;color:#4a5a6a">{{ (b.fonte_scraping or '—')[:30] }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>Nessun bando nel database. Esegui lo scraper dall'Admin Dashboard.</p>
+  </div>
+  {% endif %}
+</div>
+</body>
+</html>
