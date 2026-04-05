@@ -1,0 +1,37 @@
+# Ambiente Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# Database (non committare il DB di produzione)
+*.db
+*.sqlite
+*.sqlite3
+
+# File sensibili
+.env
+*.env.local
+*.env.production
+
+# Upload temporanei
+uploads/
+/tmp/
+
+# Log
+*.log
+logs/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

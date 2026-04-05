@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<!-- BandoMatch AI v3.0 — Upgrade Page con 4 Tier -->
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scegli il tuo Piano — BandoMatch AI</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0D1B2A; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; }
+  nav { background: #1a2a3a; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; }
+  nav .brand { font-size: 20px; font-weight: 800; color: #00C851; }
+  nav a { color: #8899aa; text-decoration: none; font-size: 14px; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 60px 24px; }
+  .hero { text-align: center; margin-bottom: 60px; }
+  .hero h1 { font-size: 40px; font-weight: 900; color: #fff; margin-bottom: 16px; }
+  .hero p { font-size: 18px; color: #8899aa; max-width: 600px; margin: 0 auto; }
+  .hero .urgency { margin-top: 16px; background: rgba(255,59,48,0.15); border: 1px solid rgba(255,59,48,0.4); border-radius: 8px; padding: 12px 24px; display: inline-block; color: #ff6b6b; font-size: 14px; font-weight: 600; }
+
+  .plans-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 60px; }
+  .plan-card { background: #1a2a3a; border-radius: 16px; padding: 28px; border: 2px solid #2a3a4a; position: relative; transition: transform 0.2s; }
+  .plan-card:hover { transform: translateY(-4px); }
+  .plan-card.featured { border-color: #00C851; box-shadow: 0 0 30px rgba(0,200,81,0.2); }
+  .plan-card.pro { border-color: #7c5cbf; box-shadow: 0 0 30px rgba(124,92,191,0.2); }
+  .plan-card.consulenza { border-color: #FFB300; }
+  .badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); padding: 4px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+  .badge-featured { background: #00C851; color: #fff; }
+  .badge-pro { background: #7c5cbf; color: #fff; }
+  .plan-name { font-size: 22px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+  .plan-price { font-size: 40px; font-weight: 900; color: #00C851; margin-bottom: 4px; }
+  .plan-price span { font-size: 15px; color: #8899aa; font-weight: 400; }
+  .plan-card.pro .plan-price { color: #9b7de8; }
+  .plan-card.consulenza .plan-price { color: #FFB300; }
+  .plan-desc { color: #8899aa; font-size: 13px; margin-bottom: 20px; line-height: 1.5; }
+  .features { list-style: none; margin-bottom: 28px; }
+  .features li { padding: 7px 0; font-size: 13px; color: #c0d0e0; border-bottom: 1px solid #2a3a4a; display: flex; align-items: flex-start; gap: 8px; }
+  .features li:last-child { border: none; }
+  .features li .icon { color: #00C851; font-weight: 700; flex-shrink: 0; }
+  .plan-card.pro .features li .icon { color: #9b7de8; }
+  .plan-card.consulenza .features li .icon { color: #FFB300; }
+  .btn-plan { width: 100%; padding: 14px; border: none; border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+  .btn-plan:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+  .btn-premium { background: linear-gradient(135deg, #00C851, #00a843); color: #fff; }
+  .btn-pro { background: linear-gradient(135deg, #7c5cbf, #5a3d9a); color: #fff; }
+  .btn-consulenza { background: linear-gradient(135deg, #FFB300, #ff8c00); color: #fff; }
+  .btn-free { background: #2a3a4a; color: #8899aa; }
+
+  .comparison { margin: 60px 0; }
+  .comparison h2 { text-align: center; font-size: 28px; color: #fff; margin-bottom: 32px; }
+  .comp-table { width: 100%; border-collapse: collapse; }
+  .comp-table th { background: #1a2a3a; padding: 16px; text-align: center; font-size: 14px; color: #8899aa; border-bottom: 2px solid #2a3a4a; }
+  .comp-table th.highlight { color: #00C851; }
+  .comp-table th.highlight-pro { color: #9b7de8; }
+  .comp-table td { padding: 14px 16px; text-align: center; font-size: 13px; border-bottom: 1px solid #1a2a3a; }
+  .comp-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .comp-table td:first-child { text-align: left; color: #c0d0e0; font-weight: 500; }
+  .check { color: #00C851; font-size: 16px; }
+  .check-pro { color: #9b7de8; font-size: 16px; }
+  .cross { color: #4a5a6a; font-size: 16px; }
+
+  .guarantee { text-align: center; color: #4a5a6a; font-size: 14px; margin: 32px 0; }
+  .faq { margin-top: 60px; }
+  .faq h2 { font-size: 24px; color: #fff; margin-bottom: 24px; text-align: center; }
+  .faq-item { background: #1a2a3a; border-radius: 8px; padding: 20px; margin-bottom: 12px; }
+  .faq-item h4 { color: #00C851; margin-bottom: 8px; font-size: 15px; }
+  .faq-item p { color: #8899aa; font-size: 14px; line-height: 1.6; }
+
+  .roi-banner { background: linear-gradient(135deg, rgba(0,200,81,0.1), rgba(124,92,191,0.1)); border: 1px solid rgba(0,200,81,0.3); border-radius: 12px; padding: 24px; text-align: center; margin: 40px 0; }
+  .roi-banner h3 { color: #00C851; font-size: 20px; margin-bottom: 8px; }
+  .roi-banner p { color: #8899aa; font-size: 14px; }
+  .roi-banner .roi-number { font-size: 36px; font-weight: 900; color: #fff; margin: 8px 0; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="brand">🎯 BandoMatch AI</div>
+  <a href="/dashboard">← Dashboard</a>
+</nav>
+
+<div class="container">
+  <div class="hero">
+    <h1>Scegli il piano giusto</h1>
+    <p>Ogni giorno senza BandoMatch AI è un giorno in cui i tuoi concorrenti accedono a fondi pubblici che tu non stai sfruttando.</p>
+    <div class="urgency">⚡ Offerta lancio: Piano Premium a €9,90/mese — prezzo garantito a vita per chi si iscrive ora</div>
+  </div>
+
+  <div class="roi-banner">
+    <h3>Il ROI medio di BandoMatch AI</h3>
+    <div class="roi-number">€47.000</div>
+    <p>Valore medio dei finanziamenti ottenuti dai nostri utenti Premium nel primo anno</p>
+  </div>
+
+  <div class="plans-grid">
+    <!-- PIANO FREE -->
+    <div class="plan-card">
+      <div class="plan-name">Free</div>
+      <div class="plan-price">€0 <span>/mese</span></div>
+      <div class="plan-desc">Per scoprire il potenziale della tua azienda</div>
+      <ul class="features">
+        <li><span class="icon">✓</span> 1 analisi visura al mese</li>
+        <li><span class="icon">✓</span> 1 bando verde sbloccato</li>
+        <li><span class="icon">✓</span> Semafori di compatibilità</li>
+        <li><span class="icon">✓</span> Simulatore di punteggio</li>
+        <li><span class="icon">✓</span> Lista bandi pubblica</li>
+      </ul>
+      <button class="btn-plan btn-free" onclick="window.location='/dashboard'">Piano attuale</button>
+    </div>
+
+    <!-- PIANO PREMIUM -->
+    <div class="plan-card featured">
+      <div class="badge badge-featured">⭐ PIÙ SCELTO</div>
+      <div class="plan-name">Premium</div>
+      <div class="plan-price">€9,90 <span>/mese</span></div>
+      <div class="plan-desc">Per imprenditori che vogliono accedere a tutti i finanziamenti disponibili</div>
+      <ul class="features">
+        <li><span class="icon">✓</span> Analisi visura illimitate</li>
+        <li><span class="icon">✓</span> Tutti i bandi sbloccati</li>
+        <li><span class="icon">✓</span> PDF Dossier di Affinità</li>
+        <li><span class="icon">✓</span> Alert email nuovi bandi</li>
+        <li><span class="icon">✓</span> Score % di compatibilità</li>
+        <li><span class="icon">✓</span> Storico analisi completo</li>
+        <li><span class="icon">✓</span> Bandi aggiornati ogni giorno</li>
+        <li><span class="icon">✓</span> Simulatore avanzato</li>
+      </ul>
+      <button class="btn-plan btn-premium" onclick="avviaPagamento('premium')">🚀 Attiva Premium — €9,90/mese</button>
+    </div>
+
+    <!-- PIANO PRO -->
+    <div class="plan-card pro">
+      <div class="badge badge-pro">💎 PER CONSULENTI</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">€29,90 <span>/mese</span></div>
+      <div class="plan-desc">Per consulenti e commercialisti che gestiscono più aziende clienti</div>
+      <ul class="features">
+        <li><span class="icon">✓</span> Tutto di Premium</li>
+        <li><span class="icon">✓</span> Reverse Matching per bandi</li>
+        <li><span class="icon">✓</span> Gestione multi-azienda</li>
+        <li><span class="icon">✓</span> Report white-label per clienti</li>
+        <li><span class="icon">✓</span> API accesso programmatico</li>
+        <li><span class="icon">✓</span> Feedback loop prioritario</li>
+        <li><span class="icon">✓</span> Supporto dedicato</li>
+        <li><span class="icon">✓</span> Early access nuove feature</li>
+      </ul>
+      <button class="btn-plan btn-pro" onclick="avviaPagamento('pro')">💎 Attiva Pro — €29,90/mese</button>
+    </div>
+
+    <!-- CONSULENZA -->
+    <div class="plan-card consulenza">
+      <div class="plan-name">Consulenza</div>
+      <div class="plan-price">€49 <span>una tantum</span></div>
+      <div class="plan-desc">Sessione 1:1 con un esperto di finanziamenti pubblici</div>
+      <ul class="features">
+        <li><span class="icon">✓</span> Sessione video 60 minuti</li>
+        <li><span class="icon">✓</span> Analisi approfondita profilo</li>
+        <li><span class="icon">✓</span> Strategia personalizzata</li>
+        <li><span class="icon">✓</span> Supporto alla candidatura</li>
+        <li><span class="icon">✓</span> Risposta garantita entro 24h</li>
+        <li><span class="icon">✓</span> Report scritto post-sessione</li>
+      </ul>
+      <button class="btn-plan btn-consulenza" onclick="avviaPagamento('consulenza')">💼 Prenota Consulenza</button>
+    </div>
+  </div>
+
+  <!-- TABELLA COMPARATIVA -->
+  <div class="comparison">
+    <h2>Confronto dettagliato</h2>
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th style="text-align:left">Funzionalità</th>
+          <th>Free</th>
+          <th class="highlight">Premium</th>
+          <th class="highlight-pro">Pro</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Analisi visura PDF</td><td>1/mese</td><td class="check">✓ Illimitate</td><td class="check-pro">✓ Illimitate</td></tr>
+        <tr><td>Bandi sbloccati</td><td>1 (verde)</td><td class="check">✓ Tutti</td><td class="check-pro">✓ Tutti</td></tr>
+        <tr><td>PDF Dossier di Affinità</td><td class="cross">✗</td><td class="check">✓</td><td class="check-pro">✓</td></tr>
+        <tr><td>Alert email nuovi bandi</td><td class="cross">✗</td><td class="check">✓</td><td class="check-pro">✓</td></tr>
+        <tr><td>Score % compatibilità</td><td class="cross">✗</td><td class="check">✓</td><td class="check-pro">✓</td></tr>
+        <tr><td>Simulatore punteggio</td><td class="check">✓ Base</td><td class="check">✓ Avanzato</td><td class="check-pro">✓ Avanzato</td></tr>
+        <tr><td>Reverse Matching bandi</td><td class="cross">✗</td><td class="cross">✗</td><td class="check-pro">✓</td></tr>
+        <tr><td>Gestione multi-azienda</td><td class="cross">✗</td><td class="cross">✗</td><td class="check-pro">✓</td></tr>
+        <tr><td>API accesso</td><td class="cross">✗</td><td class="cross">✗</td><td class="check-pro">✓</td></tr>
+        <tr><td>Report white-label</td><td class="cross">✗</td><td class="cross">✗</td><td class="check-pro">✓</td></tr>
+        <tr><td>Feedback loop storico</td><td class="cross">✗</td><td class="check">✓</td><td class="check-pro">✓ Prioritario</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="guarantee">
+    🔒 Pagamento sicuro con Stripe | Cancella quando vuoi | Nessun vincolo contrattuale | Garanzia soddisfatti o rimborsati 30 giorni
+  </div>
+
+  <div class="faq">
+    <h2>Domande Frequenti</h2>
+    <div class="faq-item">
+      <h4>Posso cancellare l'abbonamento quando voglio?</h4>
+      <p>Sì, puoi cancellare in qualsiasi momento dalla tua area personale. Non ci sono vincoli o penali. Se cancelli entro 30 giorni, ti rimborsiamo integralmente.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Quanto spesso vengono aggiornati i bandi?</h4>
+      <p>Il nostro scraper LLM-Augmented aggiorna il database ogni giorno alle 06:00 analizzando Invitalia, MIMIT, FiRA Abruzzo e altri portali istituzionali. Riceverai una notifica email immediata quando appare un nuovo bando compatibile con il tuo profilo.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Cos'è il Reverse Matching del Piano Pro?</h4>
+      <p>Il Reverse Matching ti permette di selezionare un bando e trovare automaticamente tutte le aziende nel database che potrebbero essere compatibili. Ideale per consulenti e commercialisti che vogliono proattivamente proporre bandi ai propri clienti.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Il PDF Dossier è legalmente valido?</h4>
+      <p>Il Dossier è uno strumento di analisi e orientamento, non un documento legale. Ti aiuta a capire quali bandi perseguire, ma la candidatura ufficiale va presentata tramite i canali istituzionali indicati.</p>
+    </div>
+    <div class="faq-item">
+      <h4>Cos'è il Feedback Loop?</h4>
+      <p>Ogni volta che un utente ci comunica l'esito di una domanda di finanziamento (vinto/perso), il nostro algoritmo aggiorna automaticamente il tasso di successo storico per quel bando. Questo rende le previsioni sempre più accurate nel tempo.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+function avviaPagamento(piano) {
+  const prezzi = { premium: '€9,90/mese', pro: '€29,90/mese', consulenza: '€49 una tantum' };
+  const prezzo = prezzi[piano] || '';
+  // In produzione: integrazione Stripe Checkout
+  alert('🚧 Sistema di pagamento in configurazione.\n\nPiano selezionato: ' + piano.toUpperCase() + ' — ' + prezzo + '\n\nPer attivare subito, contatta:\ninfo@bandomatch.ai\n\nL\'integrazione Stripe sarà operativa a breve!');
+}
+</script>
+</body>
+</html>

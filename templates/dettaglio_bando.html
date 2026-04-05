@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>{{ bando.nome[:60] }} — BandoMatch AI</title>
+<style>
+* { margin:0;padding:0;box-sizing:border-box; }
+body { background:#0D1B2A;color:#e0e0e0;font-family:'Segoe UI',sans-serif; }
+nav { background:#1a2a3a;padding:16px 32px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #2a3a4a; }
+nav .brand { font-size:20px;font-weight:800;color:#00C851; }
+nav a { color:#8899aa;text-decoration:none;margin-left:20px;font-size:14px; }
+.container { max-width:800px;margin:0 auto;padding:40px 24px; }
+.back { color:#8899aa;text-decoration:none;font-size:14px;display:inline-block;margin-bottom:24px; }
+h1 { font-size:28px;color:#fff;font-weight:800;margin-bottom:8px; }
+.ente { color:#8899aa;font-size:16px;margin-bottom:24px; }
+.info-grid { display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:32px; }
+.info-item { background:#1a2a3a;border-radius:8px;padding:16px; }
+.info-item .label { font-size:11px;color:#8899aa;text-transform:uppercase;margin-bottom:4px; }
+.info-item .value { font-size:18px;color:#fff;font-weight:700; }
+.info-item .value.verde { color:#00C851; }
+.cta-box { background:linear-gradient(135deg,#1a2a3a,#0f1f2f);border:1px solid #00C851;border-radius:16px;padding:32px;text-align:center;margin-top:32px; }
+.btn-cta { display:inline-block;padding:14px 32px;background:linear-gradient(135deg,#00C851,#00a843);border-radius:8px;color:#fff;font-weight:700;text-decoration:none;font-size:16px; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="brand">🎯 BandoMatch AI</div>
+  <div><a href="/bandi">← Tutti i bandi</a><a href="/">Home</a></div>
+</nav>
+<div class="container">
+  <a href="/bandi" class="back">← Torna alla lista bandi</a>
+  <h1>{{ bando.nome }}</h1>
+  <div class="ente">{{ bando.ente or 'Ente non specificato' }}</div>
+
+  <div class="info-grid">
+    <div class="info-item">
+      <div class="label">Tipo</div>
+      <div class="value">{{ (bando.tipo or 'N/D')|capitalize }}</div>
+    </div>
+    <div class="info-item">
+      <div class="label">Stato</div>
+      <div class="value verde">{{ (bando.stato or 'attivo')|upper }}</div>
+    </div>
+    {% if bando.massimale %}
+    <div class="info-item">
+      <div class="label">Massimale</div>
+      <div class="value verde">€{{ "{:,.0f}".format(bando.massimale) }}</div>
+    </div>
+    {% endif %}
+    {% if bando.percentuale_fondo_perduto %}
+    <div class="info-item">
+      <div class="label">Fondo Perduto</div>
+      <div class="value verde">{{ bando.percentuale_fondo_perduto }}%</div>
+    </div>
+    {% endif %}
+    {% if bando.data_scadenza %}
+    <div class="info-item">
+      <div class="label">Scadenza</div>
+      <div class="value">{{ bando.data_scadenza }}</div>
+    </div>
+    {% endif %}
+    <div class="info-item">
+      <div class="label">Aggiornato il</div>
+      <div class="value">{{ (bando.data_aggiornamento or '—')[:10] }}</div>
+    </div>
+  </div>
+
+  {% if bando.url %}
+  <a href="{{ bando.url }}" target="_blank" style="display:inline-block;padding:10px 24px;background:rgba(0,200,81,0.15);border:1px solid #00C851;border-radius:8px;color:#00C851;font-weight:700;text-decoration:none;margin-bottom:24px">🔗 Vai al bando ufficiale</a>
+  {% endif %}
+
+  <div class="cta-box">
+    <h2 style="color:#fff;margin-bottom:8px">🎯 Sei compatibile con questo bando?</h2>
+    <p style="color:#8899aa;margin-bottom:20px">Carica la tua visura camerale e scoprilo in 30 secondi.</p>
+    <a href="/" class="btn-cta">Analizza la mia azienda gratis →</a>
+  </div>
+</div>
+</body>
+</html>

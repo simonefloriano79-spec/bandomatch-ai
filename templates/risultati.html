@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BandoMatch AI — Risultati Demo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+            min-height: 100vh;
+            color: #f1f5f9;
+        }
+        header {
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .logo { display: flex; align-items: center; gap: 12px; }
+        .logo-icon { width: 44px; height: 44px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+        .logo-text { font-size: 22px; font-weight: 800; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .logo-sub { font-size: 11px; color: #64748b; font-weight: 500; letter-spacing: 1px; text-transform: uppercase; }
+        .btn-back { padding: 8px 20px; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: #94a3b8; font-size: 14px; cursor: pointer; text-decoration: none; }
+        .container { max-width: 900px; margin: 0 auto; padding: 40px; }
+        .demo-badge { display: inline-flex; align-items: center; gap: 8px; background: rgba(234,179,8,0.15); border: 1px solid rgba(234,179,8,0.3); border-radius: 20px; padding: 6px 16px; font-size: 13px; color: #facc15; margin-bottom: 32px; }
+        .results-header { text-align: center; margin-bottom: 40px; }
+        .company-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 24px 32px; margin-bottom: 32px; display: flex; align-items: center; gap: 20px; }
+        .company-icon { width: 56px; height: 56px; background: linear-gradient(135deg, #1e40af, #7c3aed); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; flex-shrink: 0; }
+        .company-name { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+        .company-meta { font-size: 14px; color: #64748b; }
+        .teaser-box { background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(139,92,246,0.15)); border: 1px solid rgba(59,130,246,0.3); border-radius: 20px; padding: 36px; text-align: center; margin-bottom: 40px; }
+        .teaser-title { font-size: 16px; color: #93c5fd; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+        .teaser-number { font-size: 64px; font-weight: 800; background: linear-gradient(135deg, #3b82f6, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; line-height: 1; margin-bottom: 8px; }
+        .teaser-subtitle { font-size: 20px; color: #f1f5f9; margin-bottom: 24px; }
+        .teaser-value { font-size: 28px; font-weight: 700; color: #22d3ee; margin-bottom: 8px; }
+        .teaser-value-label { font-size: 14px; color: #64748b; }
+        .semaforo-pills { display: flex; justify-content: center; gap: 16px; margin-top: 24px; flex-wrap: wrap; }
+        .pill { display: flex; align-items: center; gap: 6px; padding: 6px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; }
+        .pill-verde { background: rgba(34,197,94,0.15); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+        .pill-giallo { background: rgba(234,179,8,0.15); color: #facc15; border: 1px solid rgba(234,179,8,0.3); }
+        .pill-rosso { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+        .bandi-title { font-size: 20px; font-weight: 700; margin-bottom: 20px; color: #f1f5f9; }
+        .bando-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; padding: 24px; margin-bottom: 16px; }
+        .bando-card.verde { border-left: 4px solid #22c55e; }
+        .bando-card.giallo { border-left: 4px solid #eab308; }
+        .bando-card.rosso { border-left: 4px solid #ef4444; }
+        .bando-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 12px; }
+        .bando-semaforo { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+        .sem-verde { background: rgba(34,197,94,0.2); }
+        .sem-giallo { background: rgba(234,179,8,0.2); }
+        .sem-rosso { background: rgba(239,68,68,0.2); }
+        .bando-info { flex: 1; }
+        .bando-nome { font-size: 17px; font-weight: 700; color: #f1f5f9; margin-bottom: 4px; }
+        .bando-ente { font-size: 13px; color: #64748b; }
+        .bando-valore { font-size: 20px; font-weight: 800; color: #22d3ee; text-align: right; }
+        .bando-valore-label { font-size: 11px; color: #475569; text-align: right; }
+        .bando-snippet { font-size: 14px; color: #94a3b8; line-height: 1.5; margin-top: 8px; }
+        .bando-locked { margin-top: 16px; padding: 12px 16px; background: rgba(0,0,0,0.3); border-radius: 10px; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .locked-text { font-size: 13px; color: #64748b; }
+        .btn-unlock { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; border: none; padding: 8px 20px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; }
+        .bando-dettagli { margin-top: 16px; padding: 16px; background: rgba(34,197,94,0.08); border: 1px solid rgba(34,197,94,0.2); border-radius: 10px; }
+        .dettagli-title { font-size: 13px; font-weight: 600; color: #4ade80; margin-bottom: 10px; }
+        .requisiti-list { list-style: none; margin-bottom: 12px; }
+        .requisiti-list li { font-size: 13px; color: #86efac; padding: 3px 0; }
+        .btn-sito { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; color: #4ade80; font-size: 13px; font-weight: 500; text-decoration: none; }
+        .disclaimer { margin-top: 40px; padding: 16px 20px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; font-size: 12px; color: #475569; line-height: 1.5; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-overlay.active { display: flex; }
+        .modal-card { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 48px; max-width: 480px; width: 90%; text-align: center; }
+        .modal-icon { font-size: 48px; margin-bottom: 16px; }
+        .modal-title { font-size: 24px; font-weight: 800; margin-bottom: 12px; }
+        .modal-subtitle { font-size: 16px; color: #94a3b8; margin-bottom: 32px; line-height: 1.5; }
+        .price-box { background: linear-gradient(135deg, rgba(59,130,246,0.15), rgba(139,92,246,0.15)); border: 1px solid rgba(59,130,246,0.3); border-radius: 16px; padding: 24px; margin-bottom: 24px; }
+        .price-amount { font-size: 48px; font-weight: 800; color: #3b82f6; }
+        .price-period { font-size: 16px; color: #64748b; }
+        .price-features { list-style: none; margin: 16px 0; text-align: left; }
+        .price-features li { font-size: 14px; color: #94a3b8; padding: 4px 0; }
+        .btn-abbonati { width: 100%; background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; border: none; padding: 16px; border-radius: 12px; font-size: 18px; font-weight: 700; cursor: pointer; margin-bottom: 12px; }
+        .btn-chiudi { background: none; border: none; color: #475569; font-size: 14px; cursor: pointer; padding: 8px; }
+        footer { text-align: center; padding: 40px; border-top: 1px solid rgba(255,255,255,0.06); color: #334155; font-size: 13px; }
+    </style>
+</head>
+<body>
+<header>
+    <div class="logo">
+        <div class="logo-icon">🎯</div>
+        <div>
+            <div class="logo-text">BandoMatch AI</div>
+            <div class="logo-sub">Finanziamenti per PMI</div>
+        </div>
+    </div>
+    <a href="/" class="btn-back">← Torna all'app</a>
+</header>
+
+<div class="container" id="app"></div>
+
+<div class="modal-overlay" id="paywallModal">
+    <div class="modal-card">
+        <div class="modal-icon">🔒</div>
+        <div class="modal-title">Sblocca tutti i bandi</div>
+        <div class="modal-subtitle">Abbonati per vedere tutti i dettagli, requisiti e link ufficiali.</div>
+        <div class="price-box">
+            <div class="price-amount">€9,90</div>
+            <div class="price-period">/mese — disdici quando vuoi</div>
+            <ul class="price-features">
+                <li>✅ Tutti i bandi sbloccati con dettagli completi</li>
+                <li>✅ Aggiornamenti automatici nuovi bandi</li>
+                <li>✅ Notifiche scadenze imminenti</li>
+                <li>✅ Analisi illimitate di visure</li>
+            </ul>
+        </div>
+        <button class="btn-abbonati" onclick="alert('Pagamento in arrivo! Funzionalità in sviluppo.')">🚀 Abbonati ora — €9,90/mese</button>
+        <button class="btn-chiudi" onclick="document.getElementById('paywallModal').classList.remove('active')">Chiudi</button>
+    </div>
+</div>
+
+<footer>
+    <p>BandoMatch AI — Demo con dati di esempio</p>
+    <p style="margin-top: 8px;">© 2025 BandoMatch AI — Sviluppato da Manus + Gemini</p>
+</footer>
+
+<script>
+const data = {{ data|safe }};
+
+function renderResults(data) {
+    const app = document.getElementById('app');
+    const impresa = data.impresa;
+    const teaser = data.teaser;
+    const bandi = data.bandi;
+
+    let html = `
+        <div style="text-align:center; margin-bottom:24px;">
+            <div class="demo-badge">🎬 MODALITÀ DEMO — Dati di esempio</div>
+        </div>
+        <div class="results-header">
+            <h2 style="font-size:28px; font-weight:800; margin-bottom:8px;">Analisi completata ✅</h2>
+            <p style="color:#64748b;">Risultati per l'azienda campione</p>
+        </div>
+        <div class="company-card">
+            <div class="company-icon">🏢</div>
+            <div>
+                <div class="company-name">${impresa.ragione_sociale}</div>
+                <div class="company-meta">
+                    ${impresa.forma_giuridica} &nbsp;·&nbsp; ${impresa.regione} &nbsp;·&nbsp; ATECO: ${impresa.ateco} &nbsp;·&nbsp; Età: 3 anni
+                </div>
+            </div>
+        </div>
+        <div class="teaser-box">
+            <div class="teaser-title">Abbiamo trovato</div>
+            <div class="teaser-number">${teaser.bandi_compatibili}</div>
+            <div class="teaser-subtitle">bandi compatibili con la tua azienda</div>
+            <div class="teaser-value">€${teaser.valore_potenziale.toLocaleString('it-IT')}</div>
+            <div class="teaser-value-label">valore potenziale complessivo</div>
+            <div class="semaforo-pills">
+                <div class="pill pill-verde">🟢 ${teaser.verdi} Verde</div>
+                <div class="pill pill-giallo">🟡 ${teaser.gialli} Giallo</div>
+                <div class="pill pill-rosso">🔴 ${teaser.rossi} Rosso</div>
+            </div>
+        </div>
+        <div class="bandi-title">📋 Dettaglio bandi analizzati</div>
+    `;
+
+    bandi.forEach(bando => {
+        const semClass = bando.semaforo.toLowerCase();
+        const semIcon = { VERDE: '🟢', GIALLO: '🟡', ROSSO: '🔴', GRIGIO: '⚪' }[bando.semaforo] || '⚪';
+        const valoreStr = bando.valore_stimato > 0 ? `€${bando.valore_stimato.toLocaleString('it-IT')}` : '—';
+
+        html += `<div class="bando-card ${semClass}">
+            <div class="bando-header">
+                <div class="bando-semaforo sem-${semClass}">${semIcon}</div>
+                <div class="bando-info">
+                    <div class="bando-nome">${bando.nome}</div>
+                    <div class="bando-ente">${bando.ente}</div>
+                </div>
+                <div>
+                    <div class="bando-valore">${valoreStr}</div>
+                    <div class="bando-valore-label">valore max</div>
+                </div>
+            </div>
+            <div class="bando-snippet">${bando.snippet}</div>`;
+
+        if (!bando.locked && bando.dettagli) {
+            const d = bando.dettagli;
+            html += `<div class="bando-dettagli">
+                <div class="dettagli-title">✅ Dettagli completi (bando gratuito)</div>
+                <ul class="requisiti-list">
+                    ${(d.requisiti_soddisfatti || []).map(r => `<li>✓ ${r}</li>`).join('')}
+                </ul>
+                <div style="font-size:13px; color:#86efac; margin-bottom:12px;">📅 Scadenza: ${d.scadenza || 'N/D'}</div>
+                ${d.link ? `<a href="${d.link}" target="_blank" class="btn-sito">🔗 Vai al sito ufficiale</a>` : ''}
+            </div>`;
+        } else if (bando.locked && bando.semaforo !== 'ROSSO') {
+            html += `<div class="bando-locked">
+                <span class="locked-text">🔒 Dettagli disponibili con abbonamento</span>
+                <button class="btn-unlock" onclick="document.getElementById('paywallModal').classList.add('active')">Sblocca — €9,90/mese</button>
+            </div>`;
+        }
+        html += `</div>`;
+    });
+
+    html += `<div class="disclaimer">⚠️ ${data.disclaimer}</div>`;
+    app.innerHTML = html;
+}
+
+renderResults(data);
+</script>
+</body>
+</html>

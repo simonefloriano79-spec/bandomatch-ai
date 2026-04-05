@@ -1,0 +1,69 @@
+{
+  "meta": {
+    "parser_version": "1.0.0",
+    "parsed_at": "2026-04-03T19:48:01.879585",
+    "source_file": "/home/ubuntu/bandomatch/test_visura.pdf"
+  },
+  "impresa": {
+    "ragione_sociale": "TECH SOLUTIONS ABRUZZO S.R.L.",
+    "codice_fiscale": "01234567890",
+    "forma_giuridica": "Società a responsabilità limitata",
+    "forma_giuridica_normalizzata": "SRL",
+    "capitale_sociale": 10000.0,
+    "fatturato": null,
+    "numero_dipendenti": 3
+  },
+  "sede_legale": {
+    "indirizzo": "Via Roma, 45",
+    "comune": "Pescara",
+    "provincia": "PE",
+    "regione": "Abruzzo",
+    "cap": "65100"
+  },
+  "costituzione": {
+    "data": "2023-03-15",
+    "eta_mesi": 36,
+    "eta_anni": 3
+  },
+  "ateco": {
+    "codici": [
+      {
+        "codice": "62.01.00",
+        "descrizione": "Produzione di software non connesso all'edizione",
+        "sezione": "62"
+      },
+      {
+        "codice": "62.02.00",
+        "descrizione": "Consulenza nel settore delle tecnologie dell'informatica",
+        "sezione": "62"
+      }
+    ],
+    "sezioni": [
+      "62"
+    ],
+    "codice_primario": "62.01.00"
+  },
+  "soci": [
+    {
+      "nome": "ROSSI MARCO",
+      "quota_percentuale": 60.0,
+      "data_nascita": "1992-05-12",
+      "eta_anni": 33
+    },
+    {
+      "nome": "BIANCHI LAURA",
+      "quota_percentuale": 40.0,
+      "data_nascita": "1995-08-23",
+      "eta_anni": 30
+    }
+  ],
+  "indicatori_matching": {
+    "percentuale_soci_under35": 100.0,
+    "percentuale_soci_donne": null,
+    "eta_impresa_mesi": 36,
+    "regione": "Abruzzo",
+    "provincia": "PE",
+    "forma_giuridica_normalizzata": "SRL",
+    "is_mezzogiorno": true
+  }
+}
