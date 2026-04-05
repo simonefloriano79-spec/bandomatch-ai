@@ -26,7 +26,7 @@ stripe.api_key = STRIPE_SECRET_KEY
 # In produzione: sostituire con i Price ID reali dal dashboard Stripe
 STRIPE_PRICES = {
     "premium": {
-        "price_id": os.environ.get("STRIPE_PRICE_PREMIUM", "price_1TImgTCxZA5DFsrWBxwuIuzf"),
+        "price_id": os.environ.get("STRIPE_PRICE_PREMIUM", "price_1TIoKY2doi6GhwDG3SOorEFZ"),
         "amount": 990,        # €9,90 in centesimi
         "name": "BandoMatch AI Premium",
         "interval": "month",
@@ -39,7 +39,7 @@ STRIPE_PRICES = {
         ]
     },
     "pro": {
-        "price_id": os.environ.get("STRIPE_PRICE_PRO", "price_1TImgTCxZA5DFsrWb9vWXWjS"),
+        "price_id": os.environ.get("STRIPE_PRICE_PRO", "price_1TIoKk2doi6GhwDG4MVKK4Fq"),
         "amount": 2990,       # €29,90 in centesimi
         "name": "BandoMatch AI Pro",
         "interval": "month",
@@ -53,7 +53,7 @@ STRIPE_PRICES = {
         ]
     },
     "consulenza": {
-        "price_id": os.environ.get("STRIPE_PRICE_CONSULENZA", "price_1TImgUCxZA5DFsrWyk9yHEHd"),
+        "price_id": os.environ.get("STRIPE_PRICE_CONSULENZA", "price_1TIoKk2doi6GhwDG8MAcoeYg"),
         "amount": 4900,       # €49,00 una tantum
         "name": "Consulenza Esperto BandoMatch",
         "interval": None,     # Una tantum
