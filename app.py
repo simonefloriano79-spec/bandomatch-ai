@@ -1272,9 +1272,11 @@ def checkout(piano):
 
     user_id = session['user_id']
     conn = get_db()
-    user = conn.execute("SELECT email FROM users WHERE id=?", (user_id,)).fetchone()
+    user = conn.execute("SELECT email FROM utenti WHERE id=?", (user_id,)).fetchone()
     conn.close()
-
+    if not user:
+        flash("Utente non trovato.", "danger")
+        return redirect(url_for('upgrade'))
     base_url = request.host_url.rstrip('/')
     risultato = crea_checkout_session(user_id, user['email'], piano, base_url)
 
@@ -1562,9 +1564,16 @@ def valuta_idea():
 
 
 # ─────────────────────────────────────────────
+# INIZIALIZZAZIONE (eseguita da Gunicorn e da __main__)
+# ─────────────────────────────────────────────
+try:
+    init_db()
+    avvia_scheduler()
+except Exception as _init_err:
+    app.logger.error(f"Errore inizializzazione: {_init_err}")
+
+# ─────────────────────────────────────────────
 # AVVIO APP
 # ─────────────────────────────────────────────
 if __name__ == '__main__':
-    init_db()
-    avvia_scheduler()
     app.run(host='0.0.0.0', port=5000, debug=False)
