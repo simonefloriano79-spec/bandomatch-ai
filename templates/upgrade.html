@@ -220,10 +220,17 @@
 
 <script>
 function avviaPagamento(piano) {
-  const prezzi = { premium: '€9,90/mese', pro: '€29,90/mese', consulenza: '€49 una tantum' };
-  const prezzo = prezzi[piano] || '';
-  // In produzione: integrazione Stripe Checkout
-  alert('🚧 Sistema di pagamento in configurazione.\n\nPiano selezionato: ' + piano.toUpperCase() + ' — ' + prezzo + '\n\nPer attivare subito, contatta:\ninfo@bandomatch.ai\n\nL\'integrazione Stripe sarà operativa a breve!');
+  const links = {
+    premium: 'https://buy.stripe.com/eVqbIU2clgSCbXt1zdgfu00',
+    pro: 'https://buy.stripe.com/eVqbIU4kt31M2mT7XBgfu01',
+    consulenza: 'https://buy.stripe.com/7sY14g4kt1XI4v12Dhgfu02'
+  };
+  const url = links[piano];
+  if (url) {
+    window.location.href = url;
+  } else {
+    alert('Piano non trovato. Contatta info@bandomatch.ai');
+  }
 }
 </script>
 </body>
