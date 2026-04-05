@@ -15,13 +15,21 @@ import hashlib
 import requests
 from datetime import datetime, timedelta
 from bs4 import BeautifulSoup
-from openai import OpenAI
-
 logger = logging.getLogger(__name__)
 DB_PATH = os.path.join(os.path.dirname(__file__), "bandomatch.db")
 
-# ── Client OpenAI ──────────────────────────────────────────────────────────────
-openai_client = OpenAI()  # Usa OPENAI_API_KEY dall'ambiente
+# ── Client OpenAI (lazy init per evitare crash se OPENAI_API_KEY non è impostata) ──
+_openai_client = None
+
+def get_openai_client():
+    global _openai_client
+    if _openai_client is None:
+        api_key = os.environ.get('OPENAI_API_KEY', '')
+        if not api_key:
+            return None
+        from openai import OpenAI
+        _openai_client = OpenAI(api_key=api_key)
+    return _openai_client
 
 # ── Sorgenti Nazionali e Regionali ────────────────────────────────────────────
 SORGENTI_BANDI = {
@@ -341,6 +349,10 @@ Se non trovi bandi, rispondi con [].
 TESTO DA ANALIZZARE:
 {testo[:4000]}"""
 
+    openai_client = get_openai_client()
+    if openai_client is None:
+        logger.warning(f"OPENAI_API_KEY non configurata, skip LLM per {sorgente}")
+        return []
     try:
         response = openai_client.chat.completions.create(
             model="gpt-4.1-mini",

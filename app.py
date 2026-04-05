@@ -1486,9 +1486,18 @@ def api_prezzi():
 
 
 # ─────────────────────────────────────────────
+# INIZIALIZZAZIONE AL LIVELLO DEL MODULO
+# (necessario per Gunicorn che non chiama __main__)
+# ─────────────────────────────────────────────
+try:
+    init_db()
+except Exception as _init_err:
+    import logging as _logging
+    _logging.getLogger(__name__).error(f"Errore init_db al caricamento: {_init_err}")
+
+# ─────────────────────────────────────────────
 # AVVIO APP
 # ─────────────────────────────────────────────
 if __name__ == '__main__':
-    init_db()
     avvia_scheduler()
     app.run(host='0.0.0.0', port=5000, debug=False)

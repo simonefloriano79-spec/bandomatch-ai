@@ -11,10 +11,18 @@ import requests
 import re
 from datetime import datetime
 from typing import Optional
-from openai import OpenAI
+# Client OpenAI (inizializzato lazy per evitare crash se OPENAI_API_KEY non è impostata)
+_openai_client = None
 
-# Client OpenAI (usa variabile d'ambiente OPENAI_API_KEY)
-client = OpenAI()
+def get_openai_client():
+    global _openai_client
+    if _openai_client is None:
+        api_key = os.environ.get('OPENAI_API_KEY', '')
+        if not api_key:
+            return None
+        from openai import OpenAI
+        _openai_client = OpenAI(api_key=api_key)
+    return _openai_client
 
 # Timeout per le richieste HTTP
 HTTP_TIMEOUT = 15
@@ -140,6 +148,10 @@ Testo da analizzare:
 Rispondi SOLO con un array JSON valido. Se non trovi bandi, rispondi con [].
 """
     
+    client = get_openai_client()
+    if client is None:
+        print(f"[SCRAPER LLM] OPENAI_API_KEY non configurata, skip LLM")
+        return []
     try:
         response = client.chat.completions.create(
             model="gpt-4.1-mini",
