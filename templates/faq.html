@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FAQ — BandoMatch AI</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { margin:0;padding:0;box-sizing:border-box; }
+body { background:#0D1B2A;color:#e0e0e0;font-family:'Inter',sans-serif; }
+nav { background:rgba(13,27,42,0.95);padding:16px 40px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid rgba(255,255,255,0.06);position:sticky;top:0;z-index:100;backdrop-filter:blur(10px); }
+.nav-brand { font-size:20px;font-weight:900;color:#00C851; }
+.nav-links { display:flex;align-items:center;gap:20px; }
+.nav-links a { color:#8899aa;text-decoration:none;font-size:14px;font-weight:500;transition:color 0.2s; }
+.nav-links a:hover { color:#fff; }
+.nav-btn { padding:8px 20px;background:linear-gradient(135deg,#00C851,#00a843);border-radius:8px;color:#fff !important;font-weight:700 !important; }
+.container { max-width:800px;margin:0 auto;padding:60px 24px; }
+h1 { font-size:40px;font-weight:900;color:#fff;margin-bottom:12px;text-align:center; }
+.subtitle { color:#8899aa;font-size:16px;text-align:center;margin-bottom:48px; }
+.faq-item { background:#1a2a3a;border:1px solid #2a3a4a;border-radius:12px;padding:24px 28px;margin-bottom:16px;cursor:pointer;transition:border-color 0.2s; }
+.faq-item:hover { border-color:#00C851; }
+.faq-q { font-size:16px;font-weight:700;color:#fff;display:flex;justify-content:space-between;align-items:center;gap:16px; }
+.faq-q .arrow { color:#00C851;font-size:20px;transition:transform 0.3s;flex-shrink:0; }
+.faq-a { color:#8899aa;font-size:14px;line-height:1.8;margin-top:16px;display:none; }
+.faq-item.open .faq-a { display:block; }
+.faq-item.open .arrow { transform:rotate(180deg); }
+.faq-item.open { border-color:#00C851; }
+.section-title { font-size:13px;font-weight:700;color:#00C851;letter-spacing:1.5px;text-transform:uppercase;margin:40px 0 16px; }
+footer { text-align:center;padding:40px 24px;border-top:1px solid #1a2a3a;color:#4a5a6a;font-size:13px; }
+footer a { color:#8899aa;text-decoration:none;margin:0 12px; }
+footer a:hover { color:#fff; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">🎯 BandoMatch AI</div>
+  <div class="nav-links">
+    <a href="/bandi">Bandi Attivi</a>
+    <a href="/upgrade">Costi</a>
+    <a href="/consulenza">Consulenza</a>
+    <a href="/faq">FAQ</a>
+    {% if user %}
+      <a href="/dashboard">👤 {{ user }}</a>
+      <a href="/logout">Esci</a>
+    {% else %}
+      <a href="/login">Accedi</a>
+      <a href="/register" class="nav-btn">Registrati gratis</a>
+    {% endif %}
+  </div>
+</nav>
+
+<div class="container">
+  <h1>❓ Domande Frequenti</h1>
+  <p class="subtitle">Tutto quello che devi sapere su BandoMatch AI</p>
+
+  <div class="section-title">Come funziona</div>
+
+  <div class="faq-item">
+    <div class="faq-q">Cos'è BandoMatch AI e come funziona? <span class="arrow">▼</span></div>
+    <div class="faq-a">BandoMatch AI è un sistema intelligente che analizza il profilo della tua azienda (tramite la visura camerale) e lo confronta con il database dei bandi di finanziamento pubblico italiani. In 30 secondi ottieni un report con semaforo Verde/Giallo/Rosso che indica la compatibilità di ogni bando con la tua azienda.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Cosa devo caricare per ottenere l'analisi? <span class="arrow">▼</span></div>
+    <div class="faq-a">Devi caricare la <strong>visura camerale</strong> della tua azienda in formato PDF. La visura camerale si ottiene gratuitamente dal sito del Registro delle Imprese (registroimprese.it) o da qualsiasi Camera di Commercio. Puoi anche inserire manualmente i dati aziendali (codice ATECO, regione, fatturato, numero dipendenti).</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Quanto tempo ci vuole per ottenere il report? <span class="arrow">▼</span></div>
+    <div class="faq-a">L'analisi è praticamente istantanea: in meno di 30 secondi ricevi il report completo con tutti i bandi compatibili con la tua azienda, ordinati per rilevanza e con indicazione del semaforo di compatibilità.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Quanti bandi sono nel database? <span class="arrow">▼</span></div>
+    <div class="faq-a">Il database contiene attualmente oltre 38 bandi attivi tra nazionali e regionali, aggiornati quotidianamente. Includiamo bandi di Invitalia, MIMIT, PNRR, fondi FESR regionali e molti altri. Il database viene aggiornato automaticamente ogni giorno alle 06:00.</div>
+  </div>
+
+  <div class="section-title">Piani e prezzi</div>
+
+  <div class="faq-item">
+    <div class="faq-q">Il servizio è gratuito? <span class="arrow">▼</span></div>
+    <div class="faq-a">Sì! La prima analisi è completamente gratuita. Con il piano Free puoi analizzare la tua azienda e vedere i risultati con semaforo di compatibilità. Il piano Premium (€9,90/mese) sblocca funzionalità avanzate come il report PDF dettagliato, le notifiche automatiche sui nuovi bandi e l'accesso illimitato alle analisi.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Cosa include il piano Premium? <span class="arrow">▼</span></div>
+    <div class="faq-a">Il piano Premium a €9,90/mese include: analisi illimitate, report PDF scaricabile, notifiche email sui nuovi bandi compatibili, accesso alla sezione dettaglio bando con istruzioni per la domanda, e supporto prioritario via email.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Posso disdire in qualsiasi momento? <span class="arrow">▼</span></div>
+    <div class="faq-a">Sì, puoi disdire il piano Premium in qualsiasi momento dalla tua area personale. Non ci sono vincoli contrattuali o penali. La disdetta è immediata e non ti verrà addebitato il mese successivo.</div>
+  </div>
+
+  <div class="section-title">Sicurezza e privacy</div>
+
+  <div class="faq-item">
+    <div class="faq-q">I miei dati aziendali sono al sicuro? <span class="arrow">▼</span></div>
+    <div class="faq-a">Assolutamente sì. I dati che carichi vengono utilizzati esclusivamente per generare il report di compatibilità e non vengono condivisi con terze parti. La visura camerale viene elaborata in tempo reale e non viene conservata sui nostri server dopo l'analisi.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">I risultati dell'analisi sono garantiti? <span class="arrow">▼</span></div>
+    <div class="faq-a">I risultati di BandoMatch AI sono indicativi e basati sull'analisi automatica dei criteri di ammissibilità dei bandi. Non costituiscono consulenza finanziaria o legale. Ti consigliamo di verificare sempre i requisiti ufficiali del bando e, per i bandi più importanti, di consultare un esperto. Per questo offriamo anche il servizio di <a href="/consulenza" style="color:#00C851">consulenza 1:1</a>.</div>
+  </div>
+
+  <div class="section-title">Supporto</div>
+
+  <div class="faq-item">
+    <div class="faq-q">Come posso contattare il supporto? <span class="arrow">▼</span></div>
+    <div class="faq-a">Puoi contattarci via email a <strong style="color:#00C851">info@bandomatch.ai</strong>. Rispondiamo entro 24 ore lavorative. Per assistenza urgente o per prenotare una consulenza personalizzata, visita la pagina <a href="/consulenza" style="color:#00C851">Consulenza</a>.</div>
+  </div>
+
+  <div class="faq-item">
+    <div class="faq-q">Non trovo il bando che mi interessa, cosa faccio? <span class="arrow">▼</span></div>
+    <div class="faq-a">Il database viene aggiornato quotidianamente, ma se hai trovato un bando che non è ancora presente puoi segnalarcelo via email. Valuteremo di aggiungerlo al database. Puoi anche prenotare una <a href="/consulenza" style="color:#00C851">consulenza</a> per ricevere supporto personalizzato nella ricerca di finanziamenti specifici per il tuo settore.</div>
+  </div>
+
+</div>
+
+<footer>
+  <p style="margin-bottom:12px">🎯 <strong style="color:#00C851">BandoMatch AI</strong> — Il radar per i finanziamenti pubblici delle PMI italiane</p>
+  <div>
+    <a href="/bandi">Bandi Attivi</a>
+    <a href="/upgrade">Costi</a>
+    <a href="/consulenza">Consulenza</a>
+    <a href="/faq">FAQ</a>
+    <a href="/login">Accedi</a>
+    <a href="/register">Registrati</a>
+  </div>
+  <p style="margin-top:16px">© 2025 BandoMatch AI — Non costituisce consulenza finanziaria o legale. I risultati sono indicativi.</p>
+</footer>
+
+<script>
+document.querySelectorAll('.faq-item').forEach(item => {
+  item.addEventListener('click', () => {
+    item.classList.toggle('open');
+  });
+});
+</script>
+</body>
+</html>

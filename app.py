@@ -891,9 +891,14 @@ def upgrade():
 
 
 @app.route('/consulenza')
-@login_required
 def consulenza():
     return render_template('consulenza.html')
+
+
+@app.route('/faq')
+def faq():
+    user = session.get('user_nome') or session.get('user_email', '')
+    return render_template('faq.html', user=user)
 
 
 # ─────────────────────────────────────────────
