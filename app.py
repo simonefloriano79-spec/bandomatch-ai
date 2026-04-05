@@ -1653,10 +1653,75 @@ def seed_bandi():
 
 
 # ─────────────────────────────────────────────
+# AUTO-SEED BANDI (eseguito all'avvio se DB vuoto)
+# ─────────────────────────────────────────────
+def auto_seed_bandi():
+    """Popola automaticamente il DB con bandi se vuoto (utile su Render con filesystem effimero)"""
+    try:
+        conn = get_db()
+        count = conn.execute("SELECT COUNT(*) FROM bandi").fetchone()[0]
+        conn.close()
+        if count == 0:
+            bandi_seed = [
+                {'nome': 'Resto al Sud 2.0', 'ente': 'Invitalia', 'regione': 'Nazionale', 'tipo': 'Startup', 'stato': 'aperto', 'massimale': 200000, 'url': 'https://www.invitalia.it/cosa-facciamo/creiamo-nuove-aziende/resto-al-sud', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Abruzzo","Basilicata","Calabria","Campania","Molise","Puglia","Sardegna","Sicilia"]', 'percentuale_fondo_perduto': 50.0},
+                {'nome': 'Smart&Start Italia', 'ente': 'Invitalia', 'regione': 'Nazionale', 'tipo': 'Startup', 'stato': 'aperto', 'massimale': 1500000, 'url': 'https://www.invitalia.it/cosa-facciamo/creiamo-nuove-aziende/smart-start-italia', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Tutte"]', 'percentuale_fondo_perduto': 30.0},
+                {'nome': 'Nuova Sabatini', 'ente': 'MIMIT', 'regione': 'Nazionale', 'tipo': 'Investimenti', 'stato': 'aperto', 'massimale': 4000000, 'url': 'https://www.mise.gov.it/index.php/it/incentivi/impresa/nuova-sabatini', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Tutte"]', 'percentuale_fondo_perduto': 0.0},
+                {'nome': 'Fondo di Garanzia PMI', 'ente': 'Mediocredito Centrale', 'regione': 'Nazionale', 'tipo': 'Credito', 'stato': 'aperto', 'massimale': 5000000, 'url': 'https://www.fondidigaranzia.it', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Tutte"]', 'percentuale_fondo_perduto': 0.0},
+                {'nome': "Credito d'Imposta R&S", 'ente': 'Agenzia delle Entrate', 'regione': 'Nazionale', 'tipo': 'Ricerca', 'stato': 'aperto', 'massimale': 5000000, 'url': 'https://www.agenziaentrate.gov.it', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Tutte"]', 'percentuale_fondo_perduto': 20.0},
+                {'nome': 'Industria 4.0 - Beni Strumentali', 'ente': 'MIMIT', 'regione': 'Nazionale', 'tipo': 'Digitalizzazione', 'stato': 'aperto', 'massimale': 2000000, 'url': 'https://www.mise.gov.it', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Tutte"]', 'percentuale_fondo_perduto': 30.0},
+                {'nome': 'PNRR - Transizione 5.0', 'ente': 'GSE', 'regione': 'Nazionale', 'tipo': 'Sostenibilita', 'stato': 'aperto', 'massimale': 3000000, 'url': 'https://www.gse.it/transizione-5-0', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Tutte"]', 'percentuale_fondo_perduto': 35.0},
+                {'nome': 'Decontribuzione Sud', 'ente': 'INPS', 'regione': 'Nazionale', 'tipo': 'Lavoro', 'stato': 'aperto', 'massimale': 0, 'url': 'https://www.inps.it', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Abruzzo","Basilicata","Calabria","Campania","Molise","Puglia","Sardegna","Sicilia"]', 'percentuale_fondo_perduto': 30.0},
+                {'nome': 'Contratti di Sviluppo', 'ente': 'Invitalia', 'regione': 'Nazionale', 'tipo': 'Investimenti', 'stato': 'aperto', 'massimale': 50000000, 'url': 'https://www.invitalia.it/cosa-facciamo/rafforziamo-le-imprese/contratti-di-sviluppo', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Tutte"]', 'percentuale_fondo_perduto': 25.0},
+                {'nome': 'Brevetti+', 'ente': 'UIBM/MIMIT', 'regione': 'Nazionale', 'tipo': 'Innovazione', 'stato': 'aperto', 'massimale': 140000, 'url': 'https://uibm.mise.gov.it', 'data_scadenza': '2026-06-30', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Tutte"]', 'percentuale_fondo_perduto': 80.0},
+                {'nome': 'PR FESR Abruzzo - Digitalizzazione PMI', 'ente': 'Regione Abruzzo', 'regione': 'Abruzzo', 'tipo': 'Digitalizzazione', 'stato': 'aperto', 'massimale': 150000, 'url': 'https://www.regione.abruzzo.it/fesr', 'data_scadenza': '2026-09-30', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Abruzzo"]', 'percentuale_fondo_perduto': 50.0},
+                {'nome': 'Abruzzo Micro Prestiti', 'ente': 'FIRA Abruzzo', 'regione': 'Abruzzo', 'tipo': 'Credito', 'stato': 'aperto', 'massimale': 80000, 'url': 'https://www.fira.it', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Abruzzo"]', 'percentuale_fondo_perduto': 0.0},
+                {'nome': 'Abruzzo Turismo Sostenibile', 'ente': 'Regione Abruzzo', 'regione': 'Abruzzo', 'tipo': 'Turismo', 'stato': 'aperto', 'massimale': 200000, 'url': 'https://www.regione.abruzzo.it', 'data_scadenza': '2026-10-31', 'ateco_ammessi': '["55","56"]', 'regioni_ammesse': '["Abruzzo"]', 'percentuale_fondo_perduto': 60.0},
+                {'nome': 'Bando Innovazione Lombardia', 'ente': 'Regione Lombardia', 'regione': 'Lombardia', 'tipo': 'Innovazione', 'stato': 'aperto', 'massimale': 500000, 'url': 'https://www.regione.lombardia.it', 'data_scadenza': '2026-11-30', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Lombardia"]', 'percentuale_fondo_perduto': 40.0},
+                {'nome': 'Finlombarda - Fondo PMI', 'ente': 'Finlombarda', 'regione': 'Lombardia', 'tipo': 'Credito', 'stato': 'aperto', 'massimale': 1000000, 'url': 'https://www.finlombarda.it', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Lombardia"]', 'percentuale_fondo_perduto': 0.0},
+                {'nome': 'FESR Campania - Competitivita PMI', 'ente': 'Regione Campania', 'regione': 'Campania', 'tipo': 'Investimenti', 'stato': 'aperto', 'massimale': 300000, 'url': 'https://www.regione.campania.it', 'data_scadenza': '2026-09-30', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Campania"]', 'percentuale_fondo_perduto': 50.0},
+                {'nome': 'Campania Startup', 'ente': 'Sviluppo Campania', 'regione': 'Campania', 'tipo': 'Startup', 'stato': 'aperto', 'massimale': 200000, 'url': 'https://www.sviluppocampania.it', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Campania"]', 'percentuale_fondo_perduto': 70.0},
+                {'nome': 'FESR Sicilia - Imprenditorialita', 'ente': 'Regione Sicilia', 'regione': 'Sicilia', 'tipo': 'Startup', 'stato': 'aperto', 'massimale': 250000, 'url': 'https://www.regione.sicilia.it', 'data_scadenza': '2026-10-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Sicilia"]', 'percentuale_fondo_perduto': 60.0},
+                {'nome': 'Sicilia Digitale', 'ente': 'Regione Sicilia', 'regione': 'Sicilia', 'tipo': 'Digitalizzazione', 'stato': 'aperto', 'massimale': 100000, 'url': 'https://www.regione.sicilia.it', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Sicilia"]', 'percentuale_fondo_perduto': 50.0},
+                {'nome': 'FESR Puglia - Competitivita', 'ente': 'Regione Puglia', 'regione': 'Puglia', 'tipo': 'Investimenti', 'stato': 'aperto', 'massimale': 400000, 'url': 'https://www.regione.puglia.it', 'data_scadenza': '2026-11-30', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Puglia"]', 'percentuale_fondo_perduto': 45.0},
+                {'nome': 'Puglia Turismo 2025', 'ente': 'Puglia Promozione', 'regione': 'Puglia', 'tipo': 'Turismo', 'stato': 'aperto', 'massimale': 300000, 'url': 'https://www.pugliapromozione.com', 'data_scadenza': '2026-09-30', 'ateco_ammessi': '["55","56"]', 'regioni_ammesse': '["Puglia"]', 'percentuale_fondo_perduto': 50.0},
+                {'nome': 'Lazio Innova - Voucher Digitali', 'ente': 'Lazio Innova', 'regione': 'Lazio', 'tipo': 'Digitalizzazione', 'stato': 'aperto', 'massimale': 50000, 'url': 'https://www.lazioinnova.it', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Lazio"]', 'percentuale_fondo_perduto': 50.0},
+                {'nome': 'Lazio Startup', 'ente': 'Lazio Innova', 'regione': 'Lazio', 'tipo': 'Startup', 'stato': 'aperto', 'massimale': 300000, 'url': 'https://www.lazioinnova.it', 'data_scadenza': '2026-10-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Lazio"]', 'percentuale_fondo_perduto': 70.0},
+                {'nome': 'Veneto PMI - Bando Crescita', 'ente': 'Regione Veneto', 'regione': 'Veneto', 'tipo': 'Investimenti', 'stato': 'aperto', 'massimale': 500000, 'url': 'https://www.regione.veneto.it', 'data_scadenza': '2026-11-30', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Veneto"]', 'percentuale_fondo_perduto': 40.0},
+                {'nome': 'Veneto Agri 2025', 'ente': 'AVEPA Veneto', 'regione': 'Veneto', 'tipo': 'Agricoltura', 'stato': 'aperto', 'massimale': 200000, 'url': 'https://www.avepa.it', 'data_scadenza': '2026-09-30', 'ateco_ammessi': '["01","02"]', 'regioni_ammesse': '["Veneto"]', 'percentuale_fondo_perduto': 50.0},
+                {'nome': 'ER Imprese - Bando Innovazione', 'ente': 'Regione Emilia-Romagna', 'regione': 'Emilia-Romagna', 'tipo': 'Innovazione', 'stato': 'aperto', 'massimale': 600000, 'url': 'https://www.regione.emilia-romagna.it', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Emilia-Romagna"]', 'percentuale_fondo_perduto': 50.0},
+                {'nome': 'Toscana Digitale', 'ente': 'Regione Toscana', 'regione': 'Toscana', 'tipo': 'Digitalizzazione', 'stato': 'aperto', 'massimale': 200000, 'url': 'https://www.regione.toscana.it', 'data_scadenza': '2026-10-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Toscana"]', 'percentuale_fondo_perduto': 50.0},
+                {'nome': 'Piemonte Competitivo', 'ente': 'Finpiemonte', 'regione': 'Piemonte', 'tipo': 'Investimenti', 'stato': 'aperto', 'massimale': 400000, 'url': 'https://www.finpiemonte.it', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Piemonte"]', 'percentuale_fondo_perduto': 0.0},
+                {'nome': 'FESR Calabria - Imprenditorialita', 'ente': 'Regione Calabria', 'regione': 'Calabria', 'tipo': 'Startup', 'stato': 'aperto', 'massimale': 200000, 'url': 'https://www.regione.calabria.it', 'data_scadenza': '2026-11-30', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Calabria"]', 'percentuale_fondo_perduto': 65.0},
+                {'nome': 'Sardegna Competitiva', 'ente': 'Regione Sardegna', 'regione': 'Sardegna', 'tipo': 'Investimenti', 'stato': 'aperto', 'massimale': 300000, 'url': 'https://www.regione.sardegna.it', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Sardegna"]', 'percentuale_fondo_perduto': 50.0},
+                {'nome': 'Marche Startup 2025', 'ente': 'Regione Marche', 'regione': 'Marche', 'tipo': 'Startup', 'stato': 'aperto', 'massimale': 150000, 'url': 'https://www.regione.marche.it', 'data_scadenza': '2026-10-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Marche"]', 'percentuale_fondo_perduto': 60.0},
+                {'nome': 'Umbria Innovazione', 'ente': 'Regione Umbria', 'regione': 'Umbria', 'tipo': 'Innovazione', 'stato': 'aperto', 'massimale': 200000, 'url': 'https://www.regione.umbria.it', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Umbria"]', 'percentuale_fondo_perduto': 45.0},
+                {'nome': 'Basilicata Imprese', 'ente': 'Regione Basilicata', 'regione': 'Basilicata', 'tipo': 'Investimenti', 'stato': 'aperto', 'massimale': 250000, 'url': 'https://www.regione.basilicata.it', 'data_scadenza': '2026-11-30', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Basilicata"]', 'percentuale_fondo_perduto': 50.0},
+                {'nome': 'Molise Sviluppo', 'ente': 'Regione Molise', 'regione': 'Molise', 'tipo': 'Investimenti', 'stato': 'aperto', 'massimale': 200000, 'url': 'https://www.regione.molise.it', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Molise"]', 'percentuale_fondo_perduto': 50.0},
+                {'nome': 'Friuli Innova', 'ente': 'Regione FVG', 'regione': 'Friuli-Venezia Giulia', 'tipo': 'Innovazione', 'stato': 'aperto', 'massimale': 300000, 'url': 'https://www.regione.fvg.it', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Friuli-Venezia Giulia"]', 'percentuale_fondo_perduto': 50.0},
+                {'nome': 'Liguria Competitiva', 'ente': 'Regione Liguria', 'regione': 'Liguria', 'tipo': 'Investimenti', 'stato': 'aperto', 'massimale': 200000, 'url': 'https://www.regione.liguria.it', 'data_scadenza': '2026-10-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Liguria"]', 'percentuale_fondo_perduto': 40.0},
+                {'nome': 'Trentino Startup Hub', 'ente': 'PAT Trento', 'regione': 'Trentino-Alto Adige', 'tipo': 'Startup', 'stato': 'aperto', 'massimale': 500000, 'url': 'https://www.provincia.tn.it', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Trentino-Alto Adige"]', 'percentuale_fondo_perduto': 40.0},
+                {'nome': "Valle d Aosta PMI", 'ente': 'Regione VdA', 'regione': "Valle d Aosta", 'tipo': 'Investimenti', 'stato': 'aperto', 'massimale': 150000, 'url': 'https://www.regione.vda.it', 'data_scadenza': '2026-12-31', 'ateco_ammessi': '[]', 'regioni_ammesse': '["Valle d Aosta"]', 'percentuale_fondo_perduto': 40.0},
+            ]
+            conn2 = get_db()
+            c2 = conn2.cursor()
+            for b in bandi_seed:
+                c2.execute('''INSERT OR IGNORE INTO bandi (nome, ente, regione, tipo, stato, massimale, url, data_scadenza, ateco_ammessi, regioni_ammesse, percentuale_fondo_perduto, data_aggiornamento)
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))''',
+                         (b['nome'], b['ente'], b['regione'], b['tipo'], b['stato'], b['massimale'], b['url'], b['data_scadenza'], b['ateco_ammessi'], b['regioni_ammesse'], b['percentuale_fondo_perduto']))
+            conn2.commit()
+            conn2.close()
+            app.logger.info(f"✅ Auto-seed bandi: inseriti {len(bandi_seed)} bandi al primo avvio")
+        else:
+            app.logger.info(f"✅ Auto-seed bandi: DB già popolato con {count} bandi, skip")
+    except Exception as e:
+        app.logger.error(f"Errore auto-seed bandi: {e}")
+
+# ─────────────────────────────────────────────
 # INIZIALIZZAZIONE (eseguita da Gunicorn e da __main__)
 # ─────────────────────────────────────────────
 try:
     init_db()
+    auto_seed_bandi()
     avvia_scheduler()
 except Exception as _init_err:
     app.logger.error(f"Errore inizializzazione: {_init_err}")
