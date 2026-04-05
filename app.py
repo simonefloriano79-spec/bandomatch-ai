@@ -1572,10 +1572,9 @@ def valuta_idea():
 # SEED BANDI (endpoint admin per popolare il DB live)
 # ─────────────────────────────────────────────
 @app.route('/admin/seed-bandi', methods=['POST'])
+@admin_required
 def seed_bandi():
     """Popola il DB con bandi reali italiani - solo admin"""
-    if not session.get('is_admin'):
-        return jsonify({'error': 'Non autorizzato'}), 403
     
     bandi = [
         # NAZIONALI
