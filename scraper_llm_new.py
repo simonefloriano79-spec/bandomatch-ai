@@ -14,7 +14,17 @@ from typing import Optional
 from openai import OpenAI
 
 # Client OpenAI (usa variabile d'ambiente OPENAI_API_KEY)
-client = OpenAI()
+# Client OpenAI (inizializzato lazy per evitare crash se OPENAI_API_KEY non è impostata)
+_openai_client = None
+def get_openai_client():
+    global _openai_client
+    if _openai_client is None:
+        api_key = os.environ.get("OPENAI_API_KEY", "")
+        if not api_key:
+            return None
+        from openai import OpenAI as _OpenAI
+        _openai_client = _OpenAI(api_key=api_key)
+    return _openai_client
 
 # Timeout per le richieste HTTP
 HTTP_TIMEOUT = 15

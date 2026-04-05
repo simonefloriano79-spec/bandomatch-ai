@@ -34,32 +34,6 @@
   .semaforo-rosso { color: #FF4444; font-weight: 700; }
   .valore { color: #00C851; font-weight: 700; }
   .btn-dossier { padding: 6px 14px; background: rgba(0,200,81,0.15); border: 1px solid #00C851; border-radius: 6px; color: #00C851; font-size: 12px; text-decoration: none; font-weight: 600; }
-  /* DOSSIER CARD */
-  .dossier-card-unlocked { background: linear-gradient(135deg, rgba(0,200,81,0.1), rgba(0,168,67,0.05)); border: 1px solid rgba(0,200,81,0.4); border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; text-decoration: none; transition: all 0.2s; }
-  .dossier-card-unlocked:hover { background: rgba(0,200,81,0.2); border-color: #00C851; transform: translateY(-1px); }
-  .dossier-card-unlocked .doc-icon { font-size: 28px; flex-shrink: 0; }
-  .dossier-card-unlocked .doc-title { font-size: 12px; font-weight: 700; color: #00C851; }
-  .dossier-card-unlocked .doc-sub { font-size: 10px; color: #8899aa; margin-top: 2px; }
-  .dossier-card-locked { background: linear-gradient(135deg, rgba(255,179,0,0.05), rgba(255,140,0,0.02)); border: 1px solid rgba(255,179,0,0.3); border-radius: 10px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; text-decoration: none; transition: all 0.2s; position: relative; }
-  .dossier-card-locked:hover { background: rgba(255,179,0,0.1); border-color: #FFB300; }
-  .dossier-card-locked .doc-icon { font-size: 28px; flex-shrink: 0; filter: grayscale(1); opacity: 0.5; }
-  .dossier-card-locked .doc-title { font-size: 12px; font-weight: 700; color: #FFB300; }
-  .dossier-card-locked .doc-sub { font-size: 10px; color: #8899aa; margin-top: 2px; }
-  .lock-badge { background: rgba(255,179,0,0.2); border: 1px solid rgba(255,179,0,0.5); border-radius: 4px; padding: 2px 5px; font-size: 10px; color: #FFB300; font-weight: 700; margin-left: auto; }
-  /* DOSSIER PROMO BOX */
-  .dossier-promo { background: linear-gradient(135deg, #1a2a3a, #0f1f2f); border: 1px solid rgba(0,200,81,0.3); border-radius: 16px; padding: 24px 28px; margin-bottom: 32px; display: flex; align-items: center; gap: 24px; }
-  .promo-visual { flex-shrink: 0; width: 70px; height: 90px; background: #0a1628; border: 1px solid rgba(0,200,81,0.3); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
-  .doc-lines div { height: 5px; background: rgba(0,200,81,0.25); border-radius: 3px; margin-bottom: 4px; width: 44px; }
-  .doc-lines div:nth-child(2) { width: 36px; }
-  .doc-lines div:nth-child(3) { width: 40px; }
-  .doc-lines div:nth-child(4) { width: 30px; }
-  .lock-overlay { position: absolute; inset: 0; background: rgba(10,22,40,0.75); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
-  .promo-text h3 { font-size: 17px; font-weight: 800; color: #00C851; margin-bottom: 8px; }
-  .promo-text p { font-size: 13px; color: #8899aa; margin-bottom: 10px; line-height: 1.5; }
-  .promo-text ul { list-style: none; margin-bottom: 14px; }
-  .promo-text ul li { font-size: 13px; color: #c0d0e0; margin-bottom: 3px; }
-  .promo-text ul li::before { content: "✓ "; color: #00C851; font-weight: 700; }
-  .btn-dossier-cta { display: inline-block; padding: 10px 20px; background: linear-gradient(135deg, #00C851, #00a843); border-radius: 8px; color: #fff; font-weight: 700; text-decoration: none; font-size: 13px; }
   .upgrade-banner { background: linear-gradient(135deg, #1a2a3a, #0f1f2f); border: 1px solid #FFB300; border-radius: 12px; padding: 24px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: center; }
   .upgrade-banner .text h3 { color: #FFB300; font-size: 18px; margin-bottom: 6px; }
   .upgrade-banner .text p { color: #8899aa; font-size: 14px; }
@@ -117,26 +91,6 @@
   <a href="/" class="btn-primary">+ Nuova Analisi</a>
   <a href="/bandi" class="btn-secondary">Esplora Bandi</a>
 
-  {% if utente.piano == 'free' and storico %}
-  <div class="dossier-promo">
-    <div class="promo-visual">
-      <div class="doc-lines"><div></div><div></div><div></div><div></div></div>
-      <div class="lock-overlay">🔒</div>
-    </div>
-    <div class="promo-text">
-      <h3>📋 Genera il tuo Piano d'Azione Personalizzato</h3>
-      <p>Il documento professionale da consegnare al commercialista o alla banca per presentare la domanda di finanziamento.</p>
-      <ul>
-        <li>Sintesi esecutiva del bando (senza burocratese)</li>
-        <li>Analisi di affinità dettagliata con la tua azienda</li>
-        <li>Checklist documenti da preparare</li>
-        <li>Istruzioni passo-passo per l'invio</li>
-      </ul>
-      <a href="/upgrade" class="btn-dossier-cta">🔓 Sblocca con Premium — €9,90/mese</a>
-    </div>
-  </div>
-  {% endif %}
-
   <div class="section-title">📋 Storico Analisi</div>
 
   {% if storico %}
@@ -151,7 +105,7 @@
         <th>🟡 Gialli</th>
         <th>🔴 Rossi</th>
         <th>Valore</th>
-        <th>Piano d'Azione PDF</th>
+        <th>Dossier</th>
       </tr>
     </thead>
     <tbody>
@@ -166,17 +120,10 @@
         <td class="semaforo-rosso">{{ a.bandi_rossi }}</td>
         <td class="valore">€{{ "{:,.0f}".format(a.valore_potenziale) }}</td>
         <td>
-          {% if utente.piano in ('premium', 'pro', 'admin') or utente.abbonamento_attivo %}
-          <a href="/dossier/{{ a.id }}" class="dossier-card-unlocked">
-            <span class="doc-icon">📄</span>
-            <div><div class="doc-title">Scarica PDF</div><div class="doc-sub">Piano d'Azione</div></div>
-          </a>
+          {% if utente.piano in ('premium', 'admin') or utente.abbonamento_attivo %}
+          <a href="/dossier/{{ a.id }}" class="btn-dossier">📄 PDF</a>
           {% else %}
-          <a href="/upgrade" class="dossier-card-locked">
-            <span class="doc-icon">📄</span>
-            <div><div class="doc-title">Piano d'Azione</div><div class="doc-sub">Sblocca con Premium</div></div>
-            <span class="lock-badge">🔒 PRO</span>
-          </a>
+          <a href="/upgrade" class="btn-dossier" style="opacity:0.5">🔒 PDF</a>
           {% endif %}
         </td>
       </tr>

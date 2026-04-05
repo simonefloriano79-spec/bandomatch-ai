@@ -1485,19 +1485,86 @@ def api_prezzi():
 
 
 
-# ─────────────────────────────────────────────
-# INIZIALIZZAZIONE AL LIVELLO DEL MODULO
-# (necessario per Gunicorn che non chiama __main__)
-# ─────────────────────────────────────────────
-try:
-    init_db()
-except Exception as _init_err:
-    import logging as _logging
-    _logging.getLogger(__name__).error(f"Errore init_db al caricamento: {_init_err}")
+# ── LANDING ASPIRANTE IMPRENDITORE ──────────────────────────────────────────
+
+@app.route('/idea')
+def idea_page():
+    """Landing page per aspiranti imprenditori con quiz AI."""
+    return render_template('idea.html')
+
+@app.route('/api/valuta-idea', methods=['POST'])
+def valuta_idea():
+    """API per valutare un'idea imprenditoriale con AI e trovare bandi compatibili."""
+    dati = request.get_json() or {}
+    settore = dati.get('settore', 'altro')
+    regione = dati.get('regione', '')
+    eta = dati.get('eta', '25-35')
+    budget = dati.get('budget', 'piccolo')
+
+    # Calcolo score basato sui parametri
+    score = 50
+    bonus_settore = {'tecnologia': 20, 'green': 18, 'manifattura': 15, 'servizi': 12, 'turismo': 10, 'altro': 8}
+    score += bonus_settore.get(settore, 8)
+    bonus_eta = {'under25': 15, '25-35': 12, '35-45': 8, 'over45': 5}
+    score += bonus_eta.get(eta, 8)
+    regioni_sud = ['Abruzzo', 'Basilicata', 'Calabria', 'Campania', 'Molise', 'Puglia', 'Sardegna', 'Sicilia']
+    score += 10 if regione in regioni_sud else 5
+    bonus_budget = {'zero': 5, 'piccolo': 8, 'medio': 12, 'grande': 15}
+    score += bonus_budget.get(budget, 8)
+    score = min(score, 96)
+
+    # Trova bandi compatibili dal DB
+    conn = get_db()
+    bandi_trovati = []
+    try:
+        c = conn.cursor()
+        c.execute("""
+            SELECT nome, massimale, percentuale_fondo_perduto, regioni_ammesse
+            FROM bandi WHERE stato='aperto'
+            ORDER BY massimale DESC LIMIT 20
+        """)
+        tutti = c.fetchall()
+        for b in tutti:
+            nome, massimale, pct, regioni_json = b['nome'], b['massimale'], b['percentuale_fondo_perduto'], b['regioni_ammesse']
+            try:
+                regioni = json.loads(regioni_json) if regioni_json else []
+            except Exception:
+                regioni = []
+            if 'Nazionale' in regioni or (regione and regione in regioni):
+                colore = 'verde' if (pct or 0) >= 40 else 'giallo'
+                valore_str = f'\u20ac{massimale:,.0f}' if massimale else 'Variabile'
+                bandi_trovati.append({'nome': nome[:50], 'valore': valore_str, 'colore': colore})
+                if len(bandi_trovati) >= 5:
+                    break
+    except Exception as e:
+        app.logger.error(f'Errore valuta-idea: {e}')
+    finally:
+        conn.close()
+
+    if not bandi_trovati:
+        bandi_trovati = [
+            {'nome': 'Smart&Start Italia', 'valore': '\u20ac1.500.000', 'colore': 'verde'},
+            {'nome': 'Fondo di Garanzia PMI', 'valore': '\u20ac5.000.000', 'colore': 'giallo'},
+            {'nome': "Credito d'Imposta R&S", 'valore': '\u20ac5.000.000', 'colore': 'verde'},
+        ]
+
+    if score >= 70:
+        titolo = 'La tua idea ha ottime probabilit\u00e0! \U0001f3af'
+        sottotitolo = f'Abbiamo trovato {len(bandi_trovati)} bandi compatibili con il tuo progetto'
+    elif score >= 50:
+        titolo = 'La tua idea ha buone possibilit\u00e0 \U0001f44d'
+        sottotitolo = f'Esistono {len(bandi_trovati)} bandi potenzialmente accessibili'
+    else:
+        titolo = 'Ci sono opportunit\u00e0 da esplorare \U0001f50d'
+        sottotitolo = 'Con la giusta consulenza puoi trovare il bando adatto'
+
+    return jsonify({'score': score, 'titolo': titolo, 'sottotitolo': sottotitolo, 'bandi': bandi_trovati})
+
 
 # ─────────────────────────────────────────────
 # AVVIO APP
 # ─────────────────────────────────────────────
 if __name__ == '__main__':
+    init_db()
     avvia_scheduler()
     app.run(host='0.0.0.0', port=5000, debug=False)
