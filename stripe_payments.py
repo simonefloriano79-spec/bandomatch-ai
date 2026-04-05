@@ -16,9 +16,9 @@ logger = logging.getLogger(__name__)
 
 # ── Configurazione Stripe ──────────────────────────────────────────────────────
 # In produzione: impostare STRIPE_SECRET_KEY e STRIPE_WEBHOOK_SECRET come env vars
-STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "sk_test_51SrD9MCxZA5DFsrWTFfVuSicosDwTzP2WWpMumcYhlgyq8wWFQNpjjVb6eGgn7evkjnHfid5S4xb9Ttao656nIXt00NYcfn6Pq")
-STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "whsec_NSWJCHcYaalCwO2FZmWlXNbaxgoK00WE")
-STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "pk_test_51SrD9MCxZA5DFsrWXBHE2b3STz7RU95VxE9DYudzxGWvLpmhaHTYgk2B7GsmC4lbWxrO0b9bofUJhDSTdkiibocJ002WKJofHX")
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
+STRIPE_WEBHOOK_SECRET = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
+STRIPE_PUBLISHABLE_KEY = os.environ.get("STRIPE_PUBLISHABLE_KEY", "")
 
 stripe.api_key = STRIPE_SECRET_KEY
 
