@@ -820,7 +820,7 @@ def admin_dashboard():
         'totale_analisi': conn.execute("SELECT COUNT(*) FROM analisi").fetchone()[0],
         'analisi_oggi': conn.execute("SELECT COUNT(*) FROM analisi WHERE date(data_analisi) = date('now')").fetchone()[0],
         'totale_bandi': conn.execute("SELECT COUNT(*) FROM bandi").fetchone()[0],
-        'bandi_attivi': conn.execute("SELECT COUNT(*) FROM bandi WHERE stato = 'attivo'").fetchone()[0],
+        'bandi_attivi': conn.execute("SELECT COUNT(*) FROM bandi WHERE stato IN ('attivo', 'aperto')").fetchone()[0],
         'valore_medio': conn.execute("SELECT AVG(valore_potenziale) FROM analisi").fetchone()[0] or 0,
     }
     ultimi_utenti = conn.execute(
@@ -865,7 +865,7 @@ def admin_run_scraper():
 def lista_bandi_pubblici():
     conn = get_db()
     bandi = conn.execute(
-        "SELECT * FROM bandi WHERE stato = 'attivo' ORDER BY data_aggiornamento DESC"
+        "SELECT * FROM bandi WHERE stato IN ('attivo', 'aperto') ORDER BY data_aggiornamento DESC"
     ).fetchall()
     conn.close()
     return render_template('bandi_pubblici.html', bandi=bandi)
