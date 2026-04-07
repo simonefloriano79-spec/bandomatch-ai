@@ -45,6 +45,11 @@ from reportlab.lib.enums import TA_CENTER, TA_LEFT
 # APScheduler per cron job giornaliero
 from apscheduler.schedulers.background import BackgroundScheduler
 
+# Email SMTP
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 import sys
 sys.path.insert(0, os.path.dirname(__file__))
 from visura_parser import parse_visura
@@ -65,6 +70,13 @@ app.config['UPLOAD_FOLDER'] = tempfile.gettempdir()
 app.config['DB_PATH'] = os.path.join(os.path.dirname(__file__), 'bandomatch.db')
 app.config['ADMIN_EMAIL'] = 'simone.floriano79@gmail.com'
 app.config['ADMIN_PASSWORD'] = 'BandoMatch2025!'
+
+# Configurazione SMTP (Gmail) — impostare su Render come variabili d'ambiente
+app.config['SMTP_HOST'] = os.environ.get('SMTP_HOST', 'smtp.gmail.com')
+app.config['SMTP_PORT'] = int(os.environ.get('SMTP_PORT', '587'))
+app.config['SMTP_USER'] = os.environ.get('SMTP_USER', '')   # es. bandomatch@gmail.com
+app.config['SMTP_PASS'] = os.environ.get('SMTP_PASS', '')   # App Password Gmail
+app.config['SMTP_FROM'] = os.environ.get('SMTP_FROM', 'BandoMatch AI <noreply@bandomatch.ai>')
 
 ALLOWED_EXTENSIONS = {'pdf'}
 
@@ -1113,10 +1125,205 @@ def avvia_scheduler():
     print("✅ Scheduler avviato: scraper 06:00, alert 08:00")
 
 
+def _invia_email_singola(destinatario: str, oggetto: str, corpo_html: str) -> bool:
+    """Invia una singola email via SMTP. Ritorna True se inviata con successo."""
+    smtp_user = app.config.get('SMTP_USER', '')
+    smtp_pass = app.config.get('SMTP_PASS', '')
+    if not smtp_user or not smtp_pass:
+        print("⚠️ SMTP non configurato: impostare SMTP_USER e SMTP_PASS su Render")
+        return False
+    try:
+        msg = MIMEMultipart('alternative')
+        msg['Subject'] = oggetto
+        msg['From'] = app.config['SMTP_FROM']
+        msg['To'] = destinatario
+        msg.attach(MIMEText(corpo_html, 'html', 'utf-8'))
+        with smtplib.SMTP(app.config['SMTP_HOST'], app.config['SMTP_PORT'], timeout=15) as server:
+            server.ehlo()
+            server.starttls()
+            server.login(smtp_user, smtp_pass)
+            server.sendmail(smtp_user, destinatario, msg.as_string())
+        print(f"✅ Email inviata a {destinatario}: {oggetto}")
+        return True
+    except Exception as e:
+        print(f"❌ Errore invio email a {destinatario}: {e}")
+        return False
+
+
+def _build_email_alert(utente_nome: str, bandi_compatibili: list) -> str:
+    """Costruisce il corpo HTML dell'email di alert bandi."""
+    righe_bandi = ''
+    for b in bandi_compatibili:
+        semaforo_emoji = '🟢' if b.get('semaforo') == 'VERDE' else '🟡'
+        massimale = f"€{b.get('massimale', 0):,.0f}" if b.get('massimale') else 'N/D'
+        scadenza = b.get('data_scadenza', 'N/D') or 'N/D'
+        righe_bandi += f"""
+        <tr>
+          <td style="padding:10px 8px;border-bottom:1px solid #2a2f45;">
+            {semaforo_emoji} <strong style="color:#e0e0e0;">{b.get('nome','')}</strong><br>
+            <small style="color:#8892b0;">{b.get('ente','')} &mdash; {b.get('regione','Nazionale')}</small>
+          </td>
+          <td style="padding:10px 8px;border-bottom:1px solid #2a2f45;color:#4ade80;font-weight:700;text-align:right;">{massimale}</td>
+          <td style="padding:10px 8px;border-bottom:1px solid #2a2f45;color:#94a3b8;text-align:right;">{scadenza}</td>
+        </tr>"""
+
+    nome_display = utente_nome or 'Imprenditore'
+    return f"""<!DOCTYPE html>
+<html lang="it">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#0a0e1a;font-family:'Segoe UI',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0a0e1a;padding:40px 20px;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#111827;border-radius:16px;overflow:hidden;border:1px solid #1e2740;max-width:600px;">
+        <!-- HEADER -->
+        <tr><td style="background:linear-gradient(135deg,#6366f1,#8b5cf6);padding:32px 40px;text-align:center;">
+          <h1 style="margin:0;color:#fff;font-size:24px;font-weight:800;">🚦 BandoMatch <span style="color:#4ade80;">AI</span></h1>
+          <p style="margin:8px 0 0;color:rgba(255,255,255,0.85);font-size:14px;">Nuovi bandi compatibili con la tua impresa</p>
+        </td></tr>
+        <!-- BODY -->
+        <tr><td style="padding:32px 40px;">
+          <p style="color:#e0e0e0;font-size:16px;margin:0 0 8px;">Ciao <strong>{nome_display}</strong>,</p>
+          <p style="color:#8892b0;font-size:14px;margin:0 0 24px;line-height:1.6;">
+            Abbiamo trovato <strong style="color:#4ade80;">{len(bandi_compatibili)} nuovi bandi</strong> compatibili con la tua impresa. Ecco il riepilogo:
+          </p>
+          <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+            <thead>
+              <tr style="background:#1e2740;">
+                <th style="padding:10px 8px;text-align:left;color:#6366f1;font-size:12px;text-transform:uppercase;">Bando</th>
+                <th style="padding:10px 8px;text-align:right;color:#6366f1;font-size:12px;text-transform:uppercase;">Massimale</th>
+                <th style="padding:10px 8px;text-align:right;color:#6366f1;font-size:12px;text-transform:uppercase;">Scadenza</th>
+              </tr>
+            </thead>
+            <tbody>{righe_bandi}</tbody>
+          </table>
+          <div style="margin:28px 0;text-align:center;">
+            <a href="https://bandomatch-ai.onrender.com/dashboard" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:700;font-size:15px;display:inline-block;">Vedi tutti i bandi &rarr;</a>
+          </div>
+          <p style="color:#4a5568;font-size:12px;text-align:center;margin:0;">
+            Ricevi questa email perché hai un account attivo su BandoMatch AI.<br>
+            <a href="https://bandomatch-ai.onrender.com/profilo" style="color:#6366f1;">Gestisci le tue preferenze email</a>
+          </p>
+        </td></tr>
+      </table>
+    </td></tr>
+  </table>
+</body></html>"""
+
+
 def invia_alert_email():
-    """Invia alert email agli utenti per nuovi bandi compatibili."""
-    # Implementazione base — in produzione usare Flask-Mail o SendGrid
-    print(f"📧 Alert email: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}")
+    """Job schedulato: per ogni utente con analisi, trova i bandi compatibili
+    non ancora notificati e invia un'email di alert."""
+    print(f"📧 Alert email avviato: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M')}")
+    try:
+        conn = get_db()
+        # Prendi tutti gli utenti con almeno un'analisi e email alert attivi
+        utenti = conn.execute("""
+            SELECT DISTINCT u.id, u.email, u.nome, u.piano, u.abbonamento_attivo,
+                   a.ateco, a.regione, a.dati_impresa_json
+            FROM utenti u
+            JOIN analisi a ON a.utente_id = u.id
+            WHERE u.email IS NOT NULL
+              AND (u.abbonamento_attivo = 1 OR u.piano = 'free')
+            ORDER BY a.data_analisi DESC
+        """).fetchall()
+
+        # Prendi i bandi aperti aggiornati nelle ultime 48 ore
+        bandi_nuovi = conn.execute("""
+            SELECT * FROM bandi
+            WHERE stato IN ('aperto', 'attivo')
+              AND data_aggiornamento >= datetime('now', '-2 days')
+            ORDER BY data_aggiornamento DESC
+        """).fetchall()
+
+        if not bandi_nuovi:
+            # Se non ci sono bandi nuovi, prendi tutti i bandi aperti per il primo alert
+            bandi_nuovi = conn.execute("""
+                SELECT * FROM bandi WHERE stato IN ('aperto', 'attivo')
+                ORDER BY data_aggiornamento DESC LIMIT 20
+            """).fetchall()
+
+        print(f"   Utenti da notificare: {len(utenti)}, Bandi disponibili: {len(bandi_nuovi)}")
+        email_inviate = 0
+
+        # Raggruppa per utente (prendi solo l'analisi più recente)
+        utenti_processati = {}
+        for u in utenti:
+            uid = u['id']
+            if uid not in utenti_processati:
+                utenti_processati[uid] = u
+
+        for uid, utente in utenti_processati.items():
+            try:
+                ateco_utente = (utente['ateco'] or '').strip()
+                regione_utente = (utente['regione'] or '').strip().lower()
+                ateco_prefisso = ateco_utente[:2] if ateco_utente else ''
+
+                bandi_compatibili = []
+                for bando in bandi_nuovi:
+                    # Controlla se già notificato
+                    gia_notificato = conn.execute("""
+                        SELECT id FROM alert_email
+                        WHERE utente_id = ? AND bando_id = ? AND inviato = 1
+                    """, (uid, bando['id'])).fetchone()
+                    if gia_notificato:
+                        continue
+
+                    # Matching ATECO
+                    ateco_ammessi = json.loads(bando['ateco_ammessi'] or '[]')
+                    ateco_esclusi = json.loads(bando['ateco_esclusi'] or '[]')
+                    regioni_ammesse = json.loads(bando['regioni_ammesse'] or '[]')
+
+                    # Se lista ATECO vuota = tutti ammessi
+                    ateco_ok = True
+                    if ateco_ammessi and ateco_prefisso:
+                        ateco_ok = any(ateco_utente.startswith(a[:2]) for a in ateco_ammessi)
+                    if ateco_esclusi and ateco_prefisso:
+                        if any(ateco_utente.startswith(a[:2]) for a in ateco_esclusi):
+                            ateco_ok = False
+
+                    # Matching regione
+                    regione_ok = True
+                    if regioni_ammesse:
+                        regioni_lower = [r.lower() for r in regioni_ammesse]
+                        regione_ok = ('nazionale' in regioni_lower or
+                                      'tutte' in regioni_lower or
+                                      regione_utente in regioni_lower or
+                                      not regione_utente)
+
+                    if ateco_ok and regione_ok:
+                        bandi_compatibili.append(dict(bando))
+
+                if not bandi_compatibili:
+                    continue
+
+                # Costruisci e invia email
+                nome_utente = utente['nome'] or utente['email'].split('@')[0]
+                corpo = _build_email_alert(nome_utente, bandi_compatibili[:10])
+                n_bandi = len(bandi_compatibili)
+                oggetto = f"🚦 {n_bandi} nuov{'o' if n_bandi==1 else 'i'} band{'o' if n_bandi==1 else 'i'} compatibil{'e' if n_bandi==1 else 'i'} con la tua impresa"
+
+                inviata = _invia_email_singola(utente['email'], oggetto, corpo)
+
+                if inviata:
+                    # Registra gli alert inviati
+                    for bando in bandi_compatibili[:10]:
+                        conn.execute("""
+                            INSERT OR IGNORE INTO alert_email
+                            (utente_id, bando_id, tipo_alert, inviato, data_invio)
+                            VALUES (?, ?, 'nuovo_bando', 1, datetime('now'))
+                        """, (uid, bando['id']))
+                    conn.commit()
+                    email_inviate += 1
+
+            except Exception as e:
+                print(f"   ⚠️ Errore per utente {uid}: {e}")
+                continue
+
+        conn.close()
+        print(f"✅ Alert email completato: {email_inviate} email inviate su {len(utenti_processati)} utenti")
+
+    except Exception as e:
+        print(f"❌ Errore critico alert_email: {e}")
 
 
 # ─────────────────────────────────────────────
@@ -1655,6 +1862,38 @@ def seed_bandi():
     conn.close()
     return jsonify({'success': True, 'inseriti': inseriti, 'aggiornati': aggiornati, 'totale': inseriti + aggiornati})
 
+
+@app.route('/admin/test-email', methods=['POST'])
+@admin_required
+def test_email():
+    """Invia una email di test all'admin per verificare la configurazione SMTP."""
+    smtp_user = app.config.get('SMTP_USER', '')
+    smtp_pass = app.config.get('SMTP_PASS', '')
+    if not smtp_user or not smtp_pass:
+        return jsonify({'success': False, 'error': 'SMTP non configurato. Impostare SMTP_USER e SMTP_PASS su Render.'})
+    corpo = _build_email_alert('Admin', [
+        {'nome': 'TEST — Resto al Sud 2.0', 'ente': 'Invitalia', 'regione': 'Nazionale',
+         'massimale': 200000, 'data_scadenza': '2026-12-31', 'semaforo': 'VERDE'},
+        {'nome': 'TEST — Nuova Sabatini', 'ente': 'MIMIT', 'regione': 'Nazionale',
+         'massimale': 4000000, 'data_scadenza': '2026-12-31', 'semaforo': 'GIALLO'},
+    ])
+    ok = _invia_email_singola(app.config['ADMIN_EMAIL'],
+                              '\U0001f6a6 TEST BandoMatch AI — Email Alert Funzionante!', corpo)
+    if ok:
+        return jsonify({'success': True, 'message': f'Email di test inviata a {app.config["ADMIN_EMAIL"]}'})
+    else:
+        return jsonify({'success': False, 'error': 'Errore invio. Controlla i log di Render.'})
+
+
+@app.route('/admin/invia-alert', methods=['POST'])
+@admin_required
+def invia_alert_manuale():
+    """Triggera manualmente l'invio degli alert email a tutti gli utenti."""
+    try:
+        invia_alert_email()
+        return jsonify({'success': True, 'message': 'Alert email inviati. Controlla i log per i dettagli.'})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)})
 
 
 # ─────────────────────────────────────────────
