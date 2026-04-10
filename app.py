@@ -71,12 +71,9 @@ app.config['DB_PATH'] = os.path.join(os.path.dirname(__file__), 'bandomatch.db')
 app.config['ADMIN_EMAIL'] = 'simone.floriano79@gmail.com'
 app.config['ADMIN_PASSWORD'] = 'BandoMatch2025!'
 
-# Configurazione SMTP (Gmail) — impostare su Render come variabili d'ambiente
-app.config['SMTP_HOST'] = os.environ.get('SMTP_HOST', 'smtp.gmail.com')
-app.config['SMTP_PORT'] = int(os.environ.get('SMTP_PORT', '587'))
-app.config['SMTP_USER'] = os.environ.get('SMTP_USER', '')   # es. bandomatch@gmail.com
-app.config['SMTP_PASS'] = os.environ.get('SMTP_PASS', '')   # App Password Gmail
-app.config['SMTP_FROM'] = os.environ.get('SMTP_FROM', 'BandoMatch AI <noreply@bandomatch.ai>')
+# Configurazione Resend API — impostare RESEND_API_KEY su Render come variabile d'ambiente
+app.config['RESEND_API_KEY'] = os.environ.get('RESEND_API_KEY', '')
+app.config['SMTP_FROM'] = os.environ.get('SMTP_FROM', 'BandoMatch AI <onboarding@resend.dev>')
 
 ALLOWED_EXTENSIONS = {'pdf'}
 
@@ -1126,25 +1123,33 @@ def avvia_scheduler():
 
 
 def _invia_email_singola(destinatario: str, oggetto: str, corpo_html: str) -> bool:
-    """Invia una singola email via SMTP. Ritorna True se inviata con successo."""
-    smtp_user = app.config.get('SMTP_USER', '')
-    smtp_pass = app.config.get('SMTP_PASS', '')
-    if not smtp_user or not smtp_pass:
-        print("⚠️ SMTP non configurato: impostare SMTP_USER e SMTP_PASS su Render")
+    """Invia una singola email via Resend API. Ritorna True se inviata con successo."""
+    import urllib.request
+    import json as _json
+    api_key = app.config.get('RESEND_API_KEY', '')
+    if not api_key:
+        print("⚠️ Resend non configurato: impostare RESEND_API_KEY su Render")
         return False
     try:
-        msg = MIMEMultipart('alternative')
-        msg['Subject'] = oggetto
-        msg['From'] = app.config['SMTP_FROM']
-        msg['To'] = destinatario
-        msg.attach(MIMEText(corpo_html, 'html', 'utf-8'))
-        with smtplib.SMTP(app.config['SMTP_HOST'], app.config['SMTP_PORT'], timeout=15) as server:
-            server.ehlo()
-            server.starttls()
-            server.login(smtp_user, smtp_pass)
-            server.sendmail(smtp_user, destinatario, msg.as_string())
-        print(f"✅ Email inviata a {destinatario}: {oggetto}")
-        return True
+        payload = _json.dumps({
+            'from': app.config.get('SMTP_FROM', 'BandoMatch AI <onboarding@resend.dev>'),
+            'to': [destinatario],
+            'subject': oggetto,
+            'html': corpo_html
+        }).encode('utf-8')
+        req = urllib.request.Request(
+            'https://api.resend.com/emails',
+            data=payload,
+            headers={
+                'Authorization': f'Bearer {api_key}',
+                'Content-Type': 'application/json'
+            },
+            method='POST'
+        )
+        with urllib.request.urlopen(req, timeout=15) as resp:
+            result = _json.loads(resp.read().decode())
+            print(f"✅ Email inviata a {destinatario}: {oggetto} (id: {result.get('id', 'N/A')})")
+            return True
     except Exception as e:
         print(f"❌ Errore invio email a {destinatario}: {e}")
         return False
@@ -1867,10 +1872,9 @@ def seed_bandi():
 @admin_required
 def test_email():
     """Invia una email di test all'admin per verificare la configurazione SMTP."""
-    smtp_user = app.config.get('SMTP_USER', '')
-    smtp_pass = app.config.get('SMTP_PASS', '')
-    if not smtp_user or not smtp_pass:
-        return jsonify({'success': False, 'error': 'SMTP non configurato. Impostare SMTP_USER e SMTP_PASS su Render.'})
+    api_key = app.config.get('RESEND_API_KEY', '')
+    if not api_key:
+        return jsonify({'success': False, 'error': 'Resend non configurato. Impostare RESEND_API_KEY su Render.'})
     corpo = _build_email_alert('Admin', [
         {'nome': 'TEST — Resto al Sud 2.0', 'ente': 'Invitalia', 'regione': 'Nazionale',
          'massimale': 200000, 'data_scadenza': '2026-12-31', 'semaforo': 'VERDE'},
