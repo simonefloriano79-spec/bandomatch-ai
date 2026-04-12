@@ -1124,34 +1124,37 @@ def avvia_scheduler():
 
 def _invia_email_singola(destinatario: str, oggetto: str, corpo_html: str) -> bool:
     """Invia una singola email via Resend API. Ritorna True se inviata con successo."""
-    import urllib.request
-    import json as _json
+    import requests as _requests
     api_key = app.config.get('RESEND_API_KEY', '')
     if not api_key:
         print("⚠️ Resend non configurato: impostare RESEND_API_KEY su Render")
         return False
     try:
-        payload = _json.dumps({
-            'from': app.config.get('SMTP_FROM', 'BandoMatch AI <onboarding@resend.dev>'),
-            'to': [destinatario],
-            'subject': oggetto,
-            'html': corpo_html
-        }).encode('utf-8')
-        req = urllib.request.Request(
+        print(f"📧 Tentativo invio email a {destinatario} via Resend API...")
+        resp = _requests.post(
             'https://api.resend.com/emails',
-            data=payload,
+            json={
+                'from': app.config.get('SMTP_FROM', 'BandoMatch AI <onboarding@resend.dev>'),
+                'to': [destinatario],
+                'subject': oggetto,
+                'html': corpo_html
+            },
             headers={
                 'Authorization': f'Bearer {api_key}',
                 'Content-Type': 'application/json'
             },
-            method='POST'
+            timeout=20
         )
-        with urllib.request.urlopen(req, timeout=15) as resp:
-            result = _json.loads(resp.read().decode())
+        print(f"📧 Resend risposta HTTP {resp.status_code}: {resp.text[:300]}")
+        if resp.status_code in (200, 201):
+            result = resp.json()
             print(f"✅ Email inviata a {destinatario}: {oggetto} (id: {result.get('id', 'N/A')})")
             return True
+        else:
+            print(f"❌ Resend errore {resp.status_code}: {resp.text}")
+            return False
     except Exception as e:
-        print(f"❌ Errore invio email a {destinatario}: {e}")
+        print(f"❌ Errore invio email a {destinatario}: {type(e).__name__}: {e}")
         return False
 
 
