@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profilo Aziendale - BandoMatch.ai</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="min-h-screen flex items-center justify-center px-4 py-12">
+        <div class="w-full max-w-2xl">
+            <!-- Header -->
+            <div class="mb-12">
+                <h1 class="text-4xl font-bold mb-2">Profilo Aziendale</h1>
+                <p class="text-gray-400">Completa le informazioni della tua azienda</p>
+            </div>
+
+            <!-- Form -->
+            <form method="POST" action="{{ url_for('profilo.salva') }}" class="space-y-8">
+                
+                <!-- Sezione 1: Dati Aziendali -->
+                <div class="border-b border-gray-700 pb-8">
+                    <h2 class="text-lg font-semibold mb-6 text-gray-100">Dati Aziendali</h2>
+                    
+                    <!-- Nome Azienda -->
+                    <div class="mb-6">
+                        <label for="azienda" class="block text-sm font-medium mb-2 text-gray-300">
+                            Nome Azienda *
+                        </label>
+                        <input
+                            type="text"
+                            id="azienda"
+                            name="azienda"
+                            required
+                            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                            placeholder="Es. Acme S.r.l."
+                            value="{{ profilo.azienda or '' }}"
+                        />
+                    </div>
+
+                    <!-- Partita IVA -->
+                    <div class="mb-6">
+                        <label for="partita_iva" class="block text-sm font-medium mb-2 text-gray-300">
+                            Partita IVA *
+                        </label>
+                        <input
+                            type="text"
+                            id="partita_iva"
+                            name="partita_iva"
+                            required
+                            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                            placeholder="Es. 12345678901"
+                            value="{{ profilo.partita_iva or '' }}"
+                        />
+                    </div>
+
+                    <!-- Forma Giuridica -->
+                    <div class="mb-6">
+                        <label for="forma_giuridica" class="block text-sm font-medium mb-2 text-gray-300">
+                            Forma Giuridica *
+                        </label>
+                        <select
+                            id="forma_giuridica"
+                            name="forma_giuridica"
+                            required
+                            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition appearance-none cursor-pointer"
+                        >
+                            <option value="" disabled selected>Seleziona forma giuridica</option>
+                            <option value="spa" {% if profilo.forma_giuridica == 'spa' %}selected{% endif %}>S.p.A.</option>
+                            <option value="srl" {% if profilo.forma_giuridica == 'srl' %}selected{% endif %}>S.r.l.</option>
+                            <option value="snc" {% if profilo.forma_giuridica == 'snc' %}selected{% endif %}>S.n.c.</option>
+                            <option value="sas" {% if profilo.forma_giuridica == 'sas' %}selected{% endif %}>S.a.s.</option>
+                            <option value="ditta" {% if profilo.forma_giuridica == 'ditta' %}selected{% endif %}>Ditta Individuale</option>
+                            <option value="cooperativa" {% if profilo.forma_giuridica == 'cooperativa' %}selected{% endif %}>Cooperativa</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Sezione 2: Classificazione -->
+                <div class="border-b border-gray-700 pb-8">
+                    <h2 class="text-lg font-semibold mb-6 text-gray-100">Classificazione</h2>
+                    
+                    <!-- Codice ATECO -->
+                    <div class="mb-6">
+                        <label for="ateco" class="block text-sm font-medium mb-2 text-gray-300">
+                            Codice ATECO *
+                        </label>
+                        <input
+                            type="text"
+                            id="ateco"
+                            name="ateco"
+                            required
+                            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                            placeholder="Es. 62.01.09"
+                            value="{{ profilo.ateco or '' }}"
+                        />
+                    </div>
+
+                    <!-- Regione -->
+                    <div class="mb-6">
+                        <label for="regione" class="block text-sm font-medium mb-2 text-gray-300">
+                            Regione *
+                        </label>
+                        <select
+                            id="regione"
+                            name="regione"
+                            required
+                            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition appearance-none cursor-pointer"
+                        >
+                            <option value="" disabled selected>Seleziona regione</option>
+                            <option value="piemonte" {% if profilo.regione == 'piemonte' %}selected{% endif %}>Piemonte</option>
+                            <option value="aosta" {% if profilo.regione == 'aosta' %}selected{% endif %}>Valle d'Aosta</option>
+                            <option value="lombardia" {% if profilo.regione == 'lombardia' %}selected{% endif %}>Lombardia</option>
+                            <option value="veneto" {% if profilo.regione == 'veneto' %}selected{% endif %}>Veneto</option>
+                            <option value="friuli" {% if profilo.regione == 'friuli' %}selected{% endif %}>Friuli-Venezia Giulia</option>
+                            <option value="liguria" {% if profilo.regione == 'liguria' %}selected{% endif %}>Liguria</option>
+                            <option value="emilia" {% if profilo.regione == 'emilia' %}selected{% endif %}>Emilia-Romagna</option>
+                            <option value="toscana" {% if profilo.regione == 'toscana' %}selected{% endif %}>Toscana</option>
+                            <option value="umbria" {% if profilo.regione == 'umbria' %}selected{% endif %}>Umbria</option>
+                            <option value="marche" {% if profilo.regione == 'marche' %}selected{% endif %}>Marche</option>
+                            <option value="lazio" {% if profilo.regione == 'lazio' %}selected{% endif %}>Lazio</option>
+                            <option value="campania" {% if profilo.regione == 'campania' %}selected{% endif %}>Campania</option>
+                            <option value="abruzzo" {% if profilo.regione == 'abruzzo' %}selected{% endif %}>Abruzzo</option>
+                            <option value="molise" {% if profilo.regione == 'molise' %}selected{% endif %}>Molise</option>
+                            <option value="puglia" {% if profilo.regione == 'puglia' %}selected{% endif %}>Puglia</option>
+                            <option value="basilicata" {% if profilo.regione == 'basilicata' %}selected{% endif %}>Basilicata</option>
+                            <option value="calabria" {% if profilo.regione == 'calabria' %}selected{% endif %}>Calabria</option>
+                            <option value="sicilia" {% if profilo.regione == 'sicilia' %}selected{% endif %}>Sicilia</option>
+                            <option value="sardegna" {% if profilo.regione == 'sardegna' %}selected{% endif %}>Sardegna</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Sezione 3: Dati Finanziari -->
+                <div class="border-b border-gray-700 pb-8">
+                    <h2 class="text-lg font-semibold mb-6 text-gray-100">Dati Finanziari</h2>
+                    
+                    <!-- Anno Costituzione -->
+                    <div class="mb-6">
+                        <label for="anno_costituzione" class="block text-sm font-medium mb-2 text-gray-300">
+                            Anno Costituzione *
+                        </label>
+                        <input
+                            type="number"
+                            id="anno_costituzione"
+                            name="anno_costituzione"
+                            required
+                            min="1900"
+                            max="2100"
+                            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                            placeholder="Es. 2020"
+                            value="{{ profilo.anno_costituzione or '' }}"
+                        />
+                    </div>
+
+                    <!-- Fatturato Annuo -->
+                    <div class="mb-6">
+                        <label for="fatturato_annuo" class="block text-sm font-medium mb-2 text-gray-300">
+                            Fatturato Annuo (€) *
+                        </label>
+                        <input
+                            type="number"
+                            id="fatturato_annuo"
+                            name="fatturato_annuo"
+                            required
+                            min="0"
+                            step="1000"
+                            class="w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition"
+                            placeholder="Es. 500000"
+                            value="{{ profilo.fatturato_annuo or '' }}"
+                        />
+                    </div>
+                </div>
+
+                <!-- Errori (se presenti) -->
+                {% if errors %}
+                    <div class="bg-red-900/30 border border-red-700 rounded-lg px-4 py-3 mb-6">
+                        <p class="text-red-300 text-sm font-medium mb-2">Errori nel modulo:</p>
+                        <ul class="list-disc list-inside space-y-1">
+                            {% for error in errors %}
+                                <li class="text-red-300 text-sm">{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+
+                <!-- Success Message -->
+                {% if success %}
+                    <div class="bg-green-900/30 border border-green-700 rounded-lg px-4 py-3 mb-6">
+                        <p class="text-green-300 text-sm font-medium">✓ Profilo salvato con successo!</p>
+                    </div>
+                {% endif %}
+
+                <!-- Bottone Salva -->
+                <div class="flex gap-4 pt-8">
+                    <button
+                        type="submit"
+                        class="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                    >
+                        Salva Profilo
+                    </button>
+                    <button
+                        type="reset"
+                        class="px-6 py-3 bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold rounded-lg transition focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                    >
+                        Annulla
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
