@@ -22,5 +22,7 @@ RUN mkdir -p /tmp/uploads
 # Esponi la porta
 EXPOSE 5000
 
+
 # Comando di avvio
+
 CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:8080", "--workers", "2", "--timeout", "120"]
