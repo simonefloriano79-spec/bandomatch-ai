@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Bandi - BandoMatch.ai{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-900 text-white p-6">
+  <!-- Header -->
+  <div class="max-w-7xl mx-auto mb-8">
+    <h1 class="text-4xl font-bold mb-2">Bandi Disponibili</h1>
+    <p class="text-gray-400">Filtra e scopri le opportunità più adatte a te</p>
+  </div>
+
+  <!-- Filtri -->
+  <div class="max-w-7xl mx-auto mb-8 bg-gray-800 rounded-lg p-6 border border-gray-700">
+    <form method="GET" action="{{ url_for('bandi.lista') }}" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Filtro Stato -->
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">Stato</label>
+        <select name="stato" class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 text-white focus:border-blue-500 focus:outline-none">
+          <option value="">Tutti gli stati</option>
+          <option value="aperto" {% if request.args.get('stato') == 'aperto' %}selected{% endif %}>Aperto</option>
+          <option value="scaduto" {% if request.args.get('stato') == 'scaduto' %}selected{% endif %}>Scaduto</option>
+          <option value="in_valutazione" {% if request.args.get('stato') == 'in_valutazione' %}selected{% endif %}>In Valutazione</option>
+          <option value="chiuso" {% if request.args.get('stato') == 'chiuso' %}selected{% endif %}>Chiuso</option>
+        </select>
+      </div>
+
+      <!-- Filtro Regione -->
+      <div>
+        <label class="block text-sm font-medium text-gray-300 mb-2">Regione</label>
+        <select name="regione" class="w-full bg-gray-700 border border-gray-600 rounded px-4 py-2 text-white focus:border-blue-500 focus:outline-none">
+          <option value="">Tutte le regioni</option>
+          <option value="lombardia" {% if request.args.get('regione') == 'lombardia' %}selected{% endif %}>Lombardia</option>
+          <option value="lazio" {% if request.args.get('regione') == 'lazio' %}selected{% endif %}>Lazio</option>
+          <option value="campania" {% if request.args.get('regione') == 'campania' %}selected{% endif %}>Campania</option>
+          <option value="piemonte" {% if request.args.get('regione') == 'piemonte' %}selected{% endif %}>Piemonte</option>
+          <option value="emilia_romagna" {% if request.args.get('regione') == 'emilia_romagna' %}selected{% endif %}>Emilia Romagna</option>
+        </select>
+      </div>
+
+      <!-- Pulsante Filtra -->
+      <div class="flex items-end">
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition duration-200">
+          Filtra
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Lista Bandi -->
+  <div class="max-w-7xl mx-auto">
+    {% if bandi %}
+      <div class="space-y-4">
+        {% for bando in bandi %}
+          <div class="bg-gray-800 border border-gray-700 rounded-lg p-6 hover:border-gray-600 transition duration-200">
+            <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+              <!-- Contenuto Principale -->
+              <div class="flex-1">
+                <div class="flex flex-wrap items-center gap-3 mb-3">
+                  <h2 class="text-xl font-semibold text-white">{{ bando.titolo }}</h2>
+                  <!-- Badge Stato -->
+                  {% if bando.stato == 'aperto' %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-900 text-green-200">✓ Aperto</span>
+                  {% elif bando.stato == 'scaduto' %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-900 text-red-200">✗ Scaduto</span>
+                  {% elif bando.stato == 'in_valutazione' %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-900 text-yellow-200">⏳ In Valutazione</span>
+                  {% elif bando.stato == 'chiuso' %}
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-gray-700 text-gray-300">— Chiuso</span>
+                  {% endif %}
+                </div>
+                
+                <p class="text-gray-400 text-sm mb-2"><strong>Fonte:</strong> {{ bando.fonte }}</p>
+                <p class="text-gray-400 text-sm"><strong>Regione:</strong> {{ bando.regione }}</p>
+              </div>
+
+              <!-- Score e CTA -->
+              <div class="flex flex-col items-end gap-4">
+                <!-- Score Card -->
+                {% if bando.score %}
+                  <div class="bg-gray-700 rounded-lg p-4 text-center">
+                    <div class="text-3xl font-bold text-blue-400">{{ bando.score }}%</div>
+                    <div class="text-xs text-gray-400 mt-1">Match Score</div>
+                  </div>
+                {% endif %}
+                
+                <!-- Pulsante Dettagli -->
+                <a href="{{ url_for('bandi.dettaglio', bando_id=bando.id) }}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded transition duration-200">
+                  Visualizza
+                </a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Paginazione -->
+      {% if paginate %}
+        <div class="mt-8 flex justify-center items-center gap-2">
+          {% if paginate.has_prev %}
+            <a href="{{ url_for('bandi.lista', page=paginate.prev_num) }}" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded transition duration-200">← Precedente</a>
+          {% endif %}
+          
+          <span class="text-gray-400">Pagina {{ paginate.page }} di {{ paginate.pages }}</span>
+          
+          {% if paginate.has_next %}
+            <a href="{{ url_for('bandi.lista', page=paginate.next_num) }}" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded transition duration-200">Successiva →</a>
+          {% endif %}
+        </div>
+      {% endif %}
+    {% else %}
+      <!-- Stato Vuoto -->
+      <div class="flex flex-col items-center justify-center py-12 bg-gray-800 rounded-lg border border-gray-700">
+        <svg class="w-16 h-16 text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        <h3 class="text-xl font-medium text-gray-300 mb-2">Nessun bando trovato</h3>
+        <p class="text-gray-400 text-center">Prova a modificare i filtri per trovare le opportunità che cerchi</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
