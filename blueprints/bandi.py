@@ -1,165 +1,118 @@
-from flask import Blueprint, request, jsonify
-from sqlalchemy import and_, or_
-from models.bando import Bando
-from models.database import db
-import logging
+from flask import Blueprint, request, send_file, jsonify, current_app
+from flask_login import login_required, current_user
+from sqlalchemy import and_
+from models.bandi import Bandi
+from models.partecipazioni import Partecipazioni
+from utils.dossier import generate_dossier_pdf
+from db import db
+import os
 
-bandi_bp = Blueprint('bandi', __name__, url_prefix='/api/v1')
-logger = logging.getLogger(__name__)
+bandi_bp = Blueprint('bandi', __name__, url_prefix='/api/v1/bandi')
 
 
-@bandi_bp.route('/bandi', methods=['GET'])
+@bandi_bp.route('', methods=['GET'])
+@login_required
 def list_bandi():
-    """
-    GET /api/v1/bandi
-    Restituisce lista bandi con filtri opzionali per stato e regione.
-    Query parameters:
-    - stato: str (opzionale) - es: 'aperto', 'chiuso', 'prossimamente'
-    - regione: str (opzionale) - es: 'Lazio', 'Campania'
-    - limit: int (opzionale, default 50) - numero massimo risultati
-    - offset: int (opzionale, default 0) - offset per paginazione
-    """
+    """Lista i bandi disponibili con filtri opzionali"""
     try:
-        # Recupera parametri query
-        stato = request.args.get('stato', None)
-        regione = request.args.get('regione', None)
-        limit = request.args.get('limit', 50, type=int)
-        offset = request.args.get('offset', 0, type=int)
+        stato = request.args.get('stato')
+        categoria = request.args.get('categoria')
+        search = request.args.get('search')
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 20, type=int)
         
-        # Validazione parametri
-        if limit > 500:
-            limit = 500
-        if limit < 1:
-            limit = 1
-        if offset < 0:
-            offset = 0
-        
-        # Costruisci query base
-        query = Bando.query
-        
-        # Applica filtri
-        filters = []
+        query = Bandi.query
         
         if stato:
-            filters.append(Bando.stato == stato.lower())
+            query = query.filter_by(stato=stato)
+        if categoria:
+            query = query.filter_by(categoria=categoria)
+        if search:
+            query = query.filter(
+                or_(
+                    Bandi.titolo.ilike(f'%{search}%'),
+                    Bandi.descrizione.ilike(f'%{search}%')
+                )
+            )
         
-        if regione:
-            filters.append(Bando.regione == regione)
-        
-        # Combina filtri con AND
-        if filters:
-            query = query.filter(and_(*filters))
-        
-        # Conta totale risultati
-        total = query.count()
-        
-        # Applica paginazione e ordina per data di scadenza
-        bandi = query.order_by(Bando.data_scadenza.asc()).limit(limit).offset(offset).all()
-        
-        # Serializza risultati
-        risultati = [
-            {
-                'id': bando.id,
-                'titolo': bando.titolo,
-                'descrizione': bando.descrizione,
-                'stato': bando.stato,
-                'regione': bando.regione,
-                'data_pubblicazione': bando.data_pubblicazione.isoformat() if bando.data_pubblicazione else None,
-                'data_scadenza': bando.data_scadenza.isoformat() if bando.data_scadenza else None,
-                'ente': bando.ente,
-                'importo': float(bando.importo) if bando.importo else None,
-                'url': bando.url
-            }
-            for bando in bandi
-        ]
+        paginate = query.paginate(page=page, per_page=per_page)
         
         return jsonify({
             'success': True,
-            'data': risultati,
+            'data': [bando.to_dict() for bando in paginate.items],
             'pagination': {
-                'total': total,
-                'limit': limit,
-                'offset': offset,
-                'returned': len(risultati)
+                'page': page,
+                'per_page': per_page,
+                'total': paginate.total,
+                'pages': paginate.pages
             }
         }), 200
-    
     except Exception as e:
-        logger.error(f'Errore nel recupero bandi: {str(e)}')
-        return jsonify({
-            'success': False,
-            'error': 'Errore nel recupero dei bandi',
-            'message': str(e)
-        }), 500
+        current_app.logger.error(f'Errore list_bandi: {str(e)}')
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 
-@bandi_bp.route('/bandi/dettaglio', methods=['GET'])
-def get_bando_dettaglio():
-    """
-    GET /api/v1/bandi/dettaglio
-    Restituisce dettagli di un singolo bando.
-    Query parameters:
-    - id: int (obbligatorio) - ID del bando
-    """
+@bandi_bp.route('/<int:id_bando>', methods=['GET'])
+@login_required
+def get_bando(id_bando):
+    """Recupera un singolo bando"""
     try:
-        # Recupera parametro id
-        bando_id = request.args.get('id', None, type=int)
-        
-        # Validazione parametro
-        if not bando_id:
-            return jsonify({
-                'success': False,
-                'error': 'Parametro id mancante o non valido',
-                'message': 'Fornisci un id valido come query parameter'
-            }), 400
-        
-        # Recupera bando dal database
-        bando = Bando.query.filter_by(id=bando_id).first()
-        
-        # Verifica se bando esiste
+        bando = Bandi.query.get(id_bando)
         if not bando:
-            return jsonify({
-                'success': False,
-                'error': 'Bando non trovato',
-                'message': f'Nessun bando trovato con id {bando_id}'
-            }), 404
-        
-        # Serializza dettagli completi
-        dettaglio = {
-            'id': bando.id,
-            'titolo': bando.titolo,
-            'descrizione': bando.descrizione,
-            'stato': bando.stato,
-            'regione': bando.regione,
-            'provincia': bando.provincia,
-            'ente': bando.ente,
-            'importo': float(bando.importo) if bando.importo else None,
-            'data_pubblicazione': bando.data_pubblicazione.isoformat() if bando.data_pubblicazione else None,
-            'data_scadenza': bando.data_scadenza.isoformat() if bando.data_scadenza else None,
-            'url': bando.url,
-            'settore': bando.settore,
-            'destinatari': bando.destinatari,
-            'criteri_selezione': bando.criteri_selezione,
-            'data_creazione': bando.data_creazione.isoformat() if bando.data_creazione else None,
-            'data_aggiornamento': bando.data_aggiornamento.isoformat() if bando.data_aggiornamento else None
-        }
+            return jsonify({'success': False, 'error': 'Bando non trovato'}), 404
         
         return jsonify({
             'success': True,
-            'data': dettaglio
+            'data': bando.to_dict()
         }), 200
-    
-    except ValueError:
-        return jsonify({
-            'success': False,
-            'error': 'Parametro id non valido',
-            'message': 'L\'id deve essere un numero intero'
-        }), 400
-    
     except Exception as e:
-        logger.error(f'Errore nel recupero dettaglio bando: {str(e)}')
-        return jsonify({
-            'success': False,
-            'error': 'Errore nel recupero del bando',
-            'message': str(e)
-        }), 500
+        current_app.logger.error(f'Errore get_bando: {str(e)}')
+        return jsonify({'success': False, 'error': str(e)}), 500
+
+
+@bandi_bp.route('/dossier', methods=['GET'])
+@login_required
+def get_dossier():
+    """Genera e scarica il dossier PDF di un bando"""
+    try:
+        id_bando = request.args.get('id_bando', type=int)
+        
+        if not id_bando:
+            return jsonify({'success': False, 'error': 'Parametro id_bando obbligatorio'}), 400
+        
+        bando = Bandi.query.get(id_bando)
+        if not bando:
+            return jsonify({'success': False, 'error': 'Bando non trovato'}), 404
+        
+        partecipazioni = Partecipazioni.query.filter_by(
+            id_bando=id_bando,
+            id_user=current_user.id
+        ).all()
+        
+        if not partecipazioni:
+            return jsonify({'success': False, 'error': 'Nessuna partecipazione trovata per questo bando'}), 403
+        
+        pdf_path = generate_dossier_pdf(
+            bando=bando,
+            partecipazioni=partecipazioni,
+            user=current_user
+        )
+        
+        if not pdf_path or not os.path.exists(pdf_path):
+            return jsonify({'success': False, 'error': 'Errore nella generazione del PDF'}), 500
+        
+        filename = f"dossier_bando_{id_bando}.pdf"
+        
+        return send_file(
+            pdf_path,
+            mimetype='application/pdf',
+            as_attachment=True,
+            download_name=filename
+        )
+    
+    except ValueError as ve:
+        current_app.logger.error(f'Errore validazione get_dossier: {str(ve)}')
+        return jsonify({'success': False, 'error': 'Parametri non validi'}), 400
+    except Exception as e:
+        current_app.logger.error(f'Errore get_dossier: {str(e)}')
+        return jsonify({'success': False, 'error': str(e)}), 500
