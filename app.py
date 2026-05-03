@@ -32,7 +32,7 @@ login_manager.login_message_category = 'info'
 
 # Import modelli per registrazione con db context
 with app.app_context():
-    from models.utente import User
+    from models.utente import Utente as User
     
     @login_manager.user_loader
     def load_user(user_id):
