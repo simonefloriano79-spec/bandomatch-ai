@@ -9,10 +9,7 @@ load_dotenv()
 app = Flask(__name__)
 
 # Configurazione Database
-DATABASE_URL = os.getenv(
-    'DATABASE_URL',
-    'sqlite:///bandomatch.db'
-)
+DATABASE_URL = os.getenv('DATABASE_URL', 'sqlite:///bandomatch.db')
 if DATABASE_URL.startswith('postgres://'):
     DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
 
@@ -30,13 +27,12 @@ login_manager.login_view = 'auth.login'
 login_manager.login_message = 'Per favore accedi per continuare.'
 login_manager.login_message_category = 'info'
 
-# Import modelli per registrazione con db context
-with app.app_context():
-    from models.utente import Utente as User
-    
-    @login_manager.user_loader
-    def load_user(user_id):
-        return User.query.get(int(user_id))
+# Import modelli
+from models.utente import Utente
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Utente.query.get(int(user_id))
 
 # Registrazione Blueprints
 from blueprints.auth import auth_bp
@@ -49,14 +45,12 @@ app.register_blueprint(bandi_bp, url_prefix='/bandi')
 app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
 app.register_blueprint(scraper_bp, url_prefix='/scraper')
 
-# Route principale
 @app.route('/')
 def index():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard.home'))
     return redirect(url_for('auth.login'))
 
-# Error handlers
 @app.errorhandler(404)
 def not_found(error):
     return {'error': 'Risorsa non trovata'}, 404
