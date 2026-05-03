@@ -1,189 +1,229 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin Dashboard — BandoMatch AI</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { background: #0D1B2A; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; }
-  nav { background: #1a2a3a; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #FFB300; }
-  nav .brand { font-size: 20px; font-weight: 800; color: #FFB300; }
-  nav .nav-links a { color: #8899aa; text-decoration: none; margin-left: 20px; font-size: 14px; }
-  .container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
-  h1 { font-size: 28px; color: #FFB300; margin-bottom: 8px; }
-  .subtitle { color: #8899aa; margin-bottom: 32px; }
-  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 40px; }
-  .stat-card { background: #1a2a3a; border-radius: 12px; padding: 20px; text-align: center; border: 1px solid #2a3a4a; }
-  .stat-card .number { font-size: 32px; font-weight: 800; }
-  .stat-card .label { font-size: 12px; color: #8899aa; margin-top: 4px; }
-  .stat-card.verde .number { color: #00C851; }
-  .stat-card.giallo .number { color: #FFB300; }
-  .stat-card.blu .number { color: #4a9eff; }
-  .section { margin-bottom: 40px; }
-  .section-title { font-size: 18px; color: #fff; font-weight: 700; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
-  table { width: 100%; border-collapse: collapse; }
-  th { background: #1a2a3a; padding: 10px 14px; text-align: left; font-size: 11px; color: #8899aa; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #2a3a4a; }
-  td { padding: 12px 14px; border-bottom: 1px solid #1a2a3a; font-size: 13px; }
-  tr:hover td { background: #1a2a3a; }
-  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
-  .badge-free { background: #2a3a4a; color: #8899aa; }
-  .badge-premium { background: rgba(0,200,81,0.2); color: #00C851; }
-  .badge-admin { background: rgba(255,179,0,0.2); color: #FFB300; }
-  .btn-action { padding: 6px 14px; background: rgba(255,179,0,0.15); border: 1px solid #FFB300; border-radius: 6px; color: #FFB300; font-size: 12px; cursor: pointer; font-weight: 600; }
-  .scraper-log { background: #0D1B2A; border: 1px solid #2a3a4a; border-radius: 8px; padding: 16px; font-family: monospace; font-size: 12px; color: #8899aa; }
-  .scraper-ok { color: #00C851; }
-  .scraper-err { color: #FF4444; }
-  .revenue-card { background: linear-gradient(135deg, #1a2a3a, #0f1f2f); border: 1px solid #FFB300; border-radius: 12px; padding: 24px; margin-bottom: 32px; }
-  .revenue-card h3 { color: #FFB300; margin-bottom: 16px; }
-  .revenue-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .rev-item { text-align: center; }
-  .rev-item .val { font-size: 24px; font-weight: 800; color: #00C851; }
-  .rev-item .lbl { font-size: 12px; color: #8899aa; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - BandoMatch</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-<nav>
-  <div class="brand">⚡ BandoMatch AI — Admin</div>
-  <div class="nav-links">
-    <a href="/dashboard">Dashboard Utente</a>
-    <a href="/admin/bandi">Gestione Bandi</a>
-    <a href="/logout">Esci</a>
-  </div>
-</nav>
+<body class="bg-gray-900 text-white">
+    <div class="min-h-screen">
+        <!-- Navigation -->
+        <nav class="bg-gray-800 border-b border-gray-700">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16">
+                    <div class="flex items-center">
+                        <h1 class="text-2xl font-bold text-blue-400">BandoMatch Admin</h1>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <span class="text-sm text-gray-400">{{ current_user.email if current_user else 'Guest' }}</span>
+                        <a href="{{ url_for('auth.logout') }}" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition text-sm">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
 
-<div class="container">
-  <h1>🎛️ Admin Dashboard</h1>
-  <p class="subtitle">Pannello di controllo BandoMatch AI — Simone Floriano</p>
+        <!-- Main Content -->
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <!-- Header -->
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold mb-2">Dashboard Amministrativa</h2>
+                <p class="text-gray-400">Gestisci utenti e monitora l'attività della piattaforma</p>
+            </div>
 
-  <!-- METRICHE PRINCIPALI -->
-  <div class="stats-grid">
-    <div class="stat-card verde">
-      <div class="number">{{ stats.totale_utenti }}</div>
-      <div class="label">Utenti Totali</div>
-    </div>
-    <div class="stat-card giallo">
-      <div class="number">{{ stats.utenti_premium }}</div>
-      <div class="label">Utenti Premium</div>
-    </div>
-    <div class="stat-card blu">
-      <div class="number">{{ stats.totale_analisi }}</div>
-      <div class="label">Analisi Totali</div>
-    </div>
-    <div class="stat-card verde">
-      <div class="number">{{ stats.analisi_oggi }}</div>
-      <div class="label">Analisi Oggi</div>
-    </div>
-    <div class="stat-card blu">
-      <div class="number">{{ stats.bandi_attivi }}</div>
-      <div class="label">Bandi Attivi</div>
-    </div>
-    <div class="stat-card giallo">
-      <div class="number">€{{ "{:,.0f}".format(stats.valore_medio) }}</div>
-      <div class="label">Valore Medio Analisi</div>
-    </div>
-  </div>
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <!-- Total Users Card -->
+                <div class="bg-gray-800 rounded-lg border border-gray-700 p-6 hover:border-blue-500 transition">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm font-medium">Totale Utenti</p>
+                            <p class="text-4xl font-bold mt-2">{{ stats.total_users }}</p>
+                        </div>
+                        <div class="bg-blue-500 bg-opacity-20 p-3 rounded-lg">
+                            <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM16 20H4v-2a4 4 0 018-0v2a4 4 0 008 0v-2"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-4">Ultimi 30 giorni</p>
+                </div>
 
-  <!-- REVENUE PROIEZIONE -->
-  <div class="revenue-card">
-    <h3>💰 Revenue Proiezione (€9,90/mese)</h3>
-    <div class="revenue-grid">
-      <div class="rev-item">
-        <div class="val">€{{ "{:,.0f}".format(stats.utenti_premium * 9.90) }}</div>
-        <div class="lbl">MRR (Monthly Recurring Revenue)</div>
-      </div>
-      <div class="rev-item">
-        <div class="val">€{{ "{:,.0f}".format(stats.utenti_premium * 9.90 * 12) }}</div>
-        <div class="lbl">ARR (Annual Recurring Revenue)</div>
-      </div>
-      <div class="rev-item">
-        <div class="val">{{ "{:.1f}".format((stats.utenti_premium / stats.totale_utenti * 100) if stats.totale_utenti > 0 else 0) }}%</div>
-        <div class="lbl">Conversion Rate Free → Premium</div>
-      </div>
+                <!-- Total Bandi Card -->
+                <div class="bg-gray-800 rounded-lg border border-gray-700 p-6 hover:border-green-500 transition">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm font-medium">Totale Bandi</p>
+                            <p class="text-4xl font-bold mt-2">{{ stats.total_bandi }}</p>
+                        </div>
+                        <div class="bg-green-500 bg-opacity-20 p-3 rounded-lg">
+                            <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7 12a5 5 0 1110 0A5 5 0 017 12z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-4">Nel database</p>
+                </div>
+
+                <!-- Active Bandi Card -->
+                <div class="bg-gray-800 rounded-lg border border-gray-700 p-6 hover:border-purple-500 transition">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-400 text-sm font-medium">Bandi Attivi</p>
+                            <p class="text-4xl font-bold mt-2">{{ stats.active_bandi }}</p>
+                        </div>
+                        <div class="bg-purple-500 bg-opacity-20 p-3 rounded-lg">
+                            <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-4">In corso</p>
+                </div>
+            </div>
+
+            <!-- Scraping Section -->
+            <div class="bg-gray-800 rounded-lg border border-gray-700 p-6 mb-12">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h3 class="text-xl font-bold">Gestione Scraping</h3>
+                        <p class="text-gray-400 text-sm mt-1">Sincronizza i bandi dalle fonti esterne</p>
+                    </div>
+                    <form id="scraping-form" method="POST" action="{{ url_for('admin.manual_scraping') }}">
+                        <button type="submit" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg font-medium transition flex items-center space-x-2" id="scraping-btn">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            <span id="scraping-text">Avvia Scraping Manuale</span>
+                        </button>
+                    </form>
+                </div>
+                <div id="scraping-status" class="mt-4 text-sm text-gray-400 hidden">
+                    <p>Operazione in corso...</p>
+                </div>
+            </div>
+
+            <!-- Users Table Section -->
+            <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-700">
+                    <h3 class="text-xl font-bold">Gestione Utenti</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead>
+                            <tr class="border-b border-gray-700 bg-gray-700 bg-opacity-50">
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300">Email</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300">Piano</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300">Data Iscrizione</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300">Stato</th>
+                                <th class="px-6 py-4 text-right text-sm font-semibold text-gray-300">Azioni</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if users %}
+                                {% for user in users %}
+                                <tr class="border-b border-gray-700 hover:bg-gray-700 hover:bg-opacity-30 transition">
+                                    <td class="px-6 py-4 text-sm">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-xs font-bold">
+                                                {{ user.email[0].upper() }}
+                                            </div>
+                                            <span class="text-white">{{ user.email }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm">
+                                        <span class="px-3 py-1 bg-blue-500 bg-opacity-20 text-blue-300 rounded-full text-xs font-medium">
+                                            {{ user.plan if user.plan else 'Free' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-gray-400">
+                                        {{ user.created_at.strftime('%d/%m/%Y') if user.created_at else 'N/A' }}
+                                    </td>
+                                    <td class="px-6 py-4 text-sm">
+                                        {% if user.is_active %}
+                                            <span class="px-3 py-1 bg-green-500 bg-opacity-20 text-green-300 rounded-full text-xs font-medium">Attivo</span>
+                                        {% else %}
+                                            <span class="px-3 py-1 bg-red-500 bg-opacity-20 text-red-300 rounded-full text-xs font-medium">Inattivo</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="px-6 py-4 text-sm text-right">
+                                        <button class="text-blue-400 hover:text-blue-300 transition text-xs font-medium" onclick="editUser('{{ user.id }}')">
+                                            Modifica
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="px-6 py-8 text-center text-gray-400">
+                                        Nessun utente trovato
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination -->
+                {% if pages > 1 %}
+                <div class="px-6 py-4 border-t border-gray-700 flex items-center justify-between">
+                    <p class="text-sm text-gray-400">Pagina {{ current_page }} di {{ pages }}</p>
+                    <div class="flex space-x-2">
+                        {% if current_page > 1 %}
+                            <a href="{{ url_for('admin.dashboard', page=current_page-1) }}" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm transition">← Precedente</a>
+                        {% endif %}
+                        {% if current_page < pages %}
+                            <a href="{{ url_for('admin.dashboard', page=current_page+1) }}" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm transition">Successivo →</a>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </main>
     </div>
-  </div>
 
-  <!-- SCRAPER CONTROL -->
-  <div class="section">
-    <div class="section-title">
-      🤖 Scraper Automatico
-      <button class="btn-action" onclick="runScraper()">▶ Esegui Ora</button>
-    </div>
-    <div class="scraper-log">
-      {% if log_scraper %}
-        {% for log in log_scraper %}
-        <div class="{{ 'scraper-ok' if not log.errori else 'scraper-err' }}">
-          [{{ log.data_esecuzione[:16] }}] Fonte: {{ log.fonte }} |
-          Nuovi: {{ log.bandi_trovati }} | Aggiornati: {{ log.bandi_aggiornati }} |
-          Durata: {{ log.durata_secondi }}s
-          {% if log.errori %} | ⚠️ Errori: {{ log.errori }}{% endif %}
-        </div>
-        {% endfor %}
-      {% else %}
-        <div class="scraper-ok">Nessuna esecuzione registrata. Lo scraper gira ogni giorno alle 06:00.</div>
-      {% endif %}
-    </div>
-  </div>
-
-  <!-- ULTIMI UTENTI -->
-  <div class="section">
-    <div class="section-title">👥 Ultimi Utenti Registrati</div>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th><th>Email</th><th>Nome</th><th>Piano</th><th>Registrazione</th><th>Ultimo Accesso</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for u in ultimi_utenti %}
-        <tr>
-          <td>#{{ u.id }}</td>
-          <td>{{ u.email }}</td>
-          <td>{{ u.nome or '—' }}</td>
-          <td><span class="badge badge-{{ u.piano }}">{{ u.piano|upper }}</span></td>
-          <td>{{ u.data_registrazione[:10] }}</td>
-          <td>{{ (u.ultimo_accesso or '—')[:10] }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-
-  <!-- ULTIME ANALISI -->
-  <div class="section">
-    <div class="section-title">📊 Ultime Analisi</div>
-    <table>
-      <thead>
-        <tr>
-          <th>Data</th><th>Utente</th><th>Azienda</th><th>Regione</th><th>🟢</th><th>🟡</th><th>🔴</th><th>Valore</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for a in ultime_analisi %}
-        <tr>
-          <td>{{ a.data_analisi[:10] }}</td>
-          <td>{{ a.email }}</td>
-          <td>{{ (a.ragione_sociale or 'N/D')[:25] }}</td>
-          <td>{{ a.regione or 'N/D' }}</td>
-          <td style="color:#00C851;font-weight:700">{{ a.bandi_verdi }}</td>
-          <td style="color:#FFB300;font-weight:700">{{ a.bandi_gialli }}</td>
-          <td style="color:#FF4444;font-weight:700">{{ a.bandi_rossi }}</td>
-          <td style="color:#00C851;font-weight:700">€{{ "{:,.0f}".format(a.valore_potenziale) }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<script>
-function runScraper() {
-  fetch('/admin/scraper/run', {method: 'POST'})
-    .then(r => r.json())
-    .then(d => {
-      alert('✅ Scraper avviato in background! Aggiorna la pagina tra 30 secondi per vedere i risultati.');
-    });
-}
-</script>
+    <script>
+        document.getElementById('scraping-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('scraping-btn');
+            const status = document.getElementById('scraping-status');
+            const textSpan = document.getElementById('scraping-text');
+            
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            status.classList.remove('hidden');
+            textSpan.textContent = 'Scraping in corso...';
+            
+            try {
+                const response = await fetch('{{ url_for("admin.manual_scraping") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    status.innerHTML = '<p class="text-green-400">✓ Scraping completato con successo! Bandi aggiunti: ' + data.count + '</p>';
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    status.innerHTML = '<p class="text-red-400">✗ Errore: ' + (data.error || 'Errore sconosciuto') + '</p>';
+                }
+            } catch (error) {
+                status.innerHTML = '<p class="text-red-400">✗ Errore di connessione</p>';
+                console.error('Scraping error:', error);
+            } finally {
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+            }
+        });
+        
+        function editUser(userId) {
+            // Implementare logica di modifica utente
+            console.log('Edit user:', userId);
+        }
+    </script>
 </body>
 </html>
