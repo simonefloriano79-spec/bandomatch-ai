@@ -23,4 +23,4 @@ RUN mkdir -p /tmp/uploads
 EXPOSE 5000
 
 # Comando di avvio
-CMD ["sh", "-c", "gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120"]
+CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:8080", "--workers", "2", "--timeout", "120"]
