@@ -8,7 +8,6 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# Configurazione Database
 DATABASE_URL = os.getenv('DATABASE_URL', 'sqlite:///bandomatch.db')
 if DATABASE_URL.startswith('postgres://'):
     DATABASE_URL = DATABASE_URL.replace('postgres://', 'postgresql://', 1)
@@ -17,24 +16,20 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
 
-# Inizializzazione SQLAlchemy
 db = SQLAlchemy(app)
 
-# Inizializzazione Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'auth.login'
 login_manager.login_message = 'Per favore accedi per continuare.'
 login_manager.login_message_category = 'info'
 
-# Import modelli
 from models.utente import Utente
 
 @login_manager.user_loader
 def load_user(user_id):
     return Utente.query.get(int(user_id))
 
-# Registrazione Blueprints
 from blueprints.auth import auth_bp
 from blueprints.bandi import bandi_bp
 from blueprints.dashboard import dashboard_bp
