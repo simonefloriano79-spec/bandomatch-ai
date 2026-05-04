@@ -16,7 +16,7 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 
 RESEND_API_KEY = os.getenv('RESEND_API_KEY')
-FROM_EMAIL = os.getenv('FROM_EMAIL', 'BandoMatch AI <noreply@bandomatch.ai>')
+FROM_EMAIL = os.getenv('FROM_EMAIL', 'BandoMatch AI <noreply@bandomatch.it>')
 APP_URL = os.getenv('APP_URL', 'https://web-production-07610c.up.railway.app')
 RESEND_API_URL = 'https://api.resend.com/emails'
 

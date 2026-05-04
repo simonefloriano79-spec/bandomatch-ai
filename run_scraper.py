@@ -53,7 +53,7 @@ def bando_llm_to_model(bando_dict, sorgente_nome, regione=None):
 
     url = (
         bando_dict.get("url_ufficiale") or bando_dict.get("url") or
-        f"https://bandomatch.ai/bandi/auto/{abs(hash(titolo + sorgente_nome)) % 10**9}"
+        f"https://bandomatch.it/bandi/auto/{abs(hash(titolo + sorgente_nome)) % 10**9}"
     )[:1000]
 
     stato_raw = str(bando_dict.get("stato", "aperto")).upper()

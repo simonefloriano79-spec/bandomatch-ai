@@ -21,7 +21,7 @@ HTTP_TIMEOUT = 15
 
 # User-Agent per evitare blocchi
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; BandoMatchBot/3.0; +https://bandomatch.ai/bot)",
+    "User-Agent": "Mozilla/5.0 (compatible; BandoMatchBot/3.0; +https://bandomatch.it/bot)",
     "Accept": "text/html,application/xhtml+xml",
     "Accept-Language": "it-IT,it;q=0.9",
 }

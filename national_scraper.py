@@ -215,7 +215,7 @@ SORGENTI_BANDI = {
 }
 
 HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; BandoMatchBot/1.0; +https://bandomatch.ai/bot)",
+    "User-Agent": "Mozilla/5.0 (compatible; BandoMatchBot/1.0; +https://bandomatch.it/bot)",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
     "Accept-Language": "it-IT,it;q=0.9,en;q=0.5"
 }

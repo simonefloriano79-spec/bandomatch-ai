@@ -176,7 +176,7 @@ def _header_pagina(canvas, doc):
     canvas.setFont("Helvetica", 8)
     canvas.setFillColor(GRIGIO)
     canvas.drawCentredString(A4[0] / 2, 0.8 * cm,
-                             f"Pagina {doc.page} — Documento riservato — bandomatch.ai")
+                             f"Pagina {doc.page} — Documento riservato — bandomatch.it")
     canvas.restoreState()
 
 
