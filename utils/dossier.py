@@ -25,6 +25,8 @@ GIALLO      = colors.HexColor('#eab308')
 GIALLO_LIGHT= colors.HexColor('#fef9c3')
 ROSSO       = colors.HexColor('#ef4444')
 ROSSO_LIGHT = colors.HexColor('#fee2e2')
+GRIGIO      = colors.HexColor('#94a3b8')
+GRIGIO_LIGHT= colors.HexColor('#f1f5f9')
 BIANCO      = colors.white
 SLATE_400   = colors.HexColor('#94a3b8')
 SLATE_600   = colors.HexColor('#475569')
@@ -60,7 +62,7 @@ def _semaforo_color(semaforo: str):
         'GIALLO': (GIALLO,   GIALLO_LIGHT),
         'ROSSO':  (ROSSO,    ROSSO_LIGHT),
     }
-    return m.get(str(semaforo).upper(), (SLATE_400, colors.HexColor('#f1f5f9')))
+    return m.get(str(semaforo).upper(), (GRIGIO, GRIGIO_LIGHT))
 
 
 class _NumberedCanvas(pdfgen_canvas.Canvas):
@@ -101,17 +103,6 @@ class _NumberedCanvas(pdfgen_canvas.Canvas):
 def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
     """
     Genera il PDF Dossier Premium per BandoMatch AI.
-
-    Args:
-        utente:            oggetto Utente SQLAlchemy (.email, .piano, .profilo_aziendale)
-        analisi:           oggetto Analisi SQLAlchemy (ragione_sociale, ateco, regione, ecc.)
-        bandi_compatibili: lista di dict con chiavi:
-                           titolo, fonte, semaforo, score, massimale_agevolazione,
-                           percentuale_fondo_perduto, data_scadenza, descrizione,
-                           url, note_ai
-
-    Returns:
-        bytes: contenuto del PDF pronto per essere inviato come risposta HTTP
     """
     buf = io.BytesIO()
     doc = SimpleDocTemplate(
@@ -137,6 +128,12 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
     note_style = ParagraphStyle('note', fontName='Helvetica-Oblique', fontSize=8.5,
                                 textColor=colors.HexColor('#374151'),
                                 leading=13, spaceAfter=4, alignment=TA_JUSTIFY)
+    req_ok_style = ParagraphStyle('req_ok', fontName='Helvetica', fontSize=9,
+                                  textColor=colors.HexColor('#166534'),
+                                  leading=12, spaceAfter=2, bulletIndent=10, leftIndent=20)
+    req_ko_style = ParagraphStyle('req_ko', fontName='Helvetica-Bold', fontSize=9,
+                                  textColor=colors.HexColor('#9a3412'),
+                                  leading=12, spaceAfter=2, bulletIndent=10, leftIndent=20)
 
     # ── HEADER ────────────────────────────────────────────────────────────────
     header_data = [[
@@ -212,7 +209,6 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
     # ── RIEPILOGO NUMERICO ────────────────────────────────────────────────────
     bandi_verdi  = getattr(analisi, 'bandi_verdi',  0) or 0
     bandi_gialli = getattr(analisi, 'bandi_gialli', 0) or 0
-    bandi_rossi  = getattr(analisi, 'bandi_rossi',  0) or 0
     valore_pot   = getattr(analisi, 'valore_potenziale', 0) or 0
 
     story.append(Paragraph('Riepilogo Analisi', h2))
@@ -223,15 +219,12 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
         Paragraph(f'<b><font size="20" color="#eab308">{bandi_gialli}</font></b><br/>'
                   f'<font size="7" color="#64748b">CONDIZIONALI</font>',
                   styles['Normal']),
-        Paragraph(f'<b><font size="20" color="#ef4444">{bandi_rossi}</font></b><br/>'
-                  f'<font size="7" color="#64748b">NON IDONEI</font>',
-                  styles['Normal']),
         Paragraph(f'<b><font size="18" color="#3b82f6">{_fmt_euro(valore_pot)}</font></b><br/>'
                   f'<font size="7" color="#64748b">VALORE POTENZIALE</font>',
                   styles['Normal']),
     ]]
     riepilogo_tbl = Table(riepilogo_data,
-                          colWidths=[(PAGE_W - 2 * MARGIN) / 4] * 4)
+                          colWidths=[(PAGE_W - 2 * MARGIN) / 3] * 3)
     riepilogo_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), NAVY_LIGHT),
         ('ALIGN',      (0, 0), (-1, -1), 'CENTER'),
@@ -242,99 +235,55 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
     story.append(riepilogo_tbl)
     story.append(Spacer(1, 0.6 * cm))
 
-    # ── TABELLA RIEPILOGATIVA BANDI ───────────────────────────────────────────
-    story.append(Paragraph('Tabella Bandi Compatibili', h2))
-
-    col_w = [(PAGE_W - 2 * MARGIN) * f
-             for f in [0.35, 0.13, 0.15, 0.15, 0.10, 0.12]]
-    th_style = ParagraphStyle('th', fontName='Helvetica-Bold', fontSize=8,
-                              textColor=BIANCO)
-    tc_style = ParagraphStyle('tc', fontName='Helvetica', fontSize=8,
-                              alignment=TA_CENTER)
-
-    table_rows = [[
-        Paragraph('<b>Bando</b>', th_style),
-        Paragraph('<b>Semaforo</b>', th_style),
-        Paragraph('<b>Importo Max</b>', th_style),
-        Paragraph('<b>Scadenza</b>', th_style),
-        Paragraph('<b>% F.P.</b>', th_style),
-        Paragraph('<b>Score</b>', th_style),
-    ]]
-
-    for b in bandi_compatibili:
-        sem    = str(b.get('semaforo', 'GRIGIO')).upper()
-        col_s, _ = _semaforo_color(sem)
-        perc_fp  = b.get('percentuale_fondo_perduto') or 0
-        score    = b.get('score') or b.get('punteggio') or 0
-        table_rows.append([
-            Paragraph(str(b.get('titolo', 'N/D'))[:80],
-                      ParagraphStyle('td', fontName='Helvetica', fontSize=8,
-                                     leading=11)),
-            Paragraph(sem.capitalize(),
-                      ParagraphStyle('tds', fontName='Helvetica-Bold', fontSize=8,
-                                     textColor=col_s, alignment=TA_CENTER)),
-            Paragraph(_fmt_euro(b.get('massimale_agevolazione')), tc_style),
-            Paragraph(_fmt_data(b.get('data_scadenza')), tc_style),
-            Paragraph(f'{perc_fp:.0f}%' if perc_fp else 'N/D', tc_style),
-            Paragraph(f'{score:.0f}%' if score else 'N/D',
-                      ParagraphStyle('tdscore', fontName='Helvetica-Bold', fontSize=8,
-                                     textColor=VERDE if score >= 70 else GIALLO,
-                                     alignment=TA_CENTER)),
-        ])
-
-    tbl = Table(table_rows, colWidths=col_w, repeatRows=1)
-    tbl.setStyle(TableStyle([
-        ('BACKGROUND',    (0, 0), (-1, 0), NAVY),
-        ('FONTNAME',      (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTSIZE',      (0, 0), (-1, 0), 8),
-        ('ALIGN',         (0, 0), (-1, -1), 'LEFT'),
-        ('VALIGN',        (0, 0), (-1, -1), 'MIDDLE'),
-        ('PADDING',       (0, 0), (-1, -1), 6),
-        ('GRID',          (0, 0), (-1, -1), 0.4, colors.HexColor('#e2e8f0')),
-        ('ROWBACKGROUNDS',(0, 1), (-1, -1),
-         [colors.white, colors.HexColor('#f8fafc')]),
+    # ── LEGGENDA SEMAFORO ─────────────────────────────────────────────────────
+    story.append(Paragraph('Leggenda Semaforo', h2))
+    leggenda_data = [
+        [Paragraph('<b>VERDE</b>', ParagraphStyle('l_v', fontName='Helvetica-Bold', textColor=VERDE)),
+         Paragraph('<b>Compatibile:</b> L\'impresa soddisfa tutti i requisiti principali del bando.', body)],
+        [Paragraph('<b>GIALLO</b>', ParagraphStyle('l_g', fontName='Helvetica-Bold', textColor=GIALLO)),
+         Paragraph('<b>Condizionale:</b> L\'impresa potrebbe partecipare, ma mancano alcuni requisiti o ci sono avvertenze (es. bando in apertura, fondi in esaurimento).', body)],
+        [Paragraph('<b>ROSSO</b>', ParagraphStyle('l_r', fontName='Helvetica-Bold', textColor=ROSSO)),
+         Paragraph('<b>Non Idoneo:</b> L\'impresa non soddisfa uno o più requisiti bloccanti.', body)],
+        [Paragraph('<b>GRIGIO</b>', ParagraphStyle('l_gr', fontName='Helvetica-Bold', textColor=GRIGIO)),
+         Paragraph('<b>Dati Insufficienti:</b> Non ci sono abbastanza dati per valutare la compatibilità.', body)]
+    ]
+    leggenda_tbl = Table(leggenda_data, colWidths=[(PAGE_W - 2 * MARGIN) * 0.15, (PAGE_W - 2 * MARGIN) * 0.85])
+    leggenda_tbl.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8fafc')),
+        ('PADDING',    (0, 0), (-1, -1), 8),
+        ('VALIGN',     (0, 0), (-1, -1), 'MIDDLE'),
+        ('GRID',       (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
     ]))
-    story.append(tbl)
-    story.append(Spacer(1, 0.4 * cm))
-
-    # Totale finanziamento potenziale
-    bandi_verdi_list = [b for b in bandi_compatibili
-                        if str(b.get('semaforo', '')).upper() == 'VERDE']
-    totale = sum(b.get('massimale_agevolazione') or 0 for b in bandi_verdi_list)
-    tot_tbl = Table(
-        [[Paragraph(
-            f'<b>Totale finanziamento potenziale (bandi verdi): {_fmt_euro(totale)}</b>',
-            ParagraphStyle('tot', fontName='Helvetica-Bold', fontSize=10,
-                           textColor=BIANCO, alignment=TA_RIGHT)
-        )]],
-        colWidths=[PAGE_W - 2 * MARGIN]
-    )
-    tot_tbl.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, -1), VERDE),
-        ('PADDING',    (0, 0), (-1, -1), 10),
-    ]))
-    story.append(tot_tbl)
+    story.append(leggenda_tbl)
     story.append(Spacer(1, 0.8 * cm))
 
-    # ── SCHEDE DETTAGLIO (max 5 bandi) ───────────────────────────────────────
+    # ── SCHEDE DETTAGLIO (solo VERDI e GIALLI) ───────────────────────────────
     story.append(PageBreak())
     story.append(Paragraph('Schede Dettaglio Bandi', h2))
     story.append(Paragraph(
-        'Di seguito le schede dettagliate per i principali bandi compatibili '
+        'Di seguito le schede dettagliate per i bandi compatibili (VERDI) e condizionali (GIALLI) '
         'con il profilo della tua impresa.',
         body
     ))
     story.append(Spacer(1, 0.3 * cm))
 
-    for i, b in enumerate(bandi_compatibili[:5]):
+    # Filtra solo verdi e gialli
+    bandi_filtrati = [b for b in bandi_compatibili if str(b.get('semaforo', '')).upper() in ('VERDE', 'GIALLO')]
+
+    for i, b in enumerate(bandi_filtrati):
         sem     = str(b.get('semaforo', 'GRIGIO')).upper()
         col_s, col_sl = _semaforo_color(sem)
-        titolo  = b.get('titolo', 'Bando senza titolo')
-        fonte   = b.get('fonte', 'N/D')
+        titolo  = b.get('titolo', b.get('bando_nome', 'Bando senza titolo'))
+        fonte   = b.get('fonte', b.get('ente', 'N/D'))
         desc    = b.get('descrizione') or 'Nessuna descrizione disponibile.'
         note_ai = b.get('note_ai') or b.get('note') or ''
         url     = b.get('url', '')
-        perc_fp = b.get('percentuale_fondo_perduto') or 0
+        
+        # Gestione agevolazioni (da dict o da campi diretti)
+        agev = b.get('agevolazioni', {})
+        massimale = b.get('massimale_agevolazione') or agev.get('massimale_investimento') or agev.get('spesa_progetto_max') or 0
+        perc_fp = b.get('percentuale_fondo_perduto') or agev.get('percentuale_fondo_perduto') or agev.get('percentuale_fondo_perduto_fino_120k') or 0
+        
         score   = b.get('score') or b.get('punteggio') or 0
         regioni = b.get('regioni_ammesse') or []
         if isinstance(regioni, list):
@@ -362,9 +311,9 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
         det_rows = [
             ['Fonte / Ente',   fonte,
              'Score',          f'{score:.0f}%' if score else 'N/D'],
-            ['Importo Massimo',_fmt_euro(b.get('massimale_agevolazione')),
+            ['Importo Massimo',_fmt_euro(massimale),
              '% Fondo Perduto',f'{perc_fp:.0f}%' if perc_fp else 'N/D'],
-            ['Scadenza',       _fmt_data(b.get('data_scadenza')),
+            ['Scadenza',       _fmt_data(b.get('data_scadenza') or b.get('stato_bando')),
              'Regioni Ammesse',regioni_str[:60]],
         ]
         det_tbl = Table(det_rows,
@@ -383,19 +332,58 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
             ('VALIGN',     (0, 0), (-1, -1), 'MIDDLE'),
         ]))
 
-        # Note AI
-        note_block = []
-        if note_ai:
-            note_tbl = Table(
-                [[Paragraph(f'<b>Note AI:</b> {str(note_ai)[:400]}', note_style)]],
-                colWidths=[PAGE_W - 2 * MARGIN]
-            )
-            note_tbl.setStyle(TableStyle([
-                ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#fffbeb')),
-                ('PADDING',    (0, 0), (-1, -1), 8),
-                ('GRID',       (0, 0), (-1, -1), 0.3, colors.HexColor('#fde68a')),
-            ]))
-            note_block = [Spacer(1, 0.2 * cm), note_tbl]
+        # Estrazione requisiti da checks
+        checks = b.get('checks', {})
+        req_ok = []
+        req_ko = []
+        
+        if checks:
+            for k, v in checks.items():
+                if isinstance(v, dict):
+                    motivo = v.get('motivo', '')
+                    if v.get('ok') is True:
+                        if v.get('warning') is True:
+                            req_ko.append(f"Avvertenza: {motivo}")
+                        else:
+                            req_ok.append(motivo)
+                    else:
+                        req_ko.append(motivo)
+        else:
+            # Fallback se i dati arrivano già processati
+            req_ok = b.get('requisiti_soddisfatti', [])
+            req_ko = b.get('requisiti_mancanti', [])
+            
+            # Fallback ulteriore da semaforo_dettaglio
+            sem_det = b.get('semaforo_dettaglio', {})
+            if not req_ko and sem_det:
+                req_ko.extend(sem_det.get('warning', []))
+                req_ko.extend(sem_det.get('bloccanti_falliti', []))
+                
+            # Fallback da motivo_principale
+            if not req_ko and sem == 'GIALLO' and b.get('motivo_principale'):
+                req_ko.append(b.get('motivo_principale'))
+
+        req_block = []
+        
+        if req_ok:
+            req_block.append(Spacer(1, 0.2 * cm))
+            req_block.append(Paragraph('<b>Requisiti Soddisfatti:</b>', ParagraphStyle('h_ok', fontName='Helvetica-Bold', fontSize=9, textColor=colors.HexColor('#166534'))))
+            for req in req_ok:
+                req_block.append(Paragraph(f"• {req}", req_ok_style))
+                
+        if sem == 'GIALLO' and req_ko:
+            req_block.append(Spacer(1, 0.2 * cm))
+            req_block.append(Paragraph('<b>GAP ANALYSIS — Cosa manca o a cosa fare attenzione:</b>', ParagraphStyle('h_ko', fontName='Helvetica-Bold', fontSize=9, textColor=colors.HexColor('#9a3412'))))
+            for req in req_ko:
+                req_block.append(Paragraph(f"• {req}", req_ko_style))
+                
+            # Suggerimento
+            suggerimento = "Verifica i requisiti mancanti o le avvertenze prima di procedere. Potrebbe essere necessario attendere l'apertura del bando o integrare la documentazione."
+            if note_ai:
+                suggerimento = note_ai
+                
+            req_block.append(Spacer(1, 0.1 * cm))
+            req_block.append(Paragraph(f"<i>Suggerimento: {suggerimento}</i>", ParagraphStyle('sugg', fontName='Helvetica-Oblique', fontSize=8.5, textColor=colors.HexColor('#b45309'))))
 
         link_para = Paragraph(
             (f'<link href="{url}"><font color="#3b82f6">'
@@ -408,7 +396,7 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
             det_tbl,
             Spacer(1, 0.2 * cm),
             Paragraph(str(desc)[:600], body),
-            *note_block,
+            *req_block,
             Spacer(1, 0.15 * cm),
             link_para,
             HRFlowable(width='100%', thickness=0.5,
@@ -418,28 +406,15 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
         story.append(scheda)
 
     # ── DISCLAIMER FINALE ─────────────────────────────────────────────────────
-    story.append(Spacer(1, 0.5 * cm))
-    disc_tbl = Table(
-        [[Paragraph(
-            '<b>DISCLAIMER</b><br/>'
-            'Documento generato da AI a scopo informativo. '
-            'Verificare con un consulente prima di presentare domanda. '
-            'BandoMatch AI non costituisce consulenza finanziaria o legale. '
-            'I dati sui bandi sono aggiornati alla data di generazione del documento '
-            'e potrebbero non riflettere variazioni successive.',
-            ParagraphStyle('disc', fontName='Helvetica', fontSize=7.5,
-                           textColor=SLATE_600, leading=12, alignment=TA_JUSTIFY)
-        )]],
-        colWidths=[PAGE_W - 2 * MARGIN]
+    story.append(Spacer(1, 1 * cm))
+    disclaimer_testo = (
+        "<b>Nota Legale:</b> Le informazioni contenute in questo dossier sono generate "
+        "automaticamente da BandoMatch AI sulla base dei dati forniti e delle fonti pubbliche "
+        "disponibili. Non costituiscono consulenza professionale, legale o finanziaria. "
+        "Si raccomanda di verificare sempre i bandi ufficiali e di consultare un esperto "
+        "prima di presentare qualsiasi domanda di agevolazione."
     )
-    disc_tbl.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8fafc')),
-        ('PADDING',    (0, 0), (-1, -1), 10),
-        ('GRID',       (0, 0), (-1, -1), 0.3, colors.HexColor('#e2e8f0')),
-    ]))
-    story.append(disc_tbl)
+    story.append(Paragraph(disclaimer_testo, note_style))
 
-    # ── Build PDF ─────────────────────────────────────────────────────────────
     doc.build(story, canvasmaker=_NumberedCanvas)
-    buf.seek(0)
-    return buf.read()
+    return buf.getvalue()
