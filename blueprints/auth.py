@@ -14,7 +14,7 @@ def register():
     if request.method == 'POST':
         email = request.form.get('email', '').strip().lower()
         password = request.form.get('password', '')
-        confirm = request.form.get('confirm_password', '')
+        confirm = request.form.get('password_confirm', '')
         if not email or not password:
             flash('Email e password obbligatorie', 'error')
             return redirect(url_for('auth.register'))
