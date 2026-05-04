@@ -56,6 +56,27 @@ app.register_blueprint(admin_bp,      url_prefix='/admin')
 app.register_blueprint(enterprise_bp, url_prefix='/enterprise')
 
 with app.app_context():
+    # ── Migrazione sicura Enterprise ─────────────────────────────────────────
+    # Aggiunge le colonne nome_partner e logo_url alla tabella utenti se non
+    # esistono ancora. Usa una connessione raw per evitare che SQLAlchemy
+    # tenti di caricare il modello prima che le colonne esistano.
+    try:
+        from sqlalchemy import text as _sql_text
+        with db.engine.connect() as _conn:
+            if db.engine.dialect.name == 'postgresql':
+                _conn.execute(_sql_text(
+                    "ALTER TABLE utenti ADD COLUMN IF NOT EXISTS "
+                    "nome_partner VARCHAR(255)"
+                ))
+                _conn.execute(_sql_text(
+                    "ALTER TABLE utenti ADD COLUMN IF NOT EXISTS "
+                    "logo_url VARCHAR(500)"
+                ))
+                _conn.commit()
+                app.logger.info('Migrazione Enterprise: colonne nome_partner/logo_url verificate.')
+    except Exception as _me:
+        app.logger.warning(f'Migrazione Enterprise (non critica): {_me}')
+    # ─────────────────────────────────────────────────────────────────────────
     db.create_all()
     app.logger.info('db.create_all() completato.')
 
