@@ -112,7 +112,7 @@ def job_scraping_bandi(app):
         try:
             import national_scraper as ns
             from models.bando import Bando
-            from app import db
+            from extensions import db
 
             sorgenti = {
                 k: v for k, v in ns.SORGENTI_BANDI.items()
