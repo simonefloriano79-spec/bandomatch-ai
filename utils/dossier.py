@@ -120,31 +120,31 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
     story  = []
 
     # ── Stili personalizzati ──────────────────────────────────────────────────
-    h2 = ParagraphStyle('h2', fontName='Helvetica-Bold', fontSize=14,
+    h2 = ParagraphStyle('h2', fontName='Helvetica-Bold', fontSize=16,
                         textColor=VERDE, spaceAfter=6, spaceBefore=14)
-    body = ParagraphStyle('body', fontName='Helvetica', fontSize=9,
+    body = ParagraphStyle('body', fontName='Helvetica', fontSize=12,
                           textColor=colors.HexColor('#1e293b'),
-                          leading=14, spaceAfter=4, alignment=TA_JUSTIFY)
-    note_style = ParagraphStyle('note', fontName='Helvetica-Oblique', fontSize=8.5,
+                          leading=16, spaceAfter=4, alignment=TA_JUSTIFY)
+    note_style = ParagraphStyle('note', fontName='Helvetica-Oblique', fontSize=9.5,
                                 textColor=colors.HexColor('#374151'),
-                                leading=13, spaceAfter=4, alignment=TA_JUSTIFY)
-    req_ok_style = ParagraphStyle('req_ok', fontName='Helvetica', fontSize=9,
+                                leading=15, spaceAfter=4, alignment=TA_JUSTIFY)
+    req_ok_style = ParagraphStyle('req_ok', fontName='Helvetica', fontSize=12,
                                   textColor=colors.HexColor('#166534'),
-                                  leading=12, spaceAfter=2, bulletIndent=10, leftIndent=20)
-    req_ko_style = ParagraphStyle('req_ko', fontName='Helvetica-Bold', fontSize=9,
+                                  leading=14, spaceAfter=2, bulletIndent=10, leftIndent=20)
+    req_ko_style = ParagraphStyle('req_ko', fontName='Helvetica-Bold', fontSize=12,
                                   textColor=colors.HexColor('#9a3412'),
-                                  leading=12, spaceAfter=2, bulletIndent=10, leftIndent=20)
+                                  leading=14, spaceAfter=2, bulletIndent=10, leftIndent=20)
 
     # ── HEADER ────────────────────────────────────────────────────────────────
     header_data = [[
         Paragraph('<font color="white"><b>BandoMatch AI</b></font>',
-                  ParagraphStyle('lt', fontName='Helvetica-Bold', fontSize=18,
+                  ParagraphStyle('lt', fontName='Helvetica-Bold', fontSize=24,
                                  textColor=BIANCO)),
         Paragraph(
             f'<font color="#94a3b8">Dossier Bandi Premium</font><br/>'
             f'<font color="#64748b" size="8">Generato il '
             f'{datetime.now().strftime("%d/%m/%Y %H:%M")}</font>',
-            ParagraphStyle('rt', fontName='Helvetica', fontSize=10,
+            ParagraphStyle('rt', fontName='Helvetica', fontSize=12,
                            textColor=SLATE_400, alignment=TA_RIGHT)
         )
     ]]
@@ -152,7 +152,7 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
                        colWidths=[(PAGE_W - 2 * MARGIN) * f for f in [0.55, 0.45]])
     header_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), NAVY),
-        ('PADDING',    (0, 0), (-1, -1), 14),
+        ('PADDING',    (0, 0), (-1, -1), 18),
         ('VALIGN',     (0, 0), (-1, -1), 'MIDDLE'),
     ]))
     story.append(header_tbl)
@@ -197,7 +197,7 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
         ('FONTNAME',    (1, 0), (1, -1), 'Helvetica'),
         ('FONTNAME',    (3, 0), (3, -1), 'Helvetica'),
         ('FONTSIZE',    (0, 0), (-1, -1), 8.5),
-        ('PADDING',     (0, 0), (-1, -1), 7),
+        ('PADDING',     (0, 0), (-1, -1), 10),
         ('GRID',        (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
         ('ROWBACKGROUNDS', (0, 0), (-1, -1),
          [colors.white, colors.HexColor('#f8fafc')]),
@@ -207,8 +207,8 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
     story.append(Spacer(1, 0.4 * cm))
 
     # ── RIEPILOGO NUMERICO ────────────────────────────────────────────────────
-    bandi_verdi  = getattr(analisi, 'bandi_verdi',  0) or 0
-    bandi_gialli = getattr(analisi, 'bandi_gialli', 0) or 0
+    bandi_verdi  = len([b for b in bandi_compatibili if str(b.get('semaforo', '')).upper() == 'VERDE'])
+    bandi_gialli = len([b for b in bandi_compatibili if str(b.get('semaforo', '')).upper() == 'GIALLO'])
     valore_pot   = getattr(analisi, 'valore_potenziale', 0) or 0
 
     story.append(Paragraph('Riepilogo Analisi', h2))
@@ -229,7 +229,7 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
         ('BACKGROUND', (0, 0), (-1, -1), NAVY_LIGHT),
         ('ALIGN',      (0, 0), (-1, -1), 'CENTER'),
         ('VALIGN',     (0, 0), (-1, -1), 'MIDDLE'),
-        ('PADDING',    (0, 0), (-1, -1), 12),
+        ('PADDING',    (0, 0), (-1, -1), 16),
         ('GRID',       (0, 0), (-1, -1), 0.5, NAVY_MID),
     ]))
     story.append(riepilogo_tbl)
@@ -250,7 +250,7 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
     leggenda_tbl = Table(leggenda_data, colWidths=[(PAGE_W - 2 * MARGIN) * 0.15, (PAGE_W - 2 * MARGIN) * 0.85])
     leggenda_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f8fafc')),
-        ('PADDING',    (0, 0), (-1, -1), 8),
+        ('PADDING',    (0, 0), (-1, -1), 12),
         ('VALIGN',     (0, 0), (-1, -1), 'MIDDLE'),
         ('GRID',       (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
     ]))
@@ -294,16 +294,16 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
         # Intestazione scheda
         sh_tbl = Table(
             [[Paragraph(f'<b>{i + 1}. {str(titolo)[:70]}</b>',
-                        ParagraphStyle('sh', fontName='Helvetica-Bold', fontSize=11,
+                        ParagraphStyle('sh', fontName='Helvetica-Bold', fontSize=12,
                                        textColor=BIANCO)),
               Paragraph(f'<b>{sem.capitalize()}</b>',
-                        ParagraphStyle('sem', fontName='Helvetica-Bold', fontSize=10,
+                        ParagraphStyle('sem', fontName='Helvetica-Bold', fontSize=12,
                                        textColor=col_s, alignment=TA_RIGHT))]],
             colWidths=[(PAGE_W - 2 * MARGIN) * f for f in [0.75, 0.25]]
         )
         sh_tbl.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, -1), NAVY),
-            ('PADDING',    (0, 0), (-1, -1), 10),
+            ('PADDING',    (0, 0), (-1, -1), 14),
             ('VALIGN',     (0, 0), (-1, -1), 'MIDDLE'),
         ]))
 
@@ -367,13 +367,13 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
         
         if req_ok:
             req_block.append(Spacer(1, 0.2 * cm))
-            req_block.append(Paragraph('<b>Requisiti Soddisfatti:</b>', ParagraphStyle('h_ok', fontName='Helvetica-Bold', fontSize=9, textColor=colors.HexColor('#166534'))))
+            req_block.append(Paragraph('<b>Requisiti Soddisfatti:</b>', ParagraphStyle('h_ok', fontName='Helvetica-Bold', fontSize=12, textColor=colors.HexColor('#166534'))))
             for req in req_ok:
                 req_block.append(Paragraph(f"• {req}", req_ok_style))
                 
         if sem == 'GIALLO' and req_ko:
             req_block.append(Spacer(1, 0.2 * cm))
-            req_block.append(Paragraph('<b>GAP ANALYSIS — Cosa manca o a cosa fare attenzione:</b>', ParagraphStyle('h_ko', fontName='Helvetica-Bold', fontSize=9, textColor=colors.HexColor('#9a3412'))))
+            req_block.append(Paragraph('<b>GAP ANALYSIS — Cosa manca o a cosa fare attenzione:</b>', ParagraphStyle('h_ko', fontName='Helvetica-Bold', fontSize=12, textColor=colors.HexColor('#9a3412'))))
             for req in req_ko:
                 req_block.append(Paragraph(f"• {req}", req_ko_style))
                 
@@ -383,12 +383,12 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
                 suggerimento = note_ai
                 
             req_block.append(Spacer(1, 0.1 * cm))
-            req_block.append(Paragraph(f"<i>Suggerimento: {suggerimento}</i>", ParagraphStyle('sugg', fontName='Helvetica-Oblique', fontSize=8.5, textColor=colors.HexColor('#b45309'))))
+            req_block.append(Paragraph(f"<i>Suggerimento: {suggerimento}</i>", ParagraphStyle('sugg', fontName='Helvetica-Oblique', fontSize=9.5, textColor=colors.HexColor('#b45309'))))
 
         link_para = Paragraph(
             (f'<link href="{url}"><font color="#3b82f6">'
              f'<u>Vai al bando ufficiale</u></font></link>' if url else ''),
-            ParagraphStyle('link', fontName='Helvetica', fontSize=8, spaceAfter=4)
+            ParagraphStyle('link', fontName='Helvetica', fontSize=9, spaceAfter=4)
         )
 
         scheda = KeepTogether([

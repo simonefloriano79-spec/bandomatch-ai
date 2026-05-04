@@ -91,7 +91,7 @@ def dossier(analisi_id: int):
             dati = json.loads(analisi.risultati_json)
             # Il JSON può avere struttura {"bandi": [...]} oppure essere una lista diretta
             if isinstance(dati, dict):
-                bandi_raw = dati.get('bandi', [])
+                bandi_raw = dati.get('risultati', dati.get('bandi', []))
             elif isinstance(dati, list):
                 bandi_raw = dati
             else:
