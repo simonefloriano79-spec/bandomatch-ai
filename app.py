@@ -50,6 +50,42 @@ app.register_blueprint(enterprise_bp, url_prefix='/enterprise')
 
 with app.app_context():
     db.create_all()
+    # Migrazione sicura: aggiunge colonne Enterprise se non esistono (PostgreSQL + SQLite)
+    try:
+        from sqlalchemy import text
+        with db.engine.connect() as conn:
+            dialect = db.engine.dialect.name
+            if dialect == 'postgresql':
+                conn.execute(text(
+                    "ALTER TABLE utenti ADD COLUMN IF NOT EXISTS nome_partner VARCHAR(255)"
+                ))
+                conn.execute(text(
+                    "ALTER TABLE utenti ADD COLUMN IF NOT EXISTS logo_url VARCHAR(500)"
+                ))
+                conn.execute(text("""
+                    CREATE TABLE IF NOT EXISTS clienti_enterprise (
+                        id SERIAL PRIMARY KEY,
+                        partner_id INTEGER NOT NULL REFERENCES utenti(id) ON DELETE CASCADE,
+                        ragione_sociale VARCHAR(255) NOT NULL,
+                        partita_iva VARCHAR(11),
+                        codice_fiscale VARCHAR(16),
+                        email_cliente VARCHAR(255),
+                        ateco VARCHAR(20),
+                        regione VARCHAR(100),
+                        forma_giuridica VARCHAR(100),
+                        note TEXT,
+                        bandi_verdi_ultimo INTEGER DEFAULT 0,
+                        bandi_gialli_ultimo INTEGER DEFAULT 0,
+                        valore_potenziale FLOAT DEFAULT 0.0,
+                        ultima_analisi_id INTEGER,
+                        ultima_analisi_data TIMESTAMP,
+                        data_creazione TIMESTAMP DEFAULT NOW()
+                    )
+                """))
+                conn.commit()
+            app.logger.info('Migrazione Enterprise applicata con successo.')
+    except Exception as _me:
+        app.logger.warning(f'Migrazione Enterprise (non critica): {_me}')
 
 # Avvia lo scheduler APScheduler per scraping bandi giornaliero alle 06:00 UTC
 # Wrappato in try/except per evitare che un errore dello scheduler faccia crashare l'app
