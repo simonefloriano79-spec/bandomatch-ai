@@ -144,31 +144,37 @@ def utenti():
 @admin_bp.route('/scraper', methods=['POST'])
 @login_required
 def scraper():
-    """Avvia scraping manuale dei bandi."""
+    """Avvia scraping manuale dei bandi (richiede login admin)."""
     try:
         if not check_admin():
             return jsonify({'error': 'Accesso negato. Non sei un admin.'}), 403
-        
-        # Verifica che il modulo scraper esista
-        try:
-            from utils.scraper import run_scraper
-        except ImportError:
-            return jsonify({
-                'error': 'Modulo scraper non configurato. Crea utils/scraper.py'
-            }), 501
-        
-        # Parametri opzionali dal request
-        source = request.get_json().get('source', 'all') if request.is_json else 'all'
-        
-        # Avvia scraper in background (ideale con Celery, per ora sincrono)
-        result = run_scraper(source=source)
-        
-        return jsonify({
-            'success': True,
-            'message': f'Scraping avviato per source: {source}',
-            'result': result
-        }), 200
-    
+
+        data = request.get_json(silent=True) or {}
+        priorita = data.get('priorita', None)
+        fonte = data.get('fonte', None)
+
+        from run_scraper import run_scraper as esegui_scraper
+        result = esegui_scraper(priorita=priorita, fonte_singola=fonte)
+
+        return jsonify({'success': True, 'result': result}), 200
+
     except Exception as e:
         current_app.logger.error(f'Errore scraper: {str(e)}')
-        return jsonify({'error': f'Errore nell\'avvio scraper: {str(e)}'}), 500
+        return jsonify({'error': str(e)}), 500
+
+
+@admin_bp.route('/scraper/cron', methods=['POST'])
+def scraper_cron():
+    """Endpoint per Railway Cron Job - protetto da CRON_SECRET env var."""
+    secret = os.getenv('CRON_SECRET', '')
+    auth_header = request.headers.get('Authorization', '')
+    if not secret or auth_header != f'Bearer {secret}':
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    try:
+        from run_scraper import run_scraper as esegui_scraper
+        result = esegui_scraper(priorita=1)  # Solo fonti nazionali prioritarie
+        return jsonify({'success': True, 'result': result}), 200
+    except Exception as e:
+        current_app.logger.error(f'Errore cron scraper: {str(e)}')
+        return jsonify({'error': str(e)}), 500
