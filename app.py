@@ -46,6 +46,13 @@ app.register_blueprint(analisi_bp,   url_prefix='/analisi')
 with app.app_context():
     db.create_all()
 
+# Avvia lo scheduler APScheduler per scraping bandi giornaliero alle 06:00 UTC
+from apscheduler.schedulers.background import BackgroundScheduler
+from utils.scheduler import start_scheduler
+_scheduler = BackgroundScheduler()
+start_scheduler(_scheduler, app)
+_scheduler.start()
+
 @app.route('/')
 def index():
     if current_user.is_authenticated:

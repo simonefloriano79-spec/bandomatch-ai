@@ -1,221 +1,216 @@
+"""
+BandoMatch AI - utils/scheduler.py
+Scheduler APScheduler per aggiornamento automatico bandi ogni giorno alle 06:00 UTC.
+Usa national_scraper.py per estrarre bandi reali e li salva nel DB PostgreSQL via SQLAlchemy.
+"""
+import os
+import logging
+from datetime import datetime, date
+
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
-from datetime import datetime
-import logging
-from flask import current_app
-from sqlalchemy import and_
-from models.user import User
-from models.bando import Bando
-from models.matching import Matching
-from utils.scraper import scrape_invitalia_bandi
-from utils.matching import calculate_user_match_score
-from utils.email import send_match_notification
-from database import db
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("bandomatch.scheduler")
 
-class SchedulerService:
-    _scheduler = None
 
-    @classmethod
-    def init_scheduler(cls, app):
-        """Inizializza lo scheduler con il contesto dell'app Flask."""
-        if cls._scheduler is None:
-            cls._scheduler = BackgroundScheduler()
-            cls._scheduler.add_job(
-                func=cls._nightly_job,
-                trigger=CronTrigger(hour=2, minute=0, timezone='UTC'),
-                id='nightly_bandi_sync',
-                name='Nightly Bandi Sync and Matching',
-                replace_existing=True,
-                misfire_grace_time=3600
-            )
-            cls._scheduler.start()
-            logger.info("Scheduler inizializzato con job giornaliero alle 02:00 UTC")
-
-    @classmethod
-    def shutdown_scheduler(cls):
-        """Ferma lo scheduler."""
-        if cls._scheduler and cls._scheduler.running:
-            cls._scheduler.shutdown()
-            logger.info("Scheduler fermato")
-
-    @classmethod
-    def _nightly_job(cls):
-        """Job principale che esegue scraping, matching e notifiche."""
-        logger.info(f"[{datetime.utcnow().isoformat()}] Inizio job notturno")
+def parse_date_flexible(date_str):
+    """Converte stringhe data in oggetto datetime."""
+    if not date_str:
+        return None
+    if isinstance(date_str, (datetime, date)):
+        return date_str if isinstance(date_str, datetime) else datetime.combine(date_str, datetime.min.time())
+    formats = ["%d/%m/%Y", "%Y-%m-%d", "%d-%m-%Y", "%d.%m.%Y", "%Y/%m/%d"]
+    date_str = str(date_str).strip()
+    for fmt in formats:
         try:
-            # Step 1: Scraping bandi da Invitalia
-            logger.info("Step 1: Scraping bandi da Invitalia")
-            new_bandi_count = cls._scrape_and_store_bandi()
-            logger.info(f"Scraping completato: {new_bandi_count} nuovi bandi")
+            return datetime.strptime(date_str, fmt)
+        except ValueError:
+            continue
+    return None
 
-            # Step 2: Ricalcola score matching per tutti gli utenti
-            logger.info("Step 2: Ricalcolo score matching")
-            matching_results = cls._recalculate_all_matches()
-            logger.info(f"Matching completato: {matching_results['total']} match ricalcolati, "
-                       f"{matching_results['high_score']} con score > 70")
 
-            # Step 3: Invia notifiche per nuovi match
-            logger.info("Step 3: Invio notifiche email")
-            emails_sent = cls._send_notifications(matching_results['high_score_matches'])
-            logger.info(f"Notifiche inviate: {emails_sent} email")
+def bando_dict_to_model(bando_dict, sorgente_nome, regione=None):
+    """Converte un dict estratto da national_scraper nel modello Bando SQLAlchemy."""
+    from models.bando import Bando
 
-            logger.info(f"[{datetime.utcnow().isoformat()}] Job notturno completato con successo")
-        except Exception as e:
-            logger.error(f"Errore durante job notturno: {str(e)}", exc_info=True)
+    titolo = (
+        bando_dict.get("nome") or bando_dict.get("titolo") or
+        bando_dict.get("title") or "Bando senza titolo"
+    )[:500]
 
-    @classmethod
-    def _scrape_and_store_bandi(cls) -> int:
-        """Scrape bandi da Invitalia e li salva nel database.
-        
-        Returns:
-            int: Numero di nuovi bandi aggiunti
-        """
+    url = (
+        bando_dict.get("url_ufficiale") or bando_dict.get("url") or
+        "https://bandomatch.ai/bandi/auto/{}".format(abs(hash(titolo + sorgente_nome)) % 10**9)
+    )[:1000]
+
+    stato_raw = str(bando_dict.get("stato", "aperto")).upper()
+    stato_map = {
+        "APERTO": "APERTO", "OPEN": "APERTO", "ATTIVO": "APERTO",
+        "CHIUSO": "CHIUSO", "CLOSED": "CHIUSO", "SCADUTO": "CHIUSO",
+        "SOSPESO": "SOSPESO", "RIAPERTO": "RIAPERTO",
+    }
+    stato = stato_map.get(stato_raw, "APERTO")
+
+    regioni = bando_dict.get("regioni_ammesse", [])
+    if not regioni and regione:
+        regioni = [regione]
+    if not regioni:
+        regioni = ["Nazionale"]
+    if isinstance(regioni, str):
+        regioni = [regioni]
+
+    ateco = bando_dict.get("settori_ammessi", [])
+    if isinstance(ateco, str):
+        ateco = [ateco]
+
+    massimale = bando_dict.get("massimale_euro") or bando_dict.get("massimale_agevolazione")
+    if massimale:
         try:
-            scraped_bandi = scrape_invitalia_bandi()
-            new_count = 0
+            massimale = float(str(massimale).replace(".", "").replace(",", ".").replace("euro", "").replace("EUR", "").strip())
+        except (ValueError, TypeError):
+            massimale = None
 
-            for bando_data in scraped_bandi:
-                existing = Bando.query.filter_by(
-                    external_id=bando_data.get('external_id')
-                ).first()
-
-                if not existing:
-                    bando = Bando(
-                        title=bando_data.get('title'),
-                        description=bando_data.get('description'),
-                        external_id=bando_data.get('external_id'),
-                        source='invitalia',
-                        link=bando_data.get('link'),
-                        deadline=bando_data.get('deadline'),
-                        budget=bando_data.get('budget'),
-                        keywords=','.join(bando_data.get('keywords', [])),
-                        sectors=','.join(bando_data.get('sectors', []))
-                    )
-                    db.session.add(bando)
-                    new_count += 1
-
-            db.session.commit()
-            return new_count
-        except Exception as e:
-            db.session.rollback()
-            logger.error(f"Errore scraping Invitalia: {str(e)}")
-            return 0
-
-    @classmethod
-    def _recalculate_all_matches(cls) -> dict:
-        """Ricalcola i match per tutti gli utenti.
-        
-        Returns:
-            dict: Risultati con chiavi 'total', 'high_score', 'high_score_matches'
-        """
+    perc_fp = bando_dict.get("percentuale_fondo_perduto")
+    if perc_fp:
         try:
-            users = User.query.filter_by(is_active=True).all()
-            bandi = Bando.query.all()
-            
-            total_matches = 0
-            high_score_matches = []
+            perc_fp = float(str(perc_fp).replace("%", "").strip())
+            if perc_fp > 100:
+                perc_fp = None
+        except (ValueError, TypeError):
+            perc_fp = None
 
-            for user in users:
-                for bando in bandi:
-                    # Calcola score
-                    score = calculate_user_match_score(user, bando)
+    descrizione = (
+        bando_dict.get("descrizione") or bando_dict.get("description") or
+        bando_dict.get("note") or ""
+    )
 
-                    # Cerca o crea matching
-                    matching = Matching.query.filter_by(
-                        user_id=user.id,
-                        bando_id=bando.id
-                    ).first()
+    return Bando(
+        titolo=titolo,
+        descrizione=descrizione[:5000] if descrizione else None,
+        url=url,
+        fonte=sorgente_nome[:255],
+        stato=stato,
+        data_apertura=parse_date_flexible(bando_dict.get("data_apertura")),
+        data_scadenza=parse_date_flexible(bando_dict.get("scadenza")),
+        regioni_ammesse=regioni,
+        ateco_ammessi=ateco if ateco else None,
+        massimale_agevolazione=massimale,
+        percentuale_fondo_perduto=perc_fp,
+        data_scraping=datetime.utcnow(),
+    )
 
-                    if not matching:
-                        matching = Matching(
-                            user_id=user.id,
-                            bando_id=bando.id,
-                            score=score,
-                            notified=False
-                        )
-                        db.session.add(matching)
-                    else:
-                        matching.score = score
-                        matching.updated_at = datetime.utcnow()
 
-                    total_matches += 1
+def job_scraping_bandi(app):
+    """
+    Job APScheduler: scrapa tutte le fonti prioritarie e salva i bandi nel DB.
+    Viene eseguito ogni giorno alle 06:00 UTC.
+    """
+    logger.info("=" * 50)
+    logger.info("Scheduler: avvio job scraping bandi - {}".format(datetime.utcnow().isoformat()))
 
-                    # Track high score matches non ancora notificati
-                    if score > 70 and not matching.notified:
-                        high_score_matches.append({
-                            'user': user,
-                            'bando': bando,
-                            'score': score,
-                            'matching': matching
-                        })
+    with app.app_context():
+        try:
+            import national_scraper as ns
+            from models.bando import Bando
+            from app import db
 
-            db.session.commit()
-            return {
-                'total': total_matches,
-                'high_score': len(high_score_matches),
-                'high_score_matches': high_score_matches
-            }
-        except Exception as e:
-            db.session.rollback()
-            logger.error(f"Errore ricalcolo matching: {str(e)}")
-            return {
-                'total': 0,
-                'high_score': 0,
-                'high_score_matches': []
+            sorgenti = {
+                k: v for k, v in ns.SORGENTI_BANDI.items()
+                if v.get("priorita", 99) <= 1  # Solo fonti nazionali prioritarie
             }
 
-    @classmethod
-    def _send_notifications(cls, high_score_matches: list) -> int:
-        """Invia notifiche email per nuovi match con score > 70.
-        
-        Args:
-            high_score_matches: Lista di match con score elevato
-            
-        Returns:
-            int: Numero di email inviate con successo
-        """
-        emails_sent = 0
+            totale_nuovi = 0
+            totale_aggiornati = 0
+            totale_errori = 0
 
-        for match_info in high_score_matches:
-            try:
-                user = match_info['user']
-                bando = match_info['bando']
-                score = match_info['score']
-                matching = match_info['matching']
+            for chiave, sorgente_info in sorgenti.items():
+                if not sorgente_info:
+                    continue
+                nome = sorgente_info["nome"]
+                url = sorgente_info["url"]
+                regione = sorgente_info.get("regione")
 
-                # Invia email di notifica
-                send_match_notification(
-                    email=user.email,
-                    user_name=user.full_name,
-                    bando_title=bando.title,
-                    match_score=int(score),
-                    bando_link=bando.link,
-                    bando_deadline=bando.deadline
-                )
+                logger.info("  Scraping: {}".format(nome))
 
-                # Marca come notificato
-                matching.notified = True
-                matching.notified_at = datetime.utcnow()
-                db.session.commit()
-                emails_sent += 1
+                try:
+                    testo = ns.scrapa_url(url)
+                    if not testo:
+                        logger.warning("    Impossibile scaricare: {}".format(url))
+                        totale_errori += 1
+                        continue
 
-                logger.info(f"Email inviata a {user.email} per bando {bando.title} "
-                           f"(score: {score})")
-            except Exception as e:
-                logger.error(f"Errore invio email per match {match_info.get('bando', {}).get('title', 'Unknown')}: "
-                           f"{str(e)}")
-                continue
+                    bandi_estratti = ns.estrai_bandi_con_llm(testo, nome, regione)
+                    logger.info("    Bandi estratti: {}".format(len(bandi_estratti)))
 
-        return emails_sent
+                    nuovi = 0
+                    aggiornati = 0
+
+                    for bando_dict in bandi_estratti:
+                        try:
+                            titolo = (bando_dict.get("nome") or bando_dict.get("titolo") or "")[:500]
+                            url_bando = (bando_dict.get("url_ufficiale") or bando_dict.get("url") or "")
+
+                            esistente = None
+                            if url_bando:
+                                esistente = db.session.query(Bando).filter_by(url=url_bando).first()
+                            if not esistente and titolo:
+                                esistente = db.session.query(Bando).filter_by(titolo=titolo).first()
+
+                            if esistente:
+                                esistente.stato = bando_dict.get("stato", "APERTO").upper()
+                                esistente.data_scadenza = parse_date_flexible(bando_dict.get("scadenza"))
+                                esistente.updated_at = datetime.utcnow()
+                                esistente.data_scraping = datetime.utcnow()
+                                aggiornati += 1
+                            else:
+                                nuovo = bando_dict_to_model(bando_dict, nome, regione)
+                                db.session.add(nuovo)
+                                nuovi += 1
+
+                        except Exception as e:
+                            logger.warning("    Errore bando: {}".format(e))
+
+                    db.session.commit()
+                    totale_nuovi += nuovi
+                    totale_aggiornati += aggiornati
+                    logger.info("    Salvati: {} nuovi, {} aggiornati".format(nuovi, aggiornati))
+
+                except Exception as e:
+                    logger.error("    Errore critico per {}: {}".format(nome, e))
+                    db.session.rollback()
+                    totale_errori += 1
+
+            totale_db = db.session.query(Bando).count()
+            logger.info("Scheduler: completato - {} nuovi, {} aggiornati, {} errori".format(
+                totale_nuovi, totale_aggiornati, totale_errori))
+            logger.info("Totale bandi nel DB: {}".format(totale_db))
+
+        except Exception as e:
+            logger.error("Scheduler: errore critico nel job: {}".format(e))
+
+    logger.info("=" * 50)
 
 
-def start_background_scheduler(app):
-    """Funzione helper per avviare lo scheduler dall'app Flask."""
-    SchedulerService.init_scheduler(app)
+def start_scheduler(scheduler, app):
+    """
+    Configura e avvia il job APScheduler.
+    Da chiamare in app.py dopo db.create_all().
 
-
-def stop_background_scheduler():
-    """Funzione helper per fermare lo scheduler."""
-    SchedulerService.shutdown_scheduler()
+    Uso in app.py:
+        from apscheduler.schedulers.background import BackgroundScheduler
+        from utils.scheduler import start_scheduler
+        scheduler = BackgroundScheduler()
+        start_scheduler(scheduler, app)
+        scheduler.start()
+    """
+    # Job giornaliero alle 06:00 UTC
+    scheduler.add_job(
+        func=job_scraping_bandi,
+        trigger=CronTrigger(hour=6, minute=0, timezone="UTC"),
+        args=[app],
+        id="scraping_bandi_giornaliero",
+        name="Scraping bandi giornaliero 06:00 UTC",
+        replace_existing=True,
+        misfire_grace_time=3600,  # Tolleranza 1 ora se il server era offline
+    )
+    logger.info("Scheduler configurato: scraping bandi ogni giorno alle 06:00 UTC")
