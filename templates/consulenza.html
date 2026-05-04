@@ -29,12 +29,40 @@ p { color:#8899aa;font-size:16px;line-height:1.7;margin-bottom:32px; }
   .price { font-size: 40px; }
   .btn { padding: 14px 24px; font-size: 16px; }
 }
+
+/* ===== HAMBURGER MOBILE ===== */
+.hamburger-nav { display:none; flex-direction:column; gap:5px; cursor:pointer; background:none; border:none; padding:6px; }
+.hamburger-nav span { display:block; width:24px; height:2px; background:#8899aa; border-radius:2px; transition:all 0.3s; }
+.mobile-nav-menu { display:none; flex-direction:column; background:rgba(13,27,42,0.98); border-top:1px solid rgba(255,255,255,0.08); position:sticky; top:57px; z-index:99; backdrop-filter:blur(10px); }
+.mobile-nav-menu.open { display:flex; }
+.mobile-nav-menu a { padding:14px 24px; color:#8899aa; text-decoration:none; font-size:15px; font-weight:500; border-bottom:1px solid rgba(255,255,255,0.06); transition:color 0.2s; }
+.mobile-nav-menu a:hover { color:#fff; background:rgba(255,255,255,0.04); }
+.mobile-nav-menu .nav-btn-m { background:linear-gradient(135deg,#00C851,#00a843); color:#fff !important; font-weight:700 !important; text-align:center; margin:12px 16px; border-radius:8px; }
+@media (max-width: 640px) {
+  .nav-links { display: none !important; }
+  .hamburger-nav { display: flex !important; }
+}
 </style>
 </head>
 <body>
 <nav>
  <a href="/" class="brand" style="text-decoration:none;color:inherit;">BandoMatch AI</a>
  <div><a href="/dashboard">← Dashboard</a><a href="/upgrade">Prezzi</a></div>
+
+  <button class="hamburger-nav" onclick="document.getElementById('mob-nav-consulenza').classList.toggle('open')" aria-label="Menu"><span></span><span></span><span></span></button>
+</nav>
+<nav class="mobile-nav-menu" id="mob-nav-consulenza">
+    <a href="/bandi">Bandi Attivi</a>
+    <a href="/upgrade">Costi</a>
+    <a href="/consulenza">Consulenza</a>
+    <a href="/faq">FAQ</a>
+    {%- if user %}
+    <a href="/dashboard">{{ user }}</a>
+    <a href="/logout">Esci</a>
+    {%- else %}
+    <a href="/login">Accedi</a>
+    <a href="/register" class="nav-btn-m">Registrati gratis</a>
+    {%- endif %}
 </nav>
 <div class="container">
  <h1> Consulenza con un Esperto</h1>
