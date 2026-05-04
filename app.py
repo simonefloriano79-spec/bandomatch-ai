@@ -98,6 +98,18 @@ def index():
         return redirect(url_for('dashboard.home'))
     return render_template('landing.html')
 
+@app.route('/sys/debug-login')
+def debug_login():
+    """Endpoint temporaneo per diagnosticare l'errore 500 sul login."""
+    import traceback
+    try:
+        from models.utente import Utente
+        u = Utente.query.filter_by(email='test@bandomatch.it').first()
+        return {'ok': True, 'user': str(u), 'piano': u.piano if u else None}
+    except Exception as e:
+        return {'ok': False, 'error': str(e), 'traceback': traceback.format_exc()}, 500
+
+
 @app.route('/sys/migrate-enterprise')
 def migrate_enterprise():
     """Endpoint temporaneo per forzare la migrazione Enterprise su Railway."""
