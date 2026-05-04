@@ -1,20 +1,20 @@
 from app import db
+from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from typing import Dict, Any, Optional
 
 
-class Utente(db.Model):
+class Utente(UserMixin, db.Model):
     """Modello Utente con gestione autenticazione e piano"""
     __tablename__ = 'utenti'
-
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(255), nullable=False)
     piano = db.Column(db.String(50), default='free', nullable=False)  # free, starter, pro, enterprise
     attivo = db.Column(db.Boolean, default=True, nullable=False)
     data_registrazione = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    
+
     # Relazioni
     profilo_aziendale = db.relationship(
         'ProfiloAziendale',
@@ -27,10 +27,15 @@ class Utente(db.Model):
     def __repr__(self) -> str:
         return f'<Utente {self.email}>'
 
+    @property
+    def is_active(self) -> bool:
+        """Flask-Login: restituisce True se l'account è attivo."""
+        return self.attivo
+
     def set_password(self, password: str) -> None:
         """
         Genera e salva l'hash della password.
-        
+
         Args:
             password (str): Password in chiaro
         """
@@ -41,10 +46,10 @@ class Utente(db.Model):
     def check_password(self, password: str) -> bool:
         """
         Verifica se la password fornita corrisponde all'hash salvato.
-        
+
         Args:
             password (str): Password in chiaro da verificare
-            
+
         Returns:
             bool: True se la password è corretta, False altrimenti
         """
@@ -56,7 +61,7 @@ class Utente(db.Model):
     def to_dict(self) -> Dict[str, Any]:
         """
         Converte l'utente a dizionario.
-        
+
         Returns:
             Dict[str, Any]: Rappresentazione dict dell'utente
         """
@@ -73,7 +78,6 @@ class Utente(db.Model):
 class ProfiloAziendale(db.Model):
     """Modello Profilo Aziendale collegato all'Utente"""
     __tablename__ = 'profili_aziendali'
-
     id = db.Column(db.Integer, primary_key=True)
     utente_id = db.Column(db.Integer, db.ForeignKey('utenti.id', ondelete='CASCADE'), unique=True, nullable=False, index=True)
     azienda = db.Column(db.String(255), nullable=False)
@@ -94,7 +98,7 @@ class ProfiloAziendale(db.Model):
     def to_dict(self) -> Dict[str, Any]:
         """
         Converte il profilo aziendale a dizionario.
-        
+
         Returns:
             Dict[str, Any]: Rappresentazione dict del profilo aziendale
         """
