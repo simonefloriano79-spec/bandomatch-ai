@@ -1,8 +1,9 @@
-from flask import Blueprint, render_template, request, jsonify, current_app
+from flask import Blueprint, render_template, request, jsonify, current_app, redirect, url_for, flash
 from flask_login import login_required, current_user
 from sqlalchemy import func
 from models.utente import Utente as User
 from models.bando import Bando
+from extensions import db
 from datetime import datetime, timedelta
 import os
 
@@ -240,3 +241,27 @@ def scraper_cron():
     except Exception as e:
         current_app.logger.error(f'Errore cron scraper: {str(e)}')
         return jsonify({'error': str(e)}), 500
+
+
+@admin_bp.route('/set-piano', methods=['POST'])
+def set_piano():
+    """Aggiorna il piano di un utente — protetto da CRON_SECRET."""
+    secret = os.getenv('CRON_SECRET', '')
+    auth_header = request.headers.get('Authorization', '')
+    if not secret or auth_header != f'Bearer {secret}':
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    data  = request.get_json(silent=True) or {}
+    email = data.get('email', '').strip()
+    piano = data.get('piano', '').strip().lower()
+
+    if not email or piano not in ('free', 'starter', 'pro', 'enterprise', 'premium'):
+        return jsonify({'error': 'Parametri non validi'}), 400
+
+    utente = User.query.filter_by(email=email).first()
+    if not utente:
+        return jsonify({'error': 'Utente non trovato'}), 404
+
+    utente.piano = piano
+    db.session.commit()
+    return jsonify({'success': True, 'email': email, 'piano': piano}), 200
