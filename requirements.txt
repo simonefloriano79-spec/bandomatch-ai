@@ -12,3 +12,5 @@ python-dotenv
 gunicorn
 psycopg2-binary
 werkzeug
+pdfplumber
+python-dateutil

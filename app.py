@@ -15,6 +15,7 @@ if DATABASE_URL.startswith('postgres://'):
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10 MB max upload
 
 db = SQLAlchemy(app)
 
@@ -34,11 +35,14 @@ from blueprints.auth import auth_bp
 from blueprints.bandi import bandi_bp
 from blueprints.dashboard import dashboard_bp
 from blueprints.scraper import scraper_bp
+from blueprints.analisi import analisi_bp
 
-app.register_blueprint(auth_bp, url_prefix='/auth')
-app.register_blueprint(bandi_bp, url_prefix='/bandi')
+app.register_blueprint(auth_bp,      url_prefix='/auth')
+app.register_blueprint(bandi_bp,     url_prefix='/bandi')
 app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
-app.register_blueprint(scraper_bp, url_prefix='/scraper')
+app.register_blueprint(scraper_bp,   url_prefix='/scraper')
+app.register_blueprint(analisi_bp,   url_prefix='/analisi')
+
 with app.app_context():
     db.create_all()
 
