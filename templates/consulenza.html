@@ -2,6 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Consulenza Esperta — BandoMatch AI</title>
 <style>
 * { margin:0;padding:0;box-sizing:border-box; }
@@ -19,6 +20,15 @@ p { color:#8899aa;font-size:16px;line-height:1.7;margin-bottom:32px; }
 .features li { padding:10px 0;border-bottom:1px solid #2a3a4a;font-size:15px; }
 .features li::before { content:'';color:#FFB300;font-weight:700; }
 .btn { display:inline-block;padding:16px 40px;background:linear-gradient(135deg,#FFB300,#ff8c00);border-radius:10px;color:#fff;font-weight:800;text-decoration:none;font-size:18px; }
+
+/* ===== MOBILE ===== */
+@media (max-width: 640px) {
+  nav { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
+  .container { padding: 24px 16px; }
+  h1 { font-size: 26px; }
+  .price { font-size: 40px; }
+  .btn { padding: 14px 24px; font-size: 16px; }
+}
 </style>
 </head>
 <body>

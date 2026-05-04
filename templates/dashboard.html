@@ -18,6 +18,33 @@
  .stat-card:hover { border-color: #4b5563; }
  .header { background: #0f172a; border-bottom: 1px solid #1e293b; }
  .file-tag { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; }
+
+ /* ===== MOBILE NAV ===== */
+ .nav-links { display: flex; align-items: center; gap: 1.5rem; }
+ .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; }
+ .hamburger span { display: block; width: 24px; height: 2px; background: #94a3b8; border-radius: 2px; transition: all 0.3s; }
+ .mobile-menu { display: none; flex-direction: column; gap: 0; background: #1e293b; border-top: 1px solid #334155; }
+ .mobile-menu.open { display: flex; }
+ .mobile-menu a { padding: 14px 24px; color: #94a3b8; text-decoration: none; font-size: 15px; border-bottom: 1px solid #334155; }
+ .mobile-menu a:hover { color: #fff; background: #0f172a; }
+
+ @media (max-width: 640px) {
+ .nav-links { display: none; }
+ .hamburger { display: flex; }
+ header { padding: 12px 16px; }
+ main { padding: 24px 16px; }
+ .stat-card { padding: 1rem; }
+ h1.text-3xl { font-size: 1.5rem; }
+ .upload-box { padding: 24px 16px; }
+ .upload-box .text-5xl { font-size: 2.5rem; }
+ .overflow-x-auto { -webkit-overflow-scrolling: touch; }
+ table { min-width: 480px; }
+ .flex.items-center.justify-between { flex-wrap: wrap; gap: 8px; }
+ #form-extra .grid { grid-template-columns: 1fr; }
+ /* Banner upgrade mobile */
+ .mb-8.p-5.rounded-xl.flex { flex-direction: column; align-items: flex-start; }
+ .mb-8.p-5.rounded-xl.flex a { width: 100%; text-align: center; }
+ }
  </style>
 </head>
 <body>
@@ -27,7 +54,7 @@
  <img src="/static/img/logo_nav.png" alt="BandoMatch AI" style="width:40px;height:40px;object-fit:contain;border-radius:50%;">
  <span class="text-xl font-bold" style="color:#fff;">Bando<span style="color:#22c55e;">Match</span> AI</span>
  </a>
- <nav class="flex items-center gap-6 text-sm text-slate-400">
+ <nav class="nav-links text-sm text-slate-400">
         <a href="/" class="hover:text-white transition">Home</a>
         <a href="/bandi/" class="hover:text-white transition">Bandi Disponibili</a>
         <a href="/auth/logout" class="hover:text-red-400 transition">Esci</a>
@@ -35,7 +62,15 @@
  {{ current_user.piano if current_user.piano else 'free' }}
  </span>
  </nav>
+ <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
+ <span></span><span></span><span></span>
+ </button>
 </header>
+<nav class="mobile-menu" id="mobile-menu">
+ <a href="/">Home</a>
+ <a href="/bandi/">Bandi Disponibili</a>
+ <a href="/auth/logout">Esci</a>
+</nav>
 
 <main class="max-w-5xl mx-auto px-6 py-10">
 
@@ -215,6 +250,11 @@
 </main>
 
 <script>
+function toggleMenu() {
+ const m = document.getElementById('mobile-menu');
+ m.classList.toggle('open');
+}
+
 const uploadBox = document.getElementById('upload-box');
 uploadBox.addEventListener('dragover', (e) => { e.preventDefault(); uploadBox.classList.add('dragover'); });
 uploadBox.addEventListener('dragleave', () => uploadBox.classList.remove('dragover'));

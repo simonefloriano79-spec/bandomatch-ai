@@ -11,7 +11,14 @@
  @keyframes fall { 0% { transform: translateY(-100px) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
  .pulse-green { animation: pulse-g 2s infinite; }
  @keyframes pulse-g { 0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 50% { box-shadow: 0 0 0 20px rgba(16, 185, 129, 0); } }
- </style>
+ 
+/* ===== MOBILE ===== */
+@media (max-width: 640px) {
+  body { padding: 16px; }
+  .container, .max-w-lg, .max-w-md { padding: 20px 16px !important; }
+  h1 { font-size: 1.5rem !important; }
+}
+</style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
  <div class="max-w-lg w-full text-center">

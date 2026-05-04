@@ -36,6 +36,25 @@
  .stat-num { font-size: 2.5rem; font-weight: 800; line-height: 1; }
  .progress-bar { height: 8px; border-radius: 4px; background: #1e293b; overflow: hidden; }
  .progress-fill { height: 100%; border-radius: 4px; transition: width 1s ease; }
+
+ /* ===== MOBILE ===== */
+ .nav-actions { display: flex; align-items: center; gap: 0.75rem; }
+ .hamburger-r { display: none; flex-direction: column; gap: 5px; cursor: pointer; padding: 4px; background: none; border: none; }
+ .hamburger-r span { display: block; width: 24px; height: 2px; background: #94a3b8; border-radius: 2px; }
+ .mobile-menu-r { display: none; flex-direction: column; background: #1e293b; border-top: 1px solid #334155; }
+ .mobile-menu-r.open { display: flex; }
+ .mobile-menu-r a, .mobile-menu-r button { padding: 14px 24px; color: #94a3b8; text-decoration: none; font-size: 15px; border-bottom: 1px solid #334155; text-align: left; background: none; border-left: none; border-right: none; border-top: none; cursor: pointer; width: 100%; }
+
+ @media (max-width: 640px) {
+ .nav-actions { display: none; }
+ .hamburger-r { display: flex; }
+ header { padding: 12px 16px; }
+ main { padding: 20px 12px; }
+ .stat-num { font-size: 1.75rem; }
+ h1.text-3xl { font-size: 1.4rem; }
+ .max-w-4xl { padding-left: 12px; padding-right: 12px; }
+ .grid.grid-cols-2 { grid-template-columns: 1fr 1fr; }
+ }
  </style>
 </head>
 <body>
@@ -49,7 +68,7 @@
  <div class="text-xs text-slate-500 font-medium tracking-widest uppercase">Semaforo Verde per i tuoi Finanziamenti</div>
  </div>
  </a>
- <div class="flex items-center gap-3">
+ <div class="nav-actions">
  <a href="/dashboard/home" class="px-4 py-2 rounded-lg text-slate-400 text-sm hover:text-white transition"
  style="border:1px solid rgba(255,255,255,0.1);">← Dashboard</a>
  {% if is_premium %}
@@ -62,7 +81,18 @@
  </a>
  {% endif %}
  </div>
+ <button class="hamburger-r" onclick="document.getElementById('mob-menu-r').classList.toggle('open')" aria-label="Menu">
+ <span></span><span></span><span></span>
+ </button>
 </header>
+<nav class="mobile-menu-r" id="mob-menu-r">
+ <a href="/dashboard/home">← Dashboard</a>
+ {% if is_premium %}
+ <button onclick="scaricaDossier()">Scarica Dossier PDF</button>
+ {% else %}
+ <a href="/upgrade">Sblocca Premium</a>
+ {% endif %}
+</nav>
 
 <main class="max-w-4xl mx-auto px-6 py-10" id="main-content">
 

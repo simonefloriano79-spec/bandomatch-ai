@@ -19,7 +19,28 @@
     .badge-riaperto  { background:#1e3a5f; color:#60a5fa; }
     .badge-attivo    { background:#14532d; color:#4ade80; }
     .badge-disattivo { background:#3b1f1f; color:#f87171; }
-  </style>
+  
+/* ===== MOBILE ADMIN ===== */
+.admin-hamburger { display:none; position:fixed; top:16px; left:16px; z-index:200; flex-direction:column; gap:5px; cursor:pointer; background:#1e293b; border:1px solid #334155; border-radius:8px; padding:8px; }
+.admin-hamburger span { display:block; width:20px; height:2px; background:#94a3b8; border-radius:2px; }
+@media (max-width: 768px) {
+  .admin-hamburger { display:flex; }
+  aside { transform: translateX(-100%); transition: transform 0.3s; position:fixed; z-index:150; height:100vh; top:0; }
+  aside.open { transform: translateX(0); }
+  .ml-64 { margin-left: 0 !important; }
+  main { padding: 16px !important; }
+  .overflow-x-auto { -webkit-overflow-scrolling: touch; }
+  h1 { font-size: 1.25rem !important; }
+  .text-3xl { font-size: 1.5rem !important; }
+}
+@media (max-width: 640px) {
+  .sm\:grid-cols-2 { grid-template-columns: 1fr !important; }
+  .sm\:grid-cols-4 { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 480px) {
+  .sm\:grid-cols-4 { grid-template-columns: 1fr !important; }
+}
+</style>
 </head>
 <body class="min-h-screen flex">
 
@@ -457,5 +478,19 @@
     {% endif %}
 
   </main>
+
+<script>
+function toggleAdminSidebar() {
+  var aside = document.querySelector('aside');
+  if (aside) aside.classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  var aside = document.querySelector('aside');
+  var btn = document.querySelector('.admin-hamburger');
+  if (aside && aside.classList.contains('open') && !aside.contains(e.target) && btn && !btn.contains(e.target)) {
+    aside.classList.remove('open');
+  }
+});
+</script>
 </body>
 </html>
