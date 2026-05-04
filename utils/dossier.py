@@ -196,8 +196,8 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
         ('FONTNAME',    (2, 0), (2, -1), 'Helvetica-Bold'),
         ('FONTNAME',    (1, 0), (1, -1), 'Helvetica'),
         ('FONTNAME',    (3, 0), (3, -1), 'Helvetica'),
-        ('FONTSIZE',    (0, 0), (-1, -1), 8.5),
-        ('PADDING',     (0, 0), (-1, -1), 10),
+        ('FONTSIZE',    (0, 0), (-1, -1), 10),
+        ('PADDING',     (0, 0), (-1, -1), 12),
         ('GRID',        (0, 0), (-1, -1), 0.5, colors.HexColor('#e2e8f0')),
         ('ROWBACKGROUNDS', (0, 0), (-1, -1),
          [colors.white, colors.HexColor('#f8fafc')]),
@@ -212,16 +212,18 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
     valore_pot   = getattr(analisi, 'valore_potenziale', 0) or 0
 
     story.append(Paragraph('Riepilogo Analisi', h2))
+    kpi_style = ParagraphStyle('kpi', fontName='Helvetica', fontSize=12,
+                               textColor=BIANCO, alignment=TA_CENTER, leading=20)
     riepilogo_data = [[
-        Paragraph(f'<b><font size="20" color="#22c55e">{bandi_verdi}</font></b><br/>'
-                  f'<font size="7" color="#64748b">BANDI COMPATIBILI</font>',
-                  styles['Normal']),
-        Paragraph(f'<b><font size="20" color="#eab308">{bandi_gialli}</font></b><br/>'
-                  f'<font size="7" color="#64748b">CONDIZIONALI</font>',
-                  styles['Normal']),
-        Paragraph(f'<b><font size="18" color="#3b82f6">{_fmt_euro(valore_pot)}</font></b><br/>'
-                  f'<font size="7" color="#64748b">VALORE POTENZIALE</font>',
-                  styles['Normal']),
+        Paragraph(f'<b><font size="28" color="#22c55e">{bandi_verdi}</font></b><br/>'
+                  f'<font size="9" color="#94a3b8">BANDI COMPATIBILI</font>',
+                  kpi_style),
+        Paragraph(f'<b><font size="28" color="#eab308">{bandi_gialli}</font></b><br/>'
+                  f'<font size="9" color="#94a3b8">CONDIZIONALI</font>',
+                  kpi_style),
+        Paragraph(f'<b><font size="24" color="#3b82f6">{_fmt_euro(valore_pot)}</font></b><br/>'
+                  f'<font size="9" color="#94a3b8">VALORE POTENZIALE</font>',
+                  kpi_style),
     ]]
     riepilogo_tbl = Table(riepilogo_data,
                           colWidths=[(PAGE_W - 2 * MARGIN) / 3] * 3)
@@ -326,8 +328,8 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
             ('FONTNAME',   (2, 0), (2, -1), 'Helvetica-Bold'),
             ('TEXTCOLOR',  (0, 0), (0, -1), SLATE_600),
             ('TEXTCOLOR',  (2, 0), (2, -1), SLATE_600),
-            ('FONTSIZE',   (0, 0), (-1, -1), 8.5),
-            ('PADDING',    (0, 0), (-1, -1), 7),
+            ('FONTSIZE',   (0, 0), (-1, -1), 10),
+            ('PADDING',    (0, 0), (-1, -1), 9),
             ('GRID',       (0, 0), (-1, -1), 0.4, colors.HexColor('#e2e8f0')),
             ('VALIGN',     (0, 0), (-1, -1), 'MIDDLE'),
         ]))
@@ -406,7 +408,6 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
         story.append(scheda)
 
     # ── DISCLAIMER FINALE ─────────────────────────────────────────────────────
-    story.append(Spacer(1, 1 * cm))
     disclaimer_testo = (
         "<b>Nota Legale:</b> Le informazioni contenute in questo dossier sono generate "
         "automaticamente da BandoMatch AI sulla base dei dati forniti e delle fonti pubbliche "
@@ -414,7 +415,10 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
         "Si raccomanda di verificare sempre i bandi ufficiali e di consultare un esperto "
         "prima di presentare qualsiasi domanda di agevolazione."
     )
-    story.append(Paragraph(disclaimer_testo, note_style))
+    story.append(KeepTogether([
+        Spacer(1, 0.8 * cm),
+        Paragraph(disclaimer_testo, note_style),
+    ]))
 
     doc.build(story, canvasmaker=_NumberedCanvas)
     return buf.getvalue()
