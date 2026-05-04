@@ -330,6 +330,28 @@
  .btn-purple:hover { box-shadow: 0 0 20px rgba(139,92,246,0.4); transform: translateY(-1px); }
  .btn-blue { background: linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; }
  .btn-blue:hover { box-shadow: 0 0 20px rgba(59,130,246,0.4); transform: translateY(-1px); }
+ /* ── Enterprise card ── */
+ .price-card.enterprise-card {
+ border-color: rgba(14,165,233,0.45);
+ background: linear-gradient(160deg, rgba(14,165,233,0.06), var(--navy2));
+ }
+ .price-enterprise-badge {
+ position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+ background: linear-gradient(135deg,#0ea5e9,#0284c7);
+ color: #fff; font-size: 0.68rem; font-weight: 800;
+ padding: 0.22rem 0.9rem; border-radius: 100px;
+ text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap;
+ }
+ .enterprise-cs-box {
+ background: rgba(14,165,233,0.1); border: 1px solid rgba(14,165,233,0.3);
+ border-radius: 8px; padding: 8px 12px; margin-bottom: 10px; text-align:center;
+ }
+ .enterprise-cs-label { font-size: 10px; font-weight: 800; color: #0ea5e9; letter-spacing: 1.5px; text-transform: uppercase; display:block; margin-bottom:4px; }
+ .enterprise-price-old { font-size: 13px; color: #64748b; text-decoration: line-through; margin-right:4px; }
+ .enterprise-price-new { font-size: 20px; font-weight: 900; color: #0ea5e9; }
+ .enterprise-price-note { font-size: 10px; color: #64748b; display:block; margin-top:2px; }
+ .btn-enterprise { background: linear-gradient(135deg,#0ea5e9,#0284c7); color:#fff; }
+ .btn-enterprise:hover { box-shadow: 0 0 20px rgba(14,165,233,0.4); transform: translateY(-1px); }
 
  /* ── Testimonianze ── */
  .testi-grid {
@@ -677,6 +699,28 @@
  <li><span class="feat-ok"></span> Supporto prioritario</li>
  </ul>
  <a href="/auth/register?piano=pro" class="price-btn btn-purple">Prova Pro</a>
+ </div>
+ <!-- ENTERPRISE -->
+ <div class="price-card enterprise-card">
+ <div class="price-enterprise-badge">Partner Istituzionali</div>
+ <div class="price-name" style="color:#0ea5e9;">Enterprise</div>
+ <div class="enterprise-cs-box">
+ <span class="enterprise-cs-label">Coming Soon</span>
+ <span class="enterprise-price-old">&euro;499/mese</span>
+ <span class="enterprise-price-new">&euro;299<span style="font-size:13px;font-weight:400;color:#64748b;">/mese</span></span>
+ <span class="enterprise-price-note">Prezzo lancio &middot; primi 6 mesi</span>
+ </div>
+ <div class="price-desc">Per CNA, CAF, commercialisti con portafoglio clienti</div>
+ <ul class="price-features">
+ <li><span class="feat-ok">&#10003;</span> Tutto di Pro</li>
+ <li><span class="feat-ok">&#10003;</span> Multi-azienda illimitato</li>
+ <li><span class="feat-ok">&#10003;</span> Dashboard aggregata clienti</li>
+ <li><span class="feat-ok">&#10003;</span> Report white-label con il tuo logo</li>
+ <li><span class="feat-ok">&#10003;</span> Export massivo Excel</li>
+ <li><span class="feat-ok">&#10003;</span> Alert prioritari bandi &gt;&euro;100K</li>
+ <li><span class="feat-ok">&#10003;</span> Account manager dedicato</li>
+ </ul>
+ <a href="/upgrade" class="price-btn btn-enterprise">Richiedi Accesso Anticipato</a>
  </div>
  <div class="price-card">
  <div class="price-name">Consulenza</div>
