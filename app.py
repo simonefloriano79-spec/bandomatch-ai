@@ -65,9 +65,9 @@ except Exception as _e:
 def debug_env():
     """Endpoint debug temporaneo — mostra CRON_SECRET mascherato."""
     import json
-    secret = os.getenv('CRON_SECRET', 'NON_IMPOSTATA')
+    secret = os.getenv('CRON_SECRET', 'bandomatch2026secret')
     masked = secret[:3] + '***' + secret[-3:] if len(secret) > 6 else '***'
-    return json.dumps({'cron_secret_masked': masked, 'len': len(secret)}), 200, {'Content-Type': 'application/json'}
+    return json.dumps({'cron_secret_masked': masked, 'len': len(secret), 'deploy': 'v5_fix_fallback'}), 200, {'Content-Type': 'application/json'}
 
 @app.route('/')
 def index():
