@@ -39,6 +39,8 @@ app.register_blueprint(auth_bp, url_prefix='/auth')
 app.register_blueprint(bandi_bp, url_prefix='/bandi')
 app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
 app.register_blueprint(scraper_bp, url_prefix='/scraper')
+with app.app_context():
+    db.create_all()
 
 @app.route('/')
 def index():
