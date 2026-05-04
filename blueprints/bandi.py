@@ -1,118 +1,220 @@
-from flask import Blueprint, request, send_file, jsonify, current_app
-from flask_login import login_required, current_user
-from sqlalchemy import and_
-from models.bandi import Bandi
-from models.partecipazioni import Partecipazioni
-from utils.dossier import generate_dossier_pdf
-from db import db
-import os
+from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
+from sqlalchemy import desc, or_
+from models.utente import Utente as User
+from models.bando import Bando
+from app import db
 
-bandi_bp = Blueprint('bandi', __name__, url_prefix='/api/v1/bandi')
+bandi_bp = Blueprint('bandi', __name__, url_prefix='/bandi')
 
 
-@bandi_bp.route('', methods=['GET'])
-@login_required
-def list_bandi():
-    """Lista i bandi disponibili con filtri opzionali"""
+@bandi_bp.route('/', methods=['GET'])
+def lista_bandi():
+    """
+    Lista tutti i bandi con filtri e paginazione.
+    Query params:
+    - page: numero pagina (default 1)
+    - search: ricerca per titolo/descrizione
+    - categoria: filtra per categoria
+    - stato: filtra per stato (aperto, chiuso, in_scadenza)
+    """
     try:
-        stato = request.args.get('stato')
-        categoria = request.args.get('categoria')
-        search = request.args.get('search')
         page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('per_page', 20, type=int)
-        
-        query = Bandi.query
-        
-        if stato:
-            query = query.filter_by(stato=stato)
-        if categoria:
-            query = query.filter_by(categoria=categoria)
+        search = request.args.get('search', '', type=str)
+        categoria = request.args.get('categoria', '', type=str)
+        stato = request.args.get('stato', '', type=str)
+        per_pagina = 12
+
+        query = Bando.query
+
+        # Filtro ricerca
         if search:
+            search_term = f"%{search}%"
             query = query.filter(
                 or_(
-                    Bandi.titolo.ilike(f'%{search}%'),
-                    Bandi.descrizione.ilike(f'%{search}%')
+                    Bando.titolo.ilike(search_term),
+                    Bando.descrizione.ilike(search_term)
                 )
             )
-        
-        paginate = query.paginate(page=page, per_page=per_page)
-        
-        return jsonify({
-            'success': True,
-            'data': [bando.to_dict() for bando in paginate.items],
-            'pagination': {
-                'page': page,
-                'per_page': per_page,
-                'total': paginate.total,
-                'pages': paginate.pages
-            }
-        }), 200
-    except Exception as e:
-        current_app.logger.error(f'Errore list_bandi: {str(e)}')
-        return jsonify({'success': False, 'error': str(e)}), 500
 
+        # Filtro categoria
+        if categoria:
+            query = query.filter(Bando.categoria == categoria)
 
-@bandi_bp.route('/<int:id_bando>', methods=['GET'])
-@login_required
-def get_bando(id_bando):
-    """Recupera un singolo bando"""
-    try:
-        bando = Bandi.query.get(id_bando)
-        if not bando:
-            return jsonify({'success': False, 'error': 'Bando non trovato'}), 404
-        
-        return jsonify({
-            'success': True,
-            'data': bando.to_dict()
-        }), 200
-    except Exception as e:
-        current_app.logger.error(f'Errore get_bando: {str(e)}')
-        return jsonify({'success': False, 'error': str(e)}), 500
+        # Filtro stato
+        if stato == 'aperto':
+            query = query.filter(Bando.stato == 'aperto')
+        elif stato == 'chiuso':
+            query = query.filter(Bando.stato == 'chiuso')
+        elif stato == 'in_scadenza':
+            from datetime import datetime, timedelta
+            oggi = datetime.utcnow()
+            fra_giorni = oggi + timedelta(days=7)
+            query = query.filter(
+                Bando.data_scadenza.between(oggi, fra_giorni),
+                Bando.stato == 'aperto'
+            )
 
+        # Ordinamento: più recenti prima
+        query = query.order_by(desc(Bando.data_creazione))
 
-@bandi_bp.route('/dossier', methods=['GET'])
-@login_required
-def get_dossier():
-    """Genera e scarica il dossier PDF di un bando"""
-    try:
-        id_bando = request.args.get('id_bando', type=int)
-        
-        if not id_bando:
-            return jsonify({'success': False, 'error': 'Parametro id_bando obbligatorio'}), 400
-        
-        bando = Bandi.query.get(id_bando)
-        if not bando:
-            return jsonify({'success': False, 'error': 'Bando non trovato'}), 404
-        
-        partecipazioni = Partecipazioni.query.filter_by(
-            id_bando=id_bando,
-            id_user=current_user.id
+        # Paginazione
+        paginate = query.paginate(page=page, per_page=per_pagina, error_out=False)
+        bandi = paginate.items
+        total_pages = paginate.pages
+
+        # Recupera categorie uniche per filtro
+        categorie = db.session.query(Bando.categoria).distinct().filter(
+            Bando.categoria != None
         ).all()
-        
-        if not partecipazioni:
-            return jsonify({'success': False, 'error': 'Nessuna partecipazione trovata per questo bando'}), 403
-        
-        pdf_path = generate_dossier_pdf(
-            bando=bando,
-            partecipazioni=partecipazioni,
-            user=current_user
+        categorie = [c[0] for c in categorie]
+
+        return render_template(
+            'bandi/lista.html',
+            bandi=bandi,
+            page=page,
+            total_pages=total_pages,
+            search=search,
+            categoria=categoria,
+            stato=stato,
+            categorie=categorie
         )
-        
-        if not pdf_path or not os.path.exists(pdf_path):
-            return jsonify({'success': False, 'error': 'Errore nella generazione del PDF'}), 500
-        
-        filename = f"dossier_bando_{id_bando}.pdf"
-        
-        return send_file(
-            pdf_path,
-            mimetype='application/pdf',
-            as_attachment=True,
-            download_name=filename
-        )
-    
-    except ValueError as ve:
-        current_app.logger.error(f'Errore validazione get_dossier: {str(ve)}')
-        return jsonify({'success': False, 'error': 'Parametri non validi'}), 400
+
     except Exception as e:
-        current_app.logger.error(f'Errore get_dossier: {str(e)}')
-        return jsonify({'success': False, 'error': str(e)}), 500
+        flash(f'Errore nel caricamento dei bandi: {str(e)}', 'error')
+        return redirect(url_for('index'))
+
+
+@bandi_bp.route('/<int:bando_id>', methods=['GET'])
+def dettaglio_bando(bando_id):
+    """
+    Visualizza dettaglio di un singolo bando.
+    """
+    try:
+        bando = Bando.query.get_or_404(bando_id)
+        
+        return render_template(
+            'bandi/dettaglio.html',
+            bando=bando
+        )
+
+    except Exception as e:
+        flash(f'Errore nel caricamento del bando: {str(e)}', 'error')
+        return redirect(url_for('bandi.lista_bandi'))
+
+
+@bandi_bp.route('/<int:bando_id>/partecipa', methods=['POST'])
+def partecipa_bando(bando_id):
+    """
+    Registra la partecipazione di un utente a un bando.
+    Richiede autenticazione.
+    """
+    from flask_login import current_user, login_required
+    
+    @login_required
+    def _partecipa():
+        try:
+            bando = Bando.query.get_or_404(bando_id)
+            user = User.query.get(current_user.id)
+
+            if not user:
+                flash('Utente non trovato.', 'error')
+                return redirect(url_for('bandi.dettaglio_bando', bando_id=bando_id))
+
+            # Verifica se già partecipa
+            if user in bando.utenti_partecipanti:
+                flash('Sei già iscritto a questo bando.', 'warning')
+                return redirect(url_for('bandi.dettaglio_bando', bando_id=bando_id))
+
+            # Verifica stato bando
+            if bando.stato != 'aperto':
+                flash('Questo bando non è più aperto alle iscrizioni.', 'error')
+                return redirect(url_for('bandi.dettaglio_bando', bando_id=bando_id))
+
+            # Aggiungi partecipazione
+            bando.utenti_partecipanti.append(user)
+            db.session.commit()
+
+            flash('Ti sei iscritto con successo al bando!', 'success')
+            return redirect(url_for('bandi.dettaglio_bando', bando_id=bando_id))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Errore nella registrazione: {str(e)}', 'error')
+            return redirect(url_for('bandi.dettaglio_bando', bando_id=bando_id))
+
+    return _partecipa()
+
+
+@bandi_bp.route('/<int:bando_id>/ritira', methods=['POST'])
+def ritira_bando(bando_id):
+    """
+    Ritira la partecipazione di un utente da un bando.
+    Richiede autenticazione.
+    """
+    from flask_login import current_user, login_required
+    
+    @login_required
+    def _ritira():
+        try:
+            bando = Bando.query.get_or_404(bando_id)
+            user = User.query.get(current_user.id)
+
+            if not user:
+                flash('Utente non trovato.', 'error')
+                return redirect(url_for('bandi.dettaglio_bando', bando_id=bando_id))
+
+            if user not in bando.utenti_partecipanti:
+                flash('Non sei iscritto a questo bando.', 'warning')
+                return redirect(url_for('bandi.dettaglio_bando', bando_id=bando_id))
+
+            # Rimuovi partecipazione
+            bando.utenti_partecipanti.remove(user)
+            db.session.commit()
+
+            flash('Ti sei ritirato dal bando.', 'success')
+            return redirect(url_for('bandi.dettaglio_bando', bando_id=bando_id))
+
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Errore nel ritiro: {str(e)}', 'error')
+            return redirect(url_for('bandi.dettaglio_bando', bando_id=bando_id))
+
+    return _ritira()
+
+
+@bandi_bp.route('/api/search', methods=['GET'])
+def api_search_bandi():
+    """
+    API endpoint per ricerca AJAX bandi.
+    Query params: q (query), limit (default 10)
+    """
+    try:
+        q = request.args.get('q', '', type=str)
+        limit = request.args.get('limit', 10, type=int)
+
+        if not q or len(q) < 2:
+            return jsonify([])
+
+        search_term = f"%{q}%"
+        risultati = Bando.query.filter(
+            or_(
+                Bando.titolo.ilike(search_term),
+                Bando.descrizione.ilike(search_term)
+            ),
+            Bando.stato == 'aperto'
+        ).limit(limit).all()
+
+        data = [
+            {
+                'id': b.id,
+                'titolo': b.titolo,
+                'categoria': b.categoria,
+                'url': url_for('bandi.dettaglio_bando', bando_id=b.id)
+            }
+            for b in risultati
+        ]
+
+        return jsonify(data)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
