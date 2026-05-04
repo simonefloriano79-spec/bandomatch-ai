@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 from sqlalchemy.exc import IntegrityError
 from models.user import User
 from models.bando import Bando
-from app import db
+from extensions import db
 
 
 def inizializza_database():

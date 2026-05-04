@@ -12,7 +12,7 @@ from flask import (
 from flask_login import login_required, current_user
 from werkzeug.utils import secure_filename
 
-from app import db
+from extensions import db
 from models.analisi import Analisi
 from visura_parser import parse_visura
 from matching_engine import match_tutti_bandi

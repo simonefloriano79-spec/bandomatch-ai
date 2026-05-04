@@ -118,7 +118,8 @@ def bando_llm_to_model(bando_dict, sorgente_nome, regione=None):
 
 def run_scraper(priorita=None, fonte_singola=None):
     """Esegue lo scraper e salva i bandi nel database PostgreSQL."""
-    from app import app, db
+    from app import app
+    from extensions import db
     from models.bando import Bando
     import national_scraper as ns
 

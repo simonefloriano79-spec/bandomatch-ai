@@ -3,7 +3,7 @@ BandoMatch AI — Modello Analisi
 Salva il risultato di ogni analisi visura camerale effettuata da un utente.
 """
 from datetime import datetime
-from app import db
+from extensions import db
 
 
 class Analisi(db.Model):

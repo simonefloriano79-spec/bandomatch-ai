@@ -4,7 +4,7 @@ from functools import wraps
 from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
-from app import db
+from extensions import db
 from models.utente import Utente as User
 from models.bando import Bando
 

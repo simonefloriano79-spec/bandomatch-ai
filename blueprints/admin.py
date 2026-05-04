@@ -168,7 +168,6 @@ def scraper():
 def import_bandi():
     """Importa bandi in bulk nel DB PostgreSQL. Richiede login."""
     try:
-        from app import db
         from datetime import datetime
         data = request.get_json(silent=True) or {}
         bandi_list = data.get('bandi', [])

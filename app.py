@@ -1,7 +1,6 @@
 import os
 from flask import Flask, redirect, url_for, render_template
 from flask_login import LoginManager, current_user
-from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -17,7 +16,9 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10 MB max upload
 
-db = SQLAlchemy(app)
+# Usa l'istanza db condivisa da extensions.py (evita import circolari)
+from extensions import db
+db.init_app(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -49,11 +50,16 @@ with app.app_context():
     db.create_all()
 
 # Avvia lo scheduler APScheduler per scraping bandi giornaliero alle 06:00 UTC
-from apscheduler.schedulers.background import BackgroundScheduler
-from utils.scheduler import start_scheduler
-_scheduler = BackgroundScheduler()
-start_scheduler(_scheduler, app)
-_scheduler.start()
+# Wrappato in try/except per evitare che un errore dello scheduler faccia crashare l'app
+try:
+    from apscheduler.schedulers.background import BackgroundScheduler
+    from utils.scheduler import start_scheduler
+    _scheduler = BackgroundScheduler()
+    start_scheduler(_scheduler, app)
+    _scheduler.start()
+    app.logger.info("Scheduler APScheduler avviato con successo.")
+except Exception as _e:
+    app.logger.error(f"Scheduler non avviato (non critico): {_e}")
 
 @app.route('/')
 def index():

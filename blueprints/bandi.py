@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify, redirect, url_for, flash
 from sqlalchemy import desc, or_
 from models.bando import Bando
-from app import db
+from extensions import db
 
 bandi_bp = Blueprint('bandi', __name__, url_prefix='/bandi')
 
