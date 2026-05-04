@@ -185,10 +185,52 @@ def job_scraping_bandi(app):
                 totale_nuovi, totale_aggiornati, totale_errori))
             logger.info("Totale bandi nel DB: {}".format(totale_db))
 
+            # ── Notifiche match: invia SOLO se ci sono nuovi bandi ──
+            if totale_nuovi > 0:
+                _invia_notifiche_nuovi_match(app, totale_nuovi)
+
         except Exception as e:
             logger.error("Scheduler: errore critico nel job: {}".format(e))
 
     logger.info("=" * 50)
+
+
+def _invia_notifiche_nuovi_match(app, totale_nuovi: int):
+    """
+    Invia email di notifica a tutti gli utenti attivi quando vengono trovati nuovi bandi.
+    Chiamata dallo scheduler SOLO quando totale_nuovi > 0.
+    """
+    try:
+        from models.utente import Utente
+        from utils.notifiche import invia_notifica_match
+
+        utenti_attivi = Utente.query.filter_by(attivo=True).all()
+        inviati = 0
+        errori = 0
+
+        for utente in utenti_attivi:
+            try:
+                # Costruisce un teaser generico con il conteggio dei nuovi bandi
+                bandi_teaser = [{
+                    'titolo': f'Nuovi bandi disponibili ({totale_nuovi} aggiunti oggi)',
+                    'score': 70,
+                    'scadenza': 'Vedi dashboard',
+                    'analisi_id': None,
+                }]
+                result = invia_notifica_match(utente, bandi_teaser)
+                if result.get('success'):
+                    inviati += 1
+                else:
+                    errori += 1
+            except Exception as e:
+                logger.warning("Errore notifica per {}: {}".format(
+                    getattr(utente, 'email', '?'), e))
+                errori += 1
+
+        logger.info("Notifiche match inviate: {} ok, {} errori".format(inviati, errori))
+
+    except Exception as e:
+        logger.error("Errore critico in _invia_notifiche_nuovi_match: {}".format(e))
 
 
 def start_scheduler(scheduler, app):

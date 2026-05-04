@@ -1,229 +1,459 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
- <meta charset="UTF-8">
- <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <title>Admin Dashboard - BandoMatch</title>
- <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — BandoMatch AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body { background-color: #0f172a; color: #e2e8f0; }
+    .table-row:hover { background: #1e293b; }
+    .badge-free      { background:#334155; color:#94a3b8; }
+    .badge-starter   { background:#1e3a5f; color:#60a5fa; }
+    .badge-premium   { background:#2d1b69; color:#a78bfa; }
+    .badge-pro       { background:#1a2e1a; color:#4ade80; }
+    .badge-enterprise{ background:#3b1f1f; color:#f87171; }
+    .badge-aperto    { background:#14532d; color:#4ade80; }
+    .badge-chiuso    { background:#3b1f1f; color:#f87171; }
+    .badge-sospeso   { background:#422006; color:#fb923c; }
+    .badge-riaperto  { background:#1e3a5f; color:#60a5fa; }
+    .badge-attivo    { background:#14532d; color:#4ade80; }
+    .badge-disattivo { background:#3b1f1f; color:#f87171; }
+  </style>
 </head>
-<body class="bg-gray-900 text-white">
- <div class="min-h-screen">
- <!-- Navigation -->
- <nav class="bg-gray-800 border-b border-gray-700">
- <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
- <div class="flex justify-between items-center h-16">
- <div class="flex items-center">
- <h1 class="text-2xl font-bold text-blue-400">BandoMatch Admin</h1>
- </div>
- <div class="flex items-center space-x-4">
- <span class="text-sm text-gray-400">{{ current_user.email if current_user else 'Guest' }}</span>
- <a href="{{ url_for('auth.logout') }}" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg transition text-sm">Logout</a>
- </div>
- </div>
- </div>
- </nav>
+<body class="min-h-screen flex">
 
- <!-- Main Content -->
- <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
- <!-- Header -->
- <div class="mb-8">
- <h2 class="text-3xl font-bold mb-2">Dashboard Amministrativa</h2>
- <p class="text-gray-400">Gestisci utenti e monitora l'attività della piattaforma</p>
- </div>
+  <!-- Sidebar -->
+  <aside class="w-56 bg-slate-900 border-r border-slate-700 flex flex-col py-6 px-3 shrink-0">
+    <div class="mb-8 px-4">
+      <span class="text-indigo-400 font-bold text-lg tracking-tight">BandoMatch</span>
+      <span class="ml-1 text-xs bg-indigo-600 text-white px-2 py-0.5 rounded-full font-semibold">ADMIN</span>
+    </div>
+    <nav class="flex flex-col gap-1">
+      <a href="{{ url_for('admin.index') }}"
+         class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors
+                {% if sezione == 'dashboard' %}bg-indigo-600 text-white{% else %}text-slate-400 hover:text-white hover:bg-slate-700{% endif %}">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+        Dashboard
+      </a>
+      <a href="{{ url_for('admin.utenti') }}"
+         class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors
+                {% if sezione == 'utenti' %}bg-indigo-600 text-white{% else %}text-slate-400 hover:text-white hover:bg-slate-700{% endif %}">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+        </svg>
+        Utenti
+      </a>
+      <a href="{{ url_for('admin.abbonati') }}"
+         class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors
+                {% if sezione == 'abbonati' %}bg-indigo-600 text-white{% else %}text-slate-400 hover:text-white hover:bg-slate-700{% endif %}">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"/>
+        </svg>
+        Abbonati
+      </a>
+      <a href="{{ url_for('admin.bandi') }}"
+         class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors
+                {% if sezione == 'bandi' %}bg-indigo-600 text-white{% else %}text-slate-400 hover:text-white hover:bg-slate-700{% endif %}">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        Bandi
+      </a>
+      <a href="{{ url_for('admin.scraper_panel') }}"
+         class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors
+                {% if sezione == 'scraper' %}bg-indigo-600 text-white{% else %}text-slate-400 hover:text-white hover:bg-slate-700{% endif %}">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        Scraper
+      </a>
+    </nav>
+    <div class="mt-auto px-4">
+      <a href="{{ url_for('dashboard.home') }}"
+         class="text-slate-500 hover:text-slate-300 text-xs flex items-center gap-2 transition-colors">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        Torna al sito
+      </a>
+    </div>
+  </aside>
 
- <!-- Stats Cards -->
- <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
- <!-- Total Users Card -->
- <div class="bg-gray-800 rounded-lg border border-gray-700 p-6 hover:border-blue-500 transition">
- <div class="flex items-center justify-between">
- <div>
- <p class="text-gray-400 text-sm font-medium">Totale Utenti</p>
- <p class="text-4xl font-bold mt-2">{{ stats.total_users }}</p>
- </div>
- <div class="bg-blue-500 bg-opacity-20 p-3 rounded-lg">
- <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.856-1.487M15 10a3 3 0 11-6 0 3 3 0 016 0zM16 20H4v-2a4 4 0 018-0v2a4 4 0 008 0v-2"></path>
- </svg>
- </div>
- </div>
- <p class="text-xs text-gray-500 mt-4">Ultimi 30 giorni</p>
- </div>
+  <!-- Main content -->
+  <main class="flex-1 overflow-y-auto p-8">
 
- <!-- Total Bandi Card -->
- <div class="bg-gray-800 rounded-lg border border-gray-700 p-6 hover:border-green-500 transition">
- <div class="flex items-center justify-between">
- <div>
- <p class="text-gray-400 text-sm font-medium">Totale Bandi</p>
- <p class="text-4xl font-bold mt-2">{{ stats.total_bandi }}</p>
- </div>
- <div class="bg-green-500 bg-opacity-20 p-3 rounded-lg">
- <svg class="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7 12a5 5 0 1110 0A5 5 0 017 12z"></path>
- </svg>
- </div>
- </div>
- <p class="text-xs text-gray-500 mt-4">Nel database</p>
- </div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="mb-6 space-y-2">
+          {% for category, message in messages %}
+            <div class="px-4 py-3 rounded-lg text-sm font-medium
+                        {% if category == 'error' %}bg-red-900/50 text-red-300 border border-red-700
+                        {% else %}bg-green-900/50 text-green-300 border border-green-700{% endif %}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
 
- <!-- Active Bandi Card -->
- <div class="bg-gray-800 rounded-lg border border-gray-700 p-6 hover:border-purple-500 transition">
- <div class="flex items-center justify-between">
- <div>
- <p class="text-gray-400 text-sm font-medium">Bandi Attivi</p>
- <p class="text-4xl font-bold mt-2">{{ stats.active_bandi }}</p>
- </div>
- <div class="bg-purple-500 bg-opacity-20 p-3 rounded-lg">
- <svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
- </svg>
- </div>
- </div>
- <p class="text-xs text-gray-500 mt-4">In corso</p>
- </div>
- </div>
+    {# ===== DASHBOARD ===== #}
+    {% if sezione == 'dashboard' %}
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold text-white">Dashboard Admin</h1>
+      <p class="text-slate-400 text-sm mt-1">Panoramica generale di BandoMatch AI</p>
+    </div>
 
- <!-- Scraping Section -->
- <div class="bg-gray-800 rounded-lg border border-gray-700 p-6 mb-12">
- <div class="flex items-center justify-between">
- <div>
- <h3 class="text-xl font-bold">Gestione Scraping</h3>
- <p class="text-gray-400 text-sm mt-1">Sincronizza i bandi dalle fonti esterne</p>
- </div>
- <form id="scraping-form" method="POST" action="{{ url_for('admin.manual_scraping') }}">
- <button type="submit" class="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 rounded-lg font-medium transition flex items-center space-x-2" id="scraping-btn">
- <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
- <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
- </svg>
- <span id="scraping-text">Avvia Scraping Manuale</span>
- </button>
- </form>
- </div>
- <div id="scraping-status" class="mt-4 text-sm text-gray-400 hidden">
- <p>Operazione in corso...</p>
- </div>
- </div>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div class="bg-slate-800 border border-slate-700 rounded-xl p-5">
+        <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Iscritti totali</p>
+        <p class="text-3xl font-bold text-white mt-2">{{ stats.totale_iscritti }}</p>
+        <p class="text-slate-500 text-xs mt-1">+{{ stats.iscritti_oggi }} oggi</p>
+      </div>
+      <div class="bg-slate-800 border border-slate-700 rounded-xl p-5">
+        <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Premium</p>
+        <p class="text-3xl font-bold text-purple-400 mt-2">{{ stats.abbonati_premium }}</p>
+        <p class="text-slate-500 text-xs mt-1">9,90 euro/mese</p>
+      </div>
+      <div class="bg-slate-800 border border-slate-700 rounded-xl p-5">
+        <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Pro</p>
+        <p class="text-3xl font-bold text-green-400 mt-2">{{ stats.abbonati_pro }}</p>
+        <p class="text-slate-500 text-xs mt-1">29,90 euro/mese</p>
+      </div>
+      <div class="bg-slate-800 border border-slate-700 rounded-xl p-5">
+        <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">MRR</p>
+        <p class="text-3xl font-bold text-indigo-400 mt-2">{{ "%.2f"|format(stats.mrr) }} euro</p>
+        <p class="text-slate-500 text-xs mt-1">Ricavi mensili ricorrenti</p>
+      </div>
+    </div>
 
- <!-- Users Table Section -->
- <div class="bg-gray-800 rounded-lg border border-gray-700 overflow-hidden">
- <div class="px-6 py-4 border-b border-gray-700">
- <h3 class="text-xl font-bold">Gestione Utenti</h3>
- </div>
- <div class="overflow-x-auto">
- <table class="w-full">
- <thead>
- <tr class="border-b border-gray-700 bg-gray-700 bg-opacity-50">
- <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300">Email</th>
- <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300">Piano</th>
- <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300">Data Iscrizione</th>
- <th class="px-6 py-4 text-left text-sm font-semibold text-gray-300">Stato</th>
- <th class="px-6 py-4 text-right text-sm font-semibold text-gray-300">Azioni</th>
- </tr>
- </thead>
- <tbody>
- {% if users %}
- {% for user in users %}
- <tr class="border-b border-gray-700 hover:bg-gray-700 hover:bg-opacity-30 transition">
- <td class="px-6 py-4 text-sm">
- <div class="flex items-center space-x-2">
- <div class="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-xs font-bold">
- {{ user.email[0].upper() }}
- </div>
- <span class="text-white">{{ user.email }}</span>
- </div>
- </td>
- <td class="px-6 py-4 text-sm">
- <span class="px-3 py-1 bg-blue-500 bg-opacity-20 text-blue-300 rounded-full text-xs font-medium">
- {{ user.plan if user.plan else 'Free' }}
- </span>
- </td>
- <td class="px-6 py-4 text-sm text-gray-400">
- {{ user.created_at.strftime('%d/%m/%Y') if user.created_at else 'N/A' }}
- </td>
- <td class="px-6 py-4 text-sm">
- {% if user.is_active %}
- <span class="px-3 py-1 bg-green-500 bg-opacity-20 text-green-300 rounded-full text-xs font-medium">Attivo</span>
- {% else %}
- <span class="px-3 py-1 bg-red-500 bg-opacity-20 text-red-300 rounded-full text-xs font-medium">Inattivo</span>
- {% endif %}
- </td>
- <td class="px-6 py-4 text-sm text-right">
- <button class="text-blue-400 hover:text-blue-300 transition text-xs font-medium" onclick="editUser('{{ user.id }}')">
- Modifica
- </button>
- </td>
- </tr>
- {% endfor %}
- {% else %}
- <tr>
- <td colspan="5" class="px-6 py-8 text-center text-gray-400">
- Nessun utente trovato
- </td>
- </tr>
- {% endif %}
- </tbody>
- </table>
- </div>
- 
- <!-- Pagination -->
- {% if pages> 1 %}
- <div class="px-6 py-4 border-t border-gray-700 flex items-center justify-between">
- <p class="text-sm text-gray-400">Pagina {{ current_page }} di {{ pages }}</p>
- <div class="flex space-x-2">
- {% if current_page> 1 %}
- <a href="{{ url_for('admin.dashboard', page=current_page-1) }}" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm transition">← Precedente</a>
- {% endif %}
- {% if current_page < pages %}
- <a href="{{ url_for('admin.dashboard', page=current_page+1) }}" class="px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded text-sm transition">Successivo →</a>
- {% endif %}
- </div>
- </div>
- {% endif %}
- </div>
- </main>
- </div>
+    <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+      <div class="bg-slate-800 border border-slate-700 rounded-xl p-5">
+        <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Bandi nel DB</p>
+        <p class="text-3xl font-bold text-white mt-2">{{ stats.totale_bandi }}</p>
+        <p class="text-slate-500 text-xs mt-1">{{ stats.bandi_aperti }} aperti</p>
+      </div>
+      <div class="bg-slate-800 border border-slate-700 rounded-xl p-5">
+        <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Analisi totali</p>
+        <p class="text-3xl font-bold text-white mt-2">{{ stats.totale_analisi }}</p>
+        <p class="text-slate-500 text-xs mt-1">Visure analizzate</p>
+      </div>
+      <div class="bg-slate-800 border border-slate-700 rounded-xl p-5">
+        <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider">Ultimo scraping</p>
+        <p class="text-lg font-bold text-white mt-2">{{ stats.ultimo_scraping }}</p>
+        <p class="text-slate-500 text-xs mt-1">
+          <a href="{{ url_for('admin.scraper_panel') }}" class="text-indigo-400 hover:underline">Vai allo scraper</a>
+        </p>
+      </div>
+    </div>
 
- <script>
- document.getElementById('scraping-form').addEventListener('submit', async function(e) {
- e.preventDefault();
- 
- const btn = document.getElementById('scraping-btn');
- const status = document.getElementById('scraping-status');
- const textSpan = document.getElementById('scraping-text');
- 
- btn.disabled = true;
- btn.classList.add('opacity-50', 'cursor-not-allowed');
- status.classList.remove('hidden');
- textSpan.textContent = 'Scraping in corso...';
- 
- try {
- const response = await fetch('{{ url_for("admin.manual_scraping") }}', {
- method: 'POST',
- headers: {
- 'Content-Type': 'application/json'
- }
- });
- 
- const data = await response.json();
- 
- if (response.ok) {
- status.innerHTML = '<p class="text-green-400">Scraping completato con successo! Bandi aggiunti: ' + data.count + '</p>';
- setTimeout(() => location.reload(), 2000);
- } else {
- status.innerHTML = '<p class="text-red-400">Errore: ' + (data.error || 'Errore sconosciuto') + '</p>';
- }
- } catch (error) {
- status.innerHTML = '<p class="text-red-400">Errore di connessione</p>';
- console.error('Scraping error:', error);
- } finally {
- btn.disabled = false;
- btn.classList.remove('opacity-50', 'cursor-not-allowed');
- }
- });
- 
- function editUser(userId) {
- // Implementare logica di modifica utente
- console.log('Edit user:', userId);
- }
- </script>
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <a href="{{ url_for('admin.utenti') }}" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg p-4 text-center transition-colors">
+        <p class="text-white font-semibold text-sm">Gestisci Utenti</p>
+      </a>
+      <a href="{{ url_for('admin.abbonati') }}" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg p-4 text-center transition-colors">
+        <p class="text-white font-semibold text-sm">Abbonati</p>
+      </a>
+      <a href="{{ url_for('admin.bandi') }}" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg p-4 text-center transition-colors">
+        <p class="text-white font-semibold text-sm">Gestisci Bandi</p>
+      </a>
+      <a href="{{ url_for('admin.scraper_panel') }}" class="bg-slate-800 hover:bg-slate-700 border border-slate-600 rounded-lg p-4 text-center transition-colors">
+        <p class="text-white font-semibold text-sm">Scraper</p>
+      </a>
+    </div>
+    {% endif %}
+
+    {# ===== UTENTI ===== #}
+    {% if sezione == 'utenti' %}
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-white">Utenti</h1>
+        <p class="text-slate-400 text-sm mt-1">Tutti gli account registrati</p>
+      </div>
+      <form method="GET" class="flex gap-2">
+        <input type="text" name="q" value="{{ search }}" placeholder="Cerca email..."
+               class="bg-slate-800 border border-slate-600 text-white text-sm rounded-lg px-3 py-2 w-56 focus:outline-none focus:border-indigo-500">
+        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-lg transition-colors">Cerca</button>
+      </form>
+    </div>
+
+    <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-slate-700 text-slate-400 text-xs uppercase tracking-wider">
+            <th class="px-4 py-3 text-left">Email</th>
+            <th class="px-4 py-3 text-left">Piano</th>
+            <th class="px-4 py-3 text-left">Registrato</th>
+            <th class="px-4 py-3 text-left">Stato</th>
+            <th class="px-4 py-3 text-left">Azioni</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in utenti %}
+          <tr class="table-row border-b border-slate-700/50">
+            <td class="px-4 py-3 text-white font-medium">{{ u.email }}</td>
+            <td class="px-4 py-3">
+              <span class="badge-{{ u.piano }} text-xs font-semibold px-2 py-1 rounded-full">{{ u.piano.upper() }}</span>
+            </td>
+            <td class="px-4 py-3 text-slate-400">
+              {{ u.data_registrazione.strftime('%d/%m/%Y') if u.data_registrazione else '—' }}
+            </td>
+            <td class="px-4 py-3">
+              <span class="{% if u.attivo %}badge-attivo{% else %}badge-disattivo{% endif %} text-xs font-semibold px-2 py-1 rounded-full">
+                {{ 'Attivo' if u.attivo else 'Bloccato' }}
+              </span>
+            </td>
+            <td class="px-4 py-3">
+              <div class="flex items-center gap-2">
+                <form method="POST" action="{{ url_for('admin.aggiorna_piano', utente_id=u.id) }}" class="flex gap-1">
+                  <select name="piano" class="bg-slate-700 border border-slate-600 text-white text-xs rounded px-2 py-1 focus:outline-none">
+                    {% for p in ['free','starter','premium','pro','enterprise'] %}
+                    <option value="{{ p }}" {% if u.piano == p %}selected{% endif %}>{{ p }}</option>
+                    {% endfor %}
+                  </select>
+                  <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-2 py-1 rounded transition-colors">Salva</button>
+                </form>
+                <form method="POST" action="{{ url_for('admin.blocca_utente', utente_id=u.id) }}">
+                  <button type="submit" class="{% if u.attivo %}bg-red-800 hover:bg-red-700{% else %}bg-green-800 hover:bg-green-700{% endif %} text-white text-xs px-2 py-1 rounded transition-colors">
+                    {{ 'Blocca' if u.attivo else 'Sblocca' }}
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="px-4 py-8 text-center text-slate-500">Nessun utente trovato.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if pagination and pagination.pages > 1 %}
+    <div class="flex justify-center gap-2 mt-6">
+      {% if pagination.has_prev %}
+      <a href="{{ url_for('admin.utenti', page=pagination.prev_num, q=search) }}" class="bg-slate-700 hover:bg-slate-600 text-white text-sm px-3 py-2 rounded-lg transition-colors">Prec</a>
+      {% endif %}
+      <span class="text-slate-400 text-sm px-3 py-2">Pag. {{ pagination.page }} / {{ pagination.pages }}</span>
+      {% if pagination.has_next %}
+      <a href="{{ url_for('admin.utenti', page=pagination.next_num, q=search) }}" class="bg-slate-700 hover:bg-slate-600 text-white text-sm px-3 py-2 rounded-lg transition-colors">Succ</a>
+      {% endif %}
+    </div>
+    {% endif %}
+    {% endif %}
+
+    {# ===== ABBONATI ===== #}
+    {% if sezione == 'abbonati' %}
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-white">Abbonati</h1>
+      <p class="text-slate-400 text-sm mt-1">Utenti con piano Premium o Pro</p>
+    </div>
+    <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-slate-700 text-slate-400 text-xs uppercase tracking-wider">
+            <th class="px-4 py-3 text-left">Email</th>
+            <th class="px-4 py-3 text-left">Piano</th>
+            <th class="px-4 py-3 text-left">Data iscrizione</th>
+            <th class="px-4 py-3 text-left">Importo mensile</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in abbonati %}
+          <tr class="table-row border-b border-slate-700/50">
+            <td class="px-4 py-3 text-white font-medium">{{ u.email }}</td>
+            <td class="px-4 py-3">
+              <span class="badge-{{ u.piano }} text-xs font-semibold px-2 py-1 rounded-full">{{ u.piano.upper() }}</span>
+            </td>
+            <td class="px-4 py-3 text-slate-400">
+              {{ u.data_registrazione.strftime('%d/%m/%Y') if u.data_registrazione else '—' }}
+            </td>
+            <td class="px-4 py-3 text-slate-300 font-semibold">
+              {% if u.piano == 'premium' %}9,90 euro{% elif u.piano == 'pro' %}29,90 euro{% else %}—{% endif %}
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="px-4 py-8 text-center text-slate-500">Nessun abbonato.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+
+    {# ===== BANDI ===== #}
+    {% if sezione == 'bandi' %}
+    <div class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-white">Bandi</h1>
+        <p class="text-slate-400 text-sm mt-1">Tutti i bandi nel database</p>
+      </div>
+      <form method="GET" class="flex gap-2">
+        <select name="stato" class="bg-slate-800 border border-slate-600 text-white text-sm rounded-lg px-3 py-2 focus:outline-none focus:border-indigo-500">
+          <option value="" {% if not stato_filtro %}selected{% endif %}>Tutti gli stati</option>
+          {% for s in ['APERTO','CHIUSO','SOSPESO','RIAPERTO'] %}
+          <option value="{{ s }}" {% if stato_filtro == s %}selected{% endif %}>{{ s }}</option>
+          {% endfor %}
+        </select>
+        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-4 py-2 rounded-lg transition-colors">Filtra</button>
+      </form>
+    </div>
+
+    <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-slate-700 text-slate-400 text-xs uppercase tracking-wider">
+            <th class="px-4 py-3 text-left">Titolo</th>
+            <th class="px-4 py-3 text-left">Fonte</th>
+            <th class="px-4 py-3 text-left">Scadenza</th>
+            <th class="px-4 py-3 text-left">Massimale</th>
+            <th class="px-4 py-3 text-left">Stato</th>
+            <th class="px-4 py-3 text-left">Azioni</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in bandi %}
+          <tr class="table-row border-b border-slate-700/50">
+            <td class="px-4 py-3 text-white max-w-xs">
+              <a href="{{ b.url }}" target="_blank" class="hover:text-indigo-400 transition-colors">
+                {{ b.titolo[:80] }}{% if b.titolo|length > 80 %}...{% endif %}
+              </a>
+            </td>
+            <td class="px-4 py-3 text-slate-400 text-xs">{{ b.fonte[:30] }}</td>
+            <td class="px-4 py-3 text-slate-400 text-xs">
+              {{ b.data_scadenza.strftime('%d/%m/%Y') if b.data_scadenza else '—' }}
+            </td>
+            <td class="px-4 py-3 text-slate-300 text-xs">
+              {% if b.massimale_agevolazione %}{{ "{:,.0f}".format(b.massimale_agevolazione) }} euro{% else %}—{% endif %}
+            </td>
+            <td class="px-4 py-3">
+              <span class="badge-{{ b.stato.lower() }} text-xs font-semibold px-2 py-1 rounded-full">{{ b.stato }}</span>
+            </td>
+            <td class="px-4 py-3">
+              <form method="POST" action="{{ url_for('admin.aggiorna_stato_bando', bando_id=b.id) }}" class="flex gap-1">
+                <select name="stato" class="bg-slate-700 border border-slate-600 text-white text-xs rounded px-2 py-1 focus:outline-none">
+                  {% for s in ['APERTO','CHIUSO','SOSPESO','RIAPERTO'] %}
+                  <option value="{{ s }}" {% if b.stato == s %}selected{% endif %}>{{ s }}</option>
+                  {% endfor %}
+                </select>
+                <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-2 py-1 rounded transition-colors">OK</button>
+              </form>
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="6" class="px-4 py-8 text-center text-slate-500">Nessun bando trovato.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    {% if pagination and pagination.pages > 1 %}
+    <div class="flex justify-center gap-2 mt-6">
+      {% if pagination.has_prev %}
+      <a href="{{ url_for('admin.bandi', page=pagination.prev_num, stato=stato_filtro) }}" class="bg-slate-700 hover:bg-slate-600 text-white text-sm px-3 py-2 rounded-lg transition-colors">Prec</a>
+      {% endif %}
+      <span class="text-slate-400 text-sm px-3 py-2">Pag. {{ pagination.page }} / {{ pagination.pages }}</span>
+      {% if pagination.has_next %}
+      <a href="{{ url_for('admin.bandi', page=pagination.next_num, stato=stato_filtro) }}" class="bg-slate-700 hover:bg-slate-600 text-white text-sm px-3 py-2 rounded-lg transition-colors">Succ</a>
+      {% endif %}
+    </div>
+    {% endif %}
+    {% endif %}
+
+    {# ===== SCRAPER ===== #}
+    {% if sezione == 'scraper' %}
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-white">Scraper</h1>
+      <p class="text-slate-400 text-sm mt-1">Log ultimi bandi scrappati e avvio manuale</p>
+    </div>
+
+    <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 mb-6">
+      <h2 class="text-white font-semibold mb-2">Avvia scraping manuale</h2>
+      <p class="text-slate-400 text-sm mb-4">
+        Avvia immediatamente lo scraping delle fonti nazionali prioritarie. L'operazione puo richiedere 1-3 minuti.
+      </p>
+      <button id="btn-scraping" onclick="avviaScraping()"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-3 rounded-lg transition-colors flex items-center gap-2">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>
+        <span id="label-scraping">Avvia Scraping Ora</span>
+      </button>
+      <div id="scraping-result" class="mt-4 hidden text-sm"></div>
+    </div>
+
+    <div class="bg-slate-800 border border-slate-700 rounded-xl overflow-hidden">
+      <div class="px-4 py-3 border-b border-slate-700">
+        <h2 class="text-white font-semibold text-sm">Ultimi 20 bandi scrappati</h2>
+      </div>
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-slate-700 text-slate-400 text-xs uppercase tracking-wider">
+            <th class="px-4 py-3 text-left">Titolo</th>
+            <th class="px-4 py-3 text-left">Fonte</th>
+            <th class="px-4 py-3 text-left">Stato</th>
+            <th class="px-4 py-3 text-left">Data scraping</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for b in ultimi_bandi %}
+          <tr class="table-row border-b border-slate-700/50">
+            <td class="px-4 py-3 text-white">
+              <a href="{{ b.url }}" target="_blank" class="hover:text-indigo-400 transition-colors">
+                {{ b.titolo[:70] }}{% if b.titolo|length > 70 %}...{% endif %}
+              </a>
+            </td>
+            <td class="px-4 py-3 text-slate-400 text-xs">{{ b.fonte[:30] }}</td>
+            <td class="px-4 py-3">
+              <span class="badge-{{ b.stato.lower() }} text-xs font-semibold px-2 py-1 rounded-full">{{ b.stato }}</span>
+            </td>
+            <td class="px-4 py-3 text-slate-400 text-xs">
+              {{ b.data_scraping.strftime('%d/%m/%Y %H:%M') if b.data_scraping else '—' }}
+            </td>
+          </tr>
+          {% else %}
+          <tr><td colspan="4" class="px-4 py-8 text-center text-slate-500">Nessun bando nel log.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <script>
+    async function avviaScraping() {
+      const btn = document.getElementById('btn-scraping');
+      const label = document.getElementById('label-scraping');
+      const result = document.getElementById('scraping-result');
+      btn.disabled = true;
+      label.textContent = 'Scraping in corso...';
+      result.className = 'mt-4 text-sm text-slate-400';
+      result.textContent = 'Attendere, operazione in corso...';
+      try {
+        const resp = await fetch('{{ url_for("admin.scraper_avvia") }}', { method: 'POST' });
+        const data = await resp.json();
+        if (data.success) {
+          result.className = 'mt-4 text-sm text-green-400 bg-green-900/30 border border-green-700 rounded-lg px-4 py-3';
+          result.textContent = 'Scraping completato. Ricarica la pagina per vedere i nuovi bandi.';
+        } else {
+          result.className = 'mt-4 text-sm text-red-400 bg-red-900/30 border border-red-700 rounded-lg px-4 py-3';
+          result.textContent = 'Errore: ' + (data.error || 'Errore sconosciuto');
+        }
+      } catch (e) {
+        result.className = 'mt-4 text-sm text-red-400 bg-red-900/30 border border-red-700 rounded-lg px-4 py-3';
+        result.textContent = 'Errore di rete: ' + e.message;
+      } finally {
+        btn.disabled = false;
+        label.textContent = 'Avvia Scraping Ora';
+      }
+    }
+    </script>
+    {% endif %}
+
+  </main>
 </body>
 </html>

@@ -14,6 +14,7 @@ from werkzeug.utils import secure_filename
 
 from extensions import db
 from models.analisi import Analisi
+from models.utente import ProfiloAziendale
 from visura_parser import parse_visura
 from matching_engine import match_tutti_bandi
 
@@ -149,6 +150,17 @@ def analizza():
                 'error': 'Impossibile estrarre dati dalla visura. '
                          'Assicurati che sia un PDF nativo (non scansionato).'
             }), 422
+
+        # ── STEP 1b: Anti-duplicato Partita IVA ──
+        codice_fiscale = dati_impresa.get('impresa', {}).get('codice_fiscale', '')
+        # La P.IVA ha 11 cifre numeriche; il CF persona fisica ha 16 caratteri alfanumerici
+        if codice_fiscale and len(str(codice_fiscale).strip()) == 11 and str(codice_fiscale).strip().isdigit():
+            partita_iva = str(codice_fiscale).strip()
+            profilo_esistente = ProfiloAziendale.query.filter_by(partita_iva=partita_iva).first()
+            if profilo_esistente and profilo_esistente.utente_id != current_user.id:
+                return jsonify({
+                    'error': 'Questa azienda è già presente nel sistema.'
+                }), 409
 
         # Arricchisci con form integrativo
         dati_impresa['form_integrativo'] = form_extra
