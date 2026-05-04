@@ -1,5 +1,5 @@
 import os
-from flask import Flask, redirect, url_for, render_template
+from flask import Flask, redirect, url_for, render_template, request
 from flask_login import LoginManager, current_user
 from dotenv import load_dotenv
 
@@ -30,7 +30,14 @@ from models.utente import Utente
 
 @login_manager.user_loader
 def load_user(user_id):
-    return Utente.query.get(int(user_id))
+    try:
+        return Utente.query.get(int(user_id))
+    except Exception:
+        # Se la query crasha (es. colonne mancanti nel DB), restituisce None
+        # per evitare errori 500 su tutte le pagine
+        from extensions import db as _db
+        _db.session.rollback()
+        return None
 
 from blueprints.auth import auth_bp
 from blueprints.bandi import bandi_bp
@@ -91,6 +98,35 @@ def index():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard.home'))
     return render_template('landing.html')
+
+@app.route('/sys/migrate-enterprise')
+def migrate_enterprise():
+    """Endpoint temporaneo per forzare la migrazione Enterprise su Railway."""
+    key = os.getenv('MIGRATE_KEY', '')
+    if not key or request.args.get('key') != key:
+        return {'error': 'Unauthorized'}, 403
+    try:
+        from sqlalchemy import text, inspect as sa_inspect
+        results = []
+        with db.engine.connect() as conn:
+            insp = sa_inspect(db.engine)
+            existing_cols = [c['name'] for c in insp.get_columns('utenti')] if 'utenti' in insp.get_table_names() else []
+            if 'nome_partner' not in existing_cols:
+                conn.execute(text("ALTER TABLE utenti ADD COLUMN nome_partner VARCHAR(255)"))
+                results.append('nome_partner: AGGIUNTA')
+            else:
+                results.append('nome_partner: GIA PRESENTE')
+            if 'logo_url' not in existing_cols:
+                conn.execute(text("ALTER TABLE utenti ADD COLUMN logo_url VARCHAR(500)"))
+                results.append('logo_url: AGGIUNTA')
+            else:
+                results.append('logo_url: GIA PRESENTE')
+            conn.commit()
+        db.create_all()
+        return {'ok': True, 'results': results}
+    except Exception as e:
+        return {'ok': False, 'error': str(e)}, 500
+
 
 @app.errorhandler(404)
 def not_found(error):
