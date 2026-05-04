@@ -24,36 +24,36 @@ tr:hover td { background:#1a2a3a; }
 </head>
 <body>
 <nav>
-  <div class="brand">⚡ BandoMatch AI — Gestione Bandi</div>
-  <div><a href="/admin">← Admin</a><a href="/logout">Esci</a></div>
+ <div class="brand"> BandoMatch AI — Gestione Bandi</div>
+ <div><a href="/admin">← Admin</a><a href="/logout">Esci</a></div>
 </nav>
 <div class="container">
-  <h1>📋 Database Bandi ({{ bandi|length }} totali)</h1>
-  {% if bandi %}
-  <table>
-    <thead>
-      <tr><th>ID</th><th>Nome</th><th>Ente</th><th>Tipo</th><th>Stato</th><th>Massimale</th><th>Aggiornato</th><th>Fonte</th></tr>
-    </thead>
-    <tbody>
-      {% for b in bandi %}
-      <tr>
-        <td>#{{ b.id }}</td>
-        <td>{{ (b.nome or 'N/D')[:60] }}</td>
-        <td>{{ b.ente or '—' }}</td>
-        <td>{{ b.tipo or '—' }}</td>
-        <td><span class="badge badge-{{ b.stato or 'attivo' }}">{{ (b.stato or 'attivo')|upper }}</span></td>
-        <td>{% if b.massimale %}€{{ "{:,.0f}".format(b.massimale) }}{% else %}—{% endif %}</td>
-        <td>{{ (b.data_aggiornamento or '—')[:10] }}</td>
-        <td style="font-size:11px;color:#4a5a6a">{{ (b.fonte_scraping or '—')[:30] }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-  {% else %}
-  <div class="empty">
-    <p>Nessun bando nel database. Esegui lo scraper dall'Admin Dashboard.</p>
-  </div>
-  {% endif %}
+ <h1> Database Bandi ({{ bandi|length }} totali)</h1>
+ {% if bandi %}
+ <table>
+ <thead>
+ <tr><th>ID</th><th>Nome</th><th>Ente</th><th>Tipo</th><th>Stato</th><th>Massimale</th><th>Aggiornato</th><th>Fonte</th></tr>
+ </thead>
+ <tbody>
+ {% for b in bandi %}
+ <tr>
+ <td>#{{ b.id }}</td>
+ <td>{{ (b.nome or 'N/D')[:60] }}</td>
+ <td>{{ b.ente or '—' }}</td>
+ <td>{{ b.tipo or '—' }}</td>
+ <td><span class="badge badge-{{ b.stato or 'attivo' }}">{{ (b.stato or 'attivo')|upper }}</span></td>
+ <td>{% if b.massimale %}€{{ "{:,.0f}".format(b.massimale) }}{% else %}—{% endif %}</td>
+ <td>{{ (b.data_aggiornamento or '—')[:10] }}</td>
+ <td style="font-size:11px;color:#4a5a6a">{{ (b.fonte_scraping or '—')[:30] }}</td>
+ </tr>
+ {% endfor %}
+ </tbody>
+ </table>
+ {% else %}
+ <div class="empty">
+ <p>Nessun bando nel database. Esegui lo scraper dall'Admin Dashboard.</p>
+ </div>
+ {% endif %}
 </div>
 </body>
 </html>

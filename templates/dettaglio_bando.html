@@ -24,56 +24,56 @@ h1 { font-size:28px;color:#fff;font-weight:800;margin-bottom:8px; }
 </head>
 <body>
 <nav>
-  <div class="brand">🎯 BandoMatch AI</div>
-  <div><a href="/bandi">← Tutti i bandi</a><a href="/">Home</a></div>
+ <div class="brand">BandoMatch AI</div>
+ <div><a href="/bandi">← Tutti i bandi</a><a href="/">Home</a></div>
 </nav>
 <div class="container">
-  <a href="/bandi" class="back">← Torna alla lista bandi</a>
-  <h1>{{ bando.nome }}</h1>
-  <div class="ente">{{ bando.ente or 'Ente non specificato' }}</div>
+ <a href="/bandi" class="back">← Torna alla lista bandi</a>
+ <h1>{{ bando.nome }}</h1>
+ <div class="ente">{{ bando.ente or 'Ente non specificato' }}</div>
 
-  <div class="info-grid">
-    <div class="info-item">
-      <div class="label">Tipo</div>
-      <div class="value">{{ (bando.tipo or 'N/D')|capitalize }}</div>
-    </div>
-    <div class="info-item">
-      <div class="label">Stato</div>
-      <div class="value verde">{{ (bando.stato or 'attivo')|upper }}</div>
-    </div>
-    {% if bando.massimale %}
-    <div class="info-item">
-      <div class="label">Massimale</div>
-      <div class="value verde">€{{ "{:,.0f}".format(bando.massimale) }}</div>
-    </div>
-    {% endif %}
-    {% if bando.percentuale_fondo_perduto %}
-    <div class="info-item">
-      <div class="label">Fondo Perduto</div>
-      <div class="value verde">{{ bando.percentuale_fondo_perduto }}%</div>
-    </div>
-    {% endif %}
-    {% if bando.data_scadenza %}
-    <div class="info-item">
-      <div class="label">Scadenza</div>
-      <div class="value">{{ bando.data_scadenza }}</div>
-    </div>
-    {% endif %}
-    <div class="info-item">
-      <div class="label">Aggiornato il</div>
-      <div class="value">{{ (bando.data_aggiornamento or '—')[:10] }}</div>
-    </div>
-  </div>
+ <div class="info-grid">
+ <div class="info-item">
+ <div class="label">Tipo</div>
+ <div class="value">{{ (bando.tipo or 'N/D')|capitalize }}</div>
+ </div>
+ <div class="info-item">
+ <div class="label">Stato</div>
+ <div class="value verde">{{ (bando.stato or 'attivo')|upper }}</div>
+ </div>
+ {% if bando.massimale %}
+ <div class="info-item">
+ <div class="label">Massimale</div>
+ <div class="value verde">€{{ "{:,.0f}".format(bando.massimale) }}</div>
+ </div>
+ {% endif %}
+ {% if bando.percentuale_fondo_perduto %}
+ <div class="info-item">
+ <div class="label">Fondo Perduto</div>
+ <div class="value verde">{{ bando.percentuale_fondo_perduto }}%</div>
+ </div>
+ {% endif %}
+ {% if bando.data_scadenza %}
+ <div class="info-item">
+ <div class="label">Scadenza</div>
+ <div class="value">{{ bando.data_scadenza }}</div>
+ </div>
+ {% endif %}
+ <div class="info-item">
+ <div class="label">Aggiornato il</div>
+ <div class="value">{{ (bando.data_aggiornamento or '—')[:10] }}</div>
+ </div>
+ </div>
 
-  {% if bando.url %}
-  <a href="{{ bando.url }}" target="_blank" style="display:inline-block;padding:10px 24px;background:rgba(0,200,81,0.15);border:1px solid #00C851;border-radius:8px;color:#00C851;font-weight:700;text-decoration:none;margin-bottom:24px">🔗 Vai al bando ufficiale</a>
-  {% endif %}
+ {% if bando.url %}
+ <a href="{{ bando.url }}" target="_blank" style="display:inline-block;padding:10px 24px;background:rgba(0,200,81,0.15);border:1px solid #00C851;border-radius:8px;color:#00C851;font-weight:700;text-decoration:none;margin-bottom:24px"> Vai al bando ufficiale</a>
+ {% endif %}
 
-  <div class="cta-box">
-    <h2 style="color:#fff;margin-bottom:8px">🎯 Sei compatibile con questo bando?</h2>
-    <p style="color:#8899aa;margin-bottom:20px">Carica la tua visura camerale e scoprilo in 30 secondi.</p>
-    <a href="/" class="btn-cta">Analizza la mia azienda gratis →</a>
-  </div>
+ <div class="cta-box">
+ <h2 style="color:#fff;margin-bottom:8px">Sei compatibile con questo bando?</h2>
+ <p style="color:#8899aa;margin-bottom:20px">Carica la tua visura camerale e scoprilo in 30 secondi.</p>
+ <a href="/" class="btn-cta">Analizza la mia azienda gratis →</a>
+ </div>
 </div>
 </body>
 </html>

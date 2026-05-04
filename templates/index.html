@@ -138,10 +138,10 @@ footer a { color: #8899aa; text-decoration: none; margin: 0 12px; }
 
 /* RESPONSIVE */
 @media (max-width: 600px) {
-  nav { padding: 12px 20px; }
-  .hero { padding: 48px 16px 40px; }
-  .form-row { grid-template-columns: 1fr; }
-  .hero-stats { gap: 24px; }
+ nav { padding: 12px 20px; }
+ .hero { padding: 48px 16px 40px; }
+ .form-row { grid-template-columns: 1fr; }
+ .hero-stats { gap: 24px; }
 }
 </style>
 </head>
@@ -149,193 +149,193 @@ footer a { color: #8899aa; text-decoration: none; margin: 0 12px; }
 
 <!-- NAVIGAZIONE -->
 <nav>
-  <div class="nav-brand">🎯 BandoMatch AI</div>
-  <div class="nav-links">
-    <a href="/bandi">Bandi Attivi</a>
-    <a href="/upgrade">Costi</a>
-    <a href="/consulenza">Consulenza</a>
-    <a href="/faq">FAQ</a>
-    {% if user %}
-      <a href="/dashboard" class="nav-user">👤 {{ user }}</a>
-      <a href="/logout">Esci</a>
-    {% else %}
-      <a href="/login">Accedi</a>
-      <a href="/register" class="nav-btn">Registrati gratis</a>
-    {% endif %}
-  </div>
+ <div class="nav-brand">BandoMatch AI</div>
+ <div class="nav-links">
+ <a href="/bandi">Bandi Attivi</a>
+ <a href="/upgrade">Costi</a>
+ <a href="/consulenza">Consulenza</a>
+ <a href="/faq">FAQ</a>
+ {% if user %}
+ <a href="/dashboard" class="nav-user"> {{ user }}</a>
+ <a href="/logout">Esci</a>
+ {% else %}
+ <a href="/login">Accedi</a>
+ <a href="/register" class="nav-btn">Registrati gratis</a>
+ {% endif %}
+ </div>
 </nav>
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-badge">🚀 NUOVO — Aggiornato con AI ogni giorno</div>
-  <h1>Trova i <span>finanziamenti pubblici</span> che la tua azienda sta perdendo</h1>
-  <p>Carica la visura camerale e in 30 secondi scopri quali bandi nazionali e regionali sono compatibili con il tuo profilo. Sistema a semaforo Verde/Giallo/Rosso.</p>
-  <div class="hero-stats">
-    <div class="hero-stat"><div class="num">200+</div><div class="lbl">Bandi monitorati</div></div>
-    <div class="hero-stat"><div class="num">30s</div><div class="lbl">Tempo di analisi</div></div>
-    <div class="hero-stat"><div class="num">€200k</div><div class="lbl">Valore medio bandi</div></div>
-    <div class="hero-stat"><div class="num">100%</div><div class="lbl">Aggiornamento giornaliero</div></div>
-  </div>
+ <div class="hero-badge"> NUOVO — Aggiornato con AI ogni giorno</div>
+ <h1>Trova i <span>finanziamenti pubblici</span> che la tua azienda sta perdendo</h1>
+ <p>Carica la visura camerale e in 30 secondi scopri quali bandi nazionali e regionali sono compatibili con il tuo profilo. Sistema a semaforo Verde/Giallo/Rosso.</p>
+ <div class="hero-stats">
+ <div class="hero-stat"><div class="num">200+</div><div class="lbl">Bandi monitorati</div></div>
+ <div class="hero-stat"><div class="num">30s</div><div class="lbl">Tempo di analisi</div></div>
+ <div class="hero-stat"><div class="num">€200k</div><div class="lbl">Valore medio bandi</div></div>
+ <div class="hero-stat"><div class="num">100%</div><div class="lbl">Aggiornamento giornaliero</div></div>
+ </div>
 </section>
 
 <!-- UPLOAD CARD -->
 <section class="upload-section">
-  <div class="upload-card">
-    <h2>Analizza la tua azienda ora</h2>
-    <p class="subtitle">Carica la visura camerale in PDF nativo (non scansionata) per risultati precisi al 100%</p>
+ <div class="upload-card">
+ <h2>Analizza la tua azienda ora</h2>
+ <p class="subtitle">Carica la visura camerale in PDF nativo (non scansionata) per risultati precisi al 100%</p>
 
-    <form id="uploadForm" enctype="multipart/form-data">
-      <!-- DROP ZONE -->
-      <div class="drop-zone" id="dropZone">
-        <div class="icon">📄</div>
-        <h3>Trascina qui la Visura Camerale PDF</h3>
-        <p>oppure clicca per selezionare il file</p>
-        <input type="file" name="visura" id="fileInput" accept=".pdf" required>
-      </div>
-      <div class="file-selected" id="fileSelected">✅ <span id="fileName"></span></div>
+ <form id="uploadForm" enctype="multipart/form-data">
+ <!-- DROP ZONE -->
+ <div class="drop-zone" id="dropZone">
+ <div class="icon"></div>
+ <h3>Trascina qui la Visura Camerale PDF</h3>
+ <p>oppure clicca per selezionare il file</p>
+ <input type="file" name="visura" id="fileInput" accept=".pdf" required>
+ </div>
+ <div class="file-selected" id="fileSelected"> <span id="fileName"></span></div>
 
-      <!-- FORM INTEGRATIVO CONTESTUALE -->
-      <div class="form-extra">
-        <h3>📋 4 domande rapide per un matching più preciso</h3>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Finalità dell'investimento</label>
-            <select name="finalita_investimento">
-              <option value="">— Seleziona —</option>
-              <option value="fotovoltaico">☀️ Fotovoltaico / Green Energy</option>
-              <option value="macchinari">🏭 Macchinari / Industria 4.0</option>
-              <option value="digitalizzazione">💻 Digitalizzazione / Software</option>
-              <option value="internazionalizzazione">🌍 Internazionalizzazione / Export</option>
-              <option value="assunzioni">👥 Assunzioni / Personale</option>
-              <option value="startup">🚀 Avvio attività / Startup</option>
-              <option value="altro">📦 Altro</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Budget investimento previsto (€)</label>
-            <input type="number" name="budget_investimento" placeholder="es. 50000" min="0">
-          </div>
-        </div>
-        <div class="form-row">
-          <div class="form-group">
-            <label>Aiuti de minimis ricevuti (ultimi 3 anni)?</label>
-            <select name="de_minimis">
-              <option value="no">No, nessuno</option>
-              <option value="si_poco">Sì, meno di €100.000</option>
-              <option value="si_molto">Sì, più di €100.000</option>
-            </select>
-          </div>
-          <div class="form-group">
-            <label>Condizione occupazionale titolari</label>
-            <select name="condizione_occupazionale">
-              <option value="">— Seleziona —</option>
-              <option value="occupato">Occupato / Imprenditore attivo</option>
-              <option value="disoccupato">Disoccupato / NEET</option>
-              <option value="inoccupato">Inoccupato (mai lavorato)</option>
-            </select>
-          </div>
-        </div>
-      </div>
+ <!-- FORM INTEGRATIVO CONTESTUALE -->
+ <div class="form-extra">
+ <h3> 4 domande rapide per un matching più preciso</h3>
+ <div class="form-row">
+ <div class="form-group">
+ <label>Finalità dell'investimento</label>
+ <select name="finalita_investimento">
+ <option value="">— Seleziona —</option>
+ <option value="fotovoltaico">️ Fotovoltaico / Green Energy</option>
+ <option value="macchinari"> Macchinari / Industria 4.0</option>
+ <option value="digitalizzazione"> Digitalizzazione / Software</option>
+ <option value="internazionalizzazione"> Internazionalizzazione / Export</option>
+ <option value="assunzioni"> Assunzioni / Personale</option>
+ <option value="startup"> Avvio attività / Startup</option>
+ <option value="altro"> Altro</option>
+ </select>
+ </div>
+ <div class="form-group">
+ <label>Budget investimento previsto (€)</label>
+ <input type="number" name="budget_investimento" placeholder="es. 50000" min="0">
+ </div>
+ </div>
+ <div class="form-row">
+ <div class="form-group">
+ <label>Aiuti de minimis ricevuti (ultimi 3 anni)?</label>
+ <select name="de_minimis">
+ <option value="no">No, nessuno</option>
+ <option value="si_poco">Sì, meno di €100.000</option>
+ <option value="si_molto">Sì, più di €100.000</option>
+ </select>
+ </div>
+ <div class="form-group">
+ <label>Condizione occupazionale titolari</label>
+ <select name="condizione_occupazionale">
+ <option value="">— Seleziona —</option>
+ <option value="occupato">Occupato / Imprenditore attivo</option>
+ <option value="disoccupato">Disoccupato / NEET</option>
+ <option value="inoccupato">Inoccupato (mai lavorato)</option>
+ </select>
+ </div>
+ </div>
+ </div>
 
-      <button type="submit" class="btn-analizza" id="btnAnalizza">
-        🔍 Analizza e trova i miei bandi
-      </button>
-      <p class="disclaimer">Analisi gratuita — Il primo bando compatibile è sempre sbloccato. Nessuna carta di credito richiesta.</p>
-    </form>
+ <button type="submit" class="btn-analizza" id="btnAnalizza">
+ Analizza e trova i miei bandi
+ </button>
+ <p class="disclaimer">Analisi gratuita — Il primo bando compatibile è sempre sbloccato. Nessuna carta di credito richiesta.</p>
+ </form>
 
-    <!-- LOADING -->
-    <div class="loading" id="loading">
-      <div class="spinner"></div>
-      <p>Analisi in corso...</p>
-      <div class="steps">
-        <div class="step active" id="step1">📄 Lettura visura camerale...</div>
-        <div class="step" id="step2">🔍 Estrazione ATECO, sede, soci...</div>
-        <div class="step" id="step3">🤖 Matching con 200+ bandi...</div>
-        <div class="step" id="step4">🚦 Calcolo semafori di compatibilità...</div>
-      </div>
-    </div>
+ <!-- LOADING -->
+ <div class="loading" id="loading">
+ <div class="spinner"></div>
+ <p>Analisi in corso...</p>
+ <div class="steps">
+ <div class="step active" id="step1"> Lettura visura camerale...</div>
+ <div class="step" id="step2"> Estrazione ATECO, sede, soci...</div>
+ <div class="step" id="step3"> Matching con 200+ bandi...</div>
+ <div class="step" id="step4"> Calcolo semafori di compatibilità...</div>
+ </div>
+ </div>
 
-    <!-- RISULTATI -->
-    <div id="risultati"></div>
-  </div>
+ <!-- RISULTATI -->
+ <div id="risultati"></div>
+ </div>
 </section>
 
 <!-- COME FUNZIONA -->
 <section class="how-section" id="come-funziona">
-  <h2>Come funziona BandoMatch AI</h2>
-  <div class="steps-grid">
-    <div class="step-item">
-      <div class="step-num">1</div>
-      <h3>Carica la visura</h3>
-      <p>Carica il PDF nativo della visura camerale della tua azienda</p>
-    </div>
-    <div class="step-item">
-      <div class="step-num">2</div>
-      <h3>L'AI legge i dati</h3>
-      <p>Estrae automaticamente ATECO, sede, età soci, forma giuridica</p>
-    </div>
-    <div class="step-item">
-      <div class="step-num">3</div>
-      <h3>Matching con i bandi</h3>
-      <p>Confronta il tuo profilo con 200+ bandi nazionali e regionali</p>
-    </div>
-    <div class="step-item">
-      <div class="step-num">4</div>
-      <h3>Semaforo di compatibilità</h3>
-      <p>Verde = candidati subito. Giallo = verifica. Rosso = non compatibile.</p>
-    </div>
-  </div>
+ <h2>Come funziona BandoMatch AI</h2>
+ <div class="steps-grid">
+ <div class="step-item">
+ <div class="step-num">1</div>
+ <h3>Carica la visura</h3>
+ <p>Carica il PDF nativo della visura camerale della tua azienda</p>
+ </div>
+ <div class="step-item">
+ <div class="step-num">2</div>
+ <h3>L'AI legge i dati</h3>
+ <p>Estrae automaticamente ATECO, sede, età soci, forma giuridica</p>
+ </div>
+ <div class="step-item">
+ <div class="step-num">3</div>
+ <h3>Matching con i bandi</h3>
+ <p>Confronta il tuo profilo con 200+ bandi nazionali e regionali</p>
+ </div>
+ <div class="step-item">
+ <div class="step-num">4</div>
+ <h3>Semaforo di compatibilità</h3>
+ <p>Verde = candidati subito. Giallo = verifica. Rosso = non compatibile.</p>
+ </div>
+ </div>
 </section>
 
 <!-- FEATURES -->
 <section class="features-section">
-  <h2>Tutto quello che ti serve per non perdere un euro</h2>
-  <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-icon">🚦</div>
-      <h3>Sistema a Semaforo</h3>
-      <p>Verde, Giallo, Rosso e Grigio. Sai subito se puoi candidarti o no, senza leggere 50 pagine di bando.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">🤖</div>
-      <h3>Aggiornamento Automatico</h3>
-      <p>Il nostro scraper AI scansiona ogni giorno Invitalia, MIMIT, BUR regionali e Camere di Commercio.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">📧</div>
-      <h3>Alert Email Personalizzati</h3>
-      <p>Ricevi una notifica ogni volta che appare un nuovo bando compatibile con il profilo della tua azienda.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">📄</div>
-      <h3>PDF Dossier di Affinità</h3>
-      <p>Scarica un report professionale con tutti i bandi compatibili, requisiti e prossimi passi da seguire.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">📊</div>
-      <h3>Score % di Compatibilità</h3>
-      <p>Ogni bando ha un punteggio da 0 a 100. Sai esattamente quanto sei vicino alla soglia di ammissibilità.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">💼</div>
-      <h3>Consulenza Esperta</h3>
-      <p>Hai il semaforo verde? Prenota una sessione 1:1 con un consulente specializzato in finanziamenti pubblici.</p>
-    </div>
-  </div>
+ <h2>Tutto quello che ti serve per non perdere un euro</h2>
+ <div class="features-grid">
+ <div class="feature-card">
+ <div class="feature-icon"></div>
+ <h3>Sistema a Semaforo</h3>
+ <p>Verde, Giallo, Rosso e Grigio. Sai subito se puoi candidarti o no, senza leggere 50 pagine di bando.</p>
+ </div>
+ <div class="feature-card">
+ <div class="feature-icon"></div>
+ <h3>Aggiornamento Automatico</h3>
+ <p>Il nostro scraper AI scansiona ogni giorno Invitalia, MIMIT, BUR regionali e Camere di Commercio.</p>
+ </div>
+ <div class="feature-card">
+ <div class="feature-icon"></div>
+ <h3>Alert Email Personalizzati</h3>
+ <p>Ricevi una notifica ogni volta che appare un nuovo bando compatibile con il profilo della tua azienda.</p>
+ </div>
+ <div class="feature-card">
+ <div class="feature-icon"></div>
+ <h3>PDF Dossier di Affinità</h3>
+ <p>Scarica un report professionale con tutti i bandi compatibili, requisiti e prossimi passi da seguire.</p>
+ </div>
+ <div class="feature-card">
+ <div class="feature-icon"></div>
+ <h3>Score % di Compatibilità</h3>
+ <p>Ogni bando ha un punteggio da 0 a 100. Sai esattamente quanto sei vicino alla soglia di ammissibilità.</p>
+ </div>
+ <div class="feature-card">
+ <div class="feature-icon"></div>
+ <h3>Consulenza Esperta</h3>
+ <p>Hai il semaforo verde? Prenota una sessione 1:1 con un consulente specializzato in finanziamenti pubblici.</p>
+ </div>
+ </div>
 </section>
 
 <!-- FOOTER -->
 <footer>
-  <p style="margin-bottom:12px">🎯 <strong style="color:#00C851">BandoMatch AI</strong> — Il radar per i finanziamenti pubblici delle PMI italiane</p>
-  <div>
-    <a href="/bandi">Bandi Attivi</a>
-    <a href="/upgrade">Costi</a>
-    <a href="/consulenza">Consulenza</a>
-    <a href="/faq">FAQ</a>
-    <a href="/login">Accedi</a>
-    <a href="/register">Registrati</a>
-  </div>
-  <p style="margin-top:16px">© 2025 BandoMatch AI — Non costituisce consulenza finanziaria o legale. I risultati sono indicativi.</p>
+ <p style="margin-bottom:12px"><strong style="color:#00C851">BandoMatch AI</strong> — Il radar per i finanziamenti pubblici delle PMI italiane</p>
+ <div>
+ <a href="/bandi">Bandi Attivi</a>
+ <a href="/upgrade">Costi</a>
+ <a href="/consulenza">Consulenza</a>
+ <a href="/faq">FAQ</a>
+ <a href="/login">Accedi</a>
+ <a href="/register">Registrati</a>
+ </div>
+ <p style="margin-top:16px">© 2025 BandoMatch AI — Non costituisce consulenza finanziaria o legale. I risultati sono indicativi.</p>
 </footer>
 
 <script>
@@ -346,183 +346,183 @@ const fileSelected = document.getElementById('fileSelected');
 const fileName = document.getElementById('fileName');
 
 fileInput.addEventListener('change', function() {
-  if (this.files[0]) {
-    fileName.textContent = this.files[0].name;
-    fileSelected.classList.add('show');
-    dropZone.style.borderColor = '#00C851';
-  }
+ if (this.files[0]) {
+ fileName.textContent = this.files[0].name;
+ fileSelected.classList.add('show');
+ dropZone.style.borderColor = '#00C851';
+ }
 });
 
 dropZone.addEventListener('dragover', (e) => {
-  e.preventDefault();
-  dropZone.classList.add('drag-over');
+ e.preventDefault();
+ dropZone.classList.add('drag-over');
 });
 dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
 dropZone.addEventListener('drop', (e) => {
-  e.preventDefault();
-  dropZone.classList.remove('drag-over');
-  const file = e.dataTransfer.files[0];
-  if (file && file.type === 'application/pdf') {
-    const dt = new DataTransfer();
-    dt.items.add(file);
-    fileInput.files = dt.files;
-    fileName.textContent = file.name;
-    fileSelected.classList.add('show');
-    dropZone.style.borderColor = '#00C851';
-  }
+ e.preventDefault();
+ dropZone.classList.remove('drag-over');
+ const file = e.dataTransfer.files[0];
+ if (file && file.type === 'application/pdf') {
+ const dt = new DataTransfer();
+ dt.items.add(file);
+ fileInput.files = dt.files;
+ fileName.textContent = file.name;
+ fileSelected.classList.add('show');
+ dropZone.style.borderColor = '#00C851';
+ }
 });
 
 // ─── ANIMAZIONE STEPS ─────────────────────
 function animaSteps() {
-  const steps = ['step1', 'step2', 'step3', 'step4'];
-  let i = 0;
-  return setInterval(() => {
-    steps.forEach(s => document.getElementById(s).classList.remove('active'));
-    if (i < steps.length) {
-      document.getElementById(steps[i]).classList.add('active');
-      i++;
-    }
-  }, 1200);
+ const steps = ['step1', 'step2', 'step3', 'step4'];
+ let i = 0;
+ return setInterval(() => {
+ steps.forEach(s => document.getElementById(s).classList.remove('active'));
+ if (i < steps.length) {
+ document.getElementById(steps[i]).classList.add('active');
+ i++;
+ }
+ }, 1200);
 }
 
 // ─── SUBMIT FORM ──────────────────────────
 document.getElementById('uploadForm').addEventListener('submit', async function(e) {
-  e.preventDefault();
+ e.preventDefault();
 
-  const formData = new FormData(this);
-  const btn = document.getElementById('btnAnalizza');
-  const loading = document.getElementById('loading');
-  const risultati = document.getElementById('risultati');
+ const formData = new FormData(this);
+ const btn = document.getElementById('btnAnalizza');
+ const loading = document.getElementById('loading');
+ const risultati = document.getElementById('risultati');
 
-  // Mostra loading
-  this.style.display = 'none';
-  loading.style.display = 'block';
-  risultati.style.display = 'none';
-  btn.disabled = true;
+ // Mostra loading
+ this.style.display = 'none';
+ loading.style.display = 'block';
+ risultati.style.display = 'none';
+ btn.disabled = true;
 
-  const interval = animaSteps();
+ const interval = animaSteps();
 
-  try {
-    const response = await fetch('/analizza', {
-      method: 'POST',
-      body: formData
-    });
-    const data = await response.json();
-    clearInterval(interval);
+ try {
+ const response = await fetch('/analizza', {
+ method: 'POST',
+ body: formData
+ });
+ const data = await response.json();
+ clearInterval(interval);
 
-    loading.style.display = 'none';
-    risultati.style.display = 'block';
+ loading.style.display = 'none';
+ risultati.style.display = 'block';
 
-    if (data.error) {
-      risultati.innerHTML = `<div style="background:rgba(255,68,68,0.1);border:1px solid #ff4444;border-radius:12px;padding:20px;color:#ff6666">
-        ⚠️ ${data.error}
-        <br><br><button onclick="location.reload()" style="padding:8px 16px;background:#1a2a3a;border:1px solid #2a3a4a;border-radius:6px;color:#8899aa;cursor:pointer">Riprova</button>
-      </div>`;
-      return;
-    }
+ if (data.error) {
+ risultati.innerHTML = `<div style="background:rgba(255,68,68,0.1);border:1px solid #ff4444;border-radius:12px;padding:20px;color:#ff6666">
+ ️ ${data.error}
+ <br><br><button onclick="location.reload()" style="padding:8px 16px;background:#1a2a3a;border:1px solid #2a3a4a;border-radius:6px;color:#8899aa;cursor:pointer">Riprova</button>
+ </div>`;
+ return;
+ }
 
-    renderRisultati(data);
+ renderRisultati(data);
 
-  } catch (err) {
-    clearInterval(interval);
-    loading.style.display = 'none';
-    this.style.display = 'block';
-    btn.disabled = false;
-    alert('Errore di connessione. Riprova.');
-  }
+ } catch (err) {
+ clearInterval(interval);
+ loading.style.display = 'none';
+ this.style.display = 'block';
+ btn.disabled = false;
+ alert('Errore di connessione. Riprova.');
+ }
 });
 
 // ─── RENDER RISULTATI ─────────────────────
 function renderRisultati(data) {
-  const t = data.teaser;
-  const imp = data.impresa;
+ const t = data.teaser;
+ const imp = data.impresa;
 
-  let html = `
-    <div class="result-header">
-      <h2>📊 ${imp.ragione_sociale}</h2>
-      <div class="meta">ATECO: ${imp.ateco} | Regione: ${imp.regione} | Forma: ${imp.forma_giuridica} | Età: ${imp.eta_mesi} mesi</div>
-    </div>
+ let html = `
+ <div class="result-header">
+ <h2> ${imp.ragione_sociale}</h2>
+ <div class="meta">ATECO: ${imp.ateco} | Regione: ${imp.regione} | Forma: ${imp.forma_giuridica} | Età: ${imp.eta_mesi} mesi</div>
+ </div>
 
-    <div class="teaser-box">
-      <div class="alert">${t.messaggio_teaser || '🎯 Analisi completata!'}</div>
-      <div class="teaser-counts">
-        <div class="count-item verde"><div class="num">${t.verdi}</div><div class="lbl">🟢 VERDE</div></div>
-        <div class="count-item giallo"><div class="num">${t.gialli}</div><div class="lbl">🟡 GIALLO</div></div>
-        <div class="count-item rosso"><div class="num">${t.rossi}</div><div class="lbl">🔴 ROSSO</div></div>
-        <div class="count-item grigio"><div class="num">${t.grigi}</div><div class="lbl">⚪ GRIGIO</div></div>
-      </div>
-    </div>
+ <div class="teaser-box">
+ <div class="alert">${t.messaggio_teaser || 'Analisi completata!'}</div>
+ <div class="teaser-counts">
+ <div class="count-item verde"><div class="num">${t.verdi}</div><div class="lbl">Verde VERDE</div></div>
+ <div class="count-item giallo"><div class="num">${t.gialli}</div><div class="lbl">Giallo GIALLO</div></div>
+ <div class="count-item rosso"><div class="num">${t.rossi}</div><div class="lbl"> ROSSO</div></div>
+ <div class="count-item grigio"><div class="num">${t.grigi}</div><div class="lbl"> GRIGIO</div></div>
+ </div>
+ </div>
 
-    <div class="bandi-list">`;
+ <div class="bandi-list">`;
 
-  data.bandi.forEach(b => {
-    const cls = b.semaforo.toLowerCase();
-    const score = b.score || 0;
-    html += `<div class="bando-card ${cls}">
-      <div class="bando-header">
-        <div>
-          <div class="bando-nome">${b.nome}</div>
-          <div class="bando-ente">${b.ente}</div>
-        </div>
-        <div class="bando-score">
-          <strong style="color:${cls==='verde'?'#00C851':cls==='giallo'?'#FFB300':'#FF4444'}">${score}%</strong>
-          <div class="score-bar"><div class="score-fill ${cls}" style="width:${score}%"></div></div>
-        </div>
-      </div>
-      <div class="bando-snippet">${b.snippet}</div>`;
+ data.bandi.forEach(b => {
+ const cls = b.semaforo.toLowerCase();
+ const score = b.score || 0;
+ html += `<div class="bando-card ${cls}">
+ <div class="bando-header">
+ <div>
+ <div class="bando-nome">${b.nome}</div>
+ <div class="bando-ente">${b.ente}</div>
+ </div>
+ <div class="bando-score">
+ <strong style="color:${cls==='verde'?'#00C851':cls==='giallo'?'#FFB300':'#FF4444'}">${score}%</strong>
+ <div class="score-bar"><div class="score-fill ${cls}" style="width:${score}%"></div></div>
+ </div>
+ </div>
+ <div class="bando-snippet">${b.snippet}</div>`;
 
-    if (b.valore_stimato > 0) {
-      html += `<span class="valore-badge">💰 €${b.valore_stimato.toLocaleString('it-IT')} (${b.fondo_perduto}% fondo perduto)</span>`;
-    }
+ if (b.valore_stimato> 0) {
+ html += `<span class="valore-badge"> €${b.valore_stimato.toLocaleString('it-IT')} (${b.fondo_perduto}% fondo perduto)</span>`;
+ }
 
-    if (!b.locked && b.dettagli) {
-      html += `<div class="bando-dettagli">`;
-      if (b.dettagli.requisiti_soddisfatti) {
-        b.dettagli.requisiti_soddisfatti.forEach(r => {
-          html += `<div class="req">✓ ${r}</div>`;
-        });
-      }
-      html += `<div style="font-size:12px;color:#8899aa;margin-top:6px">📅 Scadenza: ${b.dettagli.scadenza || 'N/D'}</div>`;
-      if (b.dettagli.link) {
-        html += `<a href="${b.dettagli.link}" target="_blank" class="link-btn">🔗 Vai al bando ufficiale</a>`;
-      }
-      html += `</div>`;
-    } else if (b.locked) {
-      html += `<div class="locked-overlay">
-        <div class="lock-icon">🔒</div>
-        <p>Sblocca tutti i dettagli con il piano Premium</p>
-        <a href="/upgrade" class="btn-unlock">🚀 Sblocca — €9,90/mese</a>
-      </div>`;
-    }
+ if (!b.locked && b.dettagli) {
+ html += `<div class="bando-dettagli">`;
+ if (b.dettagli.requisiti_soddisfatti) {
+ b.dettagli.requisiti_soddisfatti.forEach(r => {
+ html += `<div class="req">${r}</div>`;
+ });
+ }
+ html += `<div style="font-size:12px;color:#8899aa;margin-top:6px"> Scadenza: ${b.dettagli.scadenza || 'N/D'}</div>`;
+ if (b.dettagli.link) {
+ html += `<a href="${b.dettagli.link}" target="_blank" class="link-btn"> Vai al bando ufficiale</a>`;
+ }
+ html += `</div>`;
+ } else if (b.locked) {
+ html += `<div class="locked-overlay">
+ <div class="lock-icon"></div>
+ <p>Sblocca tutti i dettagli con il piano Premium</p>
+ <a href="/upgrade" class="btn-unlock"> Sblocca — €9,90/mese</a>
+ </div>`;
+ }
 
-    html += `</div>`;
-  });
+ html += `</div>`;
+ });
 
-  html += `</div>`;
+ html += `</div>`;
 
-  // CTA finale
-  if (!data.is_premium) {
-    html += `<div style="background:linear-gradient(135deg,#1a2a3a,#0f1f2f);border:1px solid #FFB300;border-radius:12px;padding:24px;text-align:center;margin-bottom:16px">
-      <h3 style="color:#FFB300;margin-bottom:8px">🚀 Sblocca tutti i ${data.bandi.length} bandi — €9,90/mese</h3>
-      <p style="color:#8899aa;font-size:14px;margin-bottom:16px">PDF Dossier, alert email, storico analisi e aggiornamenti giornalieri</p>
-      <a href="/upgrade" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,#FFB300,#ff8c00);border-radius:8px;color:#fff;font-weight:700;text-decoration:none">Upgrade ora →</a>
-    </div>`;
-  }
+ // CTA finale
+ if (!data.is_premium) {
+ html += `<div style="background:linear-gradient(135deg,#1a2a3a,#0f1f2f);border:1px solid #FFB300;border-radius:12px;padding:24px;text-align:center;margin-bottom:16px">
+ <h3 style="color:#FFB300;margin-bottom:8px"> Sblocca tutti i ${data.bandi.length} bandi — €9,90/mese</h3>
+ <p style="color:#8899aa;font-size:14px;margin-bottom:16px">PDF Dossier, alert email, storico analisi e aggiornamenti giornalieri</p>
+ <a href="/upgrade" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,#FFB300,#ff8c00);border-radius:8px;color:#fff;font-weight:700;text-decoration:none">Upgrade ora →</a>
+ </div>`;
+ }
 
-  if (data.analisi_id) {
-    html += `<div style="text-align:center;margin-bottom:16px">
-      <a href="/dossier/${data.analisi_id}" style="display:inline-block;padding:10px 24px;background:rgba(0,200,81,0.15);border:1px solid #00C851;border-radius:8px;color:#00C851;font-weight:700;text-decoration:none">📄 Scarica PDF Dossier</a>
-      <a href="/dashboard" style="display:inline-block;margin-left:12px;padding:10px 24px;background:#1a2a3a;border:1px solid #2a3a4a;border-radius:8px;color:#8899aa;font-weight:600;text-decoration:none">📋 Vai alla Dashboard</a>
-    </div>`;
-  }
+ if (data.analisi_id) {
+ html += `<div style="text-align:center;margin-bottom:16px">
+ <a href="/dossier/${data.analisi_id}" style="display:inline-block;padding:10px 24px;background:rgba(0,200,81,0.15);border:1px solid #00C851;border-radius:8px;color:#00C851;font-weight:700;text-decoration:none"> Scarica PDF Dossier</a>
+ <a href="/dashboard" style="display:inline-block;margin-left:12px;padding:10px 24px;background:#1a2a3a;border:1px solid #2a3a4a;border-radius:8px;color:#8899aa;font-weight:600;text-decoration:none"> Vai alla Dashboard</a>
+ </div>`;
+ }
 
-  html += `<p style="font-size:11px;color:#4a5a6a;text-align:center">${data.disclaimer}</p>
-  <div style="text-align:center;margin-top:16px">
-    <button onclick="location.reload()" style="padding:8px 20px;background:#1a2a3a;border:1px solid #2a3a4a;border-radius:6px;color:#8899aa;cursor:pointer;font-size:13px">🔄 Nuova analisi</button>
-  </div>`;
+ html += `<p style="font-size:11px;color:#4a5a6a;text-align:center">${data.disclaimer}</p>
+ <div style="text-align:center;margin-top:16px">
+ <button onclick="location.reload()" style="padding:8px 20px;background:#1a2a3a;border:1px solid #2a3a4a;border-radius:6px;color:#8899aa;cursor:pointer;font-size:13px"> Nuova analisi</button>
+ </div>`;
 
-  document.getElementById('risultati').innerHTML = html;
-  document.getElementById('risultati').scrollIntoView({ behavior: 'smooth', block: 'start' });
+ document.getElementById('risultati').innerHTML = html;
+ document.getElementById('risultati').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 </script>
 </body>

@@ -1,216 +1,216 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard — BandoMatch.ai</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background-color: #0f172a; color: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif; }
-        .upload-box { border: 2px dashed #334155; border-radius: 12px; transition: all 0.3s; cursor: pointer; }
-        .upload-box:hover, .upload-box.dragover { border-color: #22c55e; background: rgba(34,197,94,0.04); }
-        .progress-fill { transition: width 0.5s ease; }
-        .score-green  { background: #065f46; color: #86efac; }
-        .score-yellow { background: #713f12; color: #fef08a; }
-        .score-red    { background: #7f1d1d; color: #fca5a5; }
-        .stat-card { background: #1e293b; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.5rem; }
-        .stat-card:hover { border-color: #4b5563; }
-        .header { background: #0f172a; border-bottom: 1px solid #1e293b; }
-        .file-tag { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; }
-    </style>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Dashboard — BandoMatch AI</title>
+ <link rel="icon" type="image/png" href="/static/img/favicon.png">
+ <script src="https://cdn.tailwindcss.com"></script>
+ <style>
+ body { background-color: #0f172a; color: #f1f5f9; font-family: 'Segoe UI', system-ui, sans-serif; }
+ .upload-box { border: 2px dashed #334155; border-radius: 12px; transition: all 0.3s; cursor: pointer; }
+ .upload-box:hover, .upload-box.dragover { border-color: #22c55e; background: rgba(34,197,94,0.04); }
+ .progress-fill { transition: width 0.5s ease; }
+ .score-green { background: #065f46; color: #86efac; }
+ .score-yellow { background: #713f12; color: #fef08a; }
+ .score-red { background: #7f1d1d; color: #fca5a5; }
+ .stat-card { background: #1e293b; border: 1px solid #334155; border-radius: 0.75rem; padding: 1.5rem; }
+ .stat-card:hover { border-color: #4b5563; }
+ .header { background: #0f172a; border-bottom: 1px solid #1e293b; }
+ .file-tag { background: rgba(34,197,94,0.15); border: 1px solid rgba(34,197,94,0.3); border-radius: 8px; }
+ </style>
 </head>
 <body>
 
 <header class="header px-6 py-4 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl flex items-center justify-center text-lg"
-             style="background: linear-gradient(135deg,#3b82f6,#8b5cf6);">🎯</div>
-        <span class="text-xl font-bold text-blue-400">BandoMatch.ai</span>
-    </div>
-    <nav class="flex items-center gap-6 text-sm text-slate-400">
-        <a href="/bandi" class="hover:text-white transition">Bandi</a>
-        <a href="/auth/logout" class="hover:text-red-400 transition">Esci</a>
-        <span class="bg-slate-700 text-slate-300 px-3 py-1 rounded-full text-xs font-semibold uppercase">
-            {{ current_user.piano if current_user.piano else 'free' }}
-        </span>
-    </nav>
+ <a href="/" class="flex items-center gap-3" style="text-decoration:none;">
+ <img src="/static/img/logo_nav.png" alt="BandoMatch AI" style="width:40px;height:40px;object-fit:contain;border-radius:50%;">
+ <span class="text-xl font-bold" style="color:#fff;">Bando<span style="color:#22c55e;">Match</span> AI</span>
+ </a>
+ <nav class="flex items-center gap-6 text-sm text-slate-400">
+ <a href="/bandi/" class="hover:text-white transition">Verde Bandi</a>
+ <a href="/auth/logout" class="hover:text-red-400 transition">Esci</a>
+ <span class="bg-slate-700 text-slate-300 px-3 py-1 rounded-full text-xs font-semibold uppercase">
+ {{ current_user.piano if current_user.piano else 'free' }}
+ </span>
+ </nav>
 </header>
 
 <main class="max-w-5xl mx-auto px-6 py-10">
 
-    <div class="mb-8">
-        <h1 class="text-3xl font-extrabold text-white mb-1">Ciao, {{ user_name }}! 👋</h1>
-        <p class="text-slate-400">Benvenuto nella tua area personale BandoMatch AI</p>
-    </div>
+ <div class="mb-8">
+ <h1 class="text-3xl font-extrabold text-white mb-1">Ciao, {{ user_name }}! </h1>
+ <p class="text-slate-400">Benvenuto nella tua area personale BandoMatch AI</p>
+ </div>
 
-    {% if current_user.piano == 'free' %}
-    <div class="mb-8 p-5 rounded-xl flex items-center justify-between gap-4"
-         style="background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.3);">
-        <div>
-            <p class="font-bold text-yellow-400 text-lg">🚀 Passa a Premium — €9,90/mese</p>
-            <p class="text-slate-400 text-sm mt-1">Sblocca tutti i bandi, il PDF Dossier e gli alert email automatici</p>
-        </div>
-        <a href="/upgrade" class="px-5 py-2.5 rounded-lg font-bold text-sm text-slate-900 whitespace-nowrap"
-           style="background: linear-gradient(135deg,#fbbf24,#f59e0b);">Upgrade ora →</a>
-    </div>
-    {% endif %}
+ {% if current_user.piano == 'free' %}
+ <div class="mb-8 p-5 rounded-xl flex items-center justify-between gap-4"
+ style="background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.3);">
+ <div>
+ <p class="font-bold text-yellow-400 text-lg"> Passa a Premium — €9,90/mese</p>
+ <p class="text-slate-400 text-sm mt-1">Sblocca tutti i bandi, il PDF Dossier e gli alert email automatici</p>
+ </div>
+ <a href="/upgrade" class="px-5 py-2.5 rounded-lg font-bold text-sm text-slate-900 whitespace-nowrap"
+ style="background: linear-gradient(135deg,#fbbf24,#f59e0b);">Upgrade ora →</a>
+ </div>
+ {% endif %}
 
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
-        <div class="stat-card text-center">
-            <div class="text-4xl font-extrabold text-green-400">{{ total_bandi }}</div>
-            <div class="text-slate-400 text-sm mt-1">Bandi disponibili</div>
-        </div>
-        <div class="stat-card text-center">
-            <div class="text-4xl font-extrabold text-blue-400">{{ active_matches }}</div>
-            <div class="text-slate-400 text-sm mt-1">Match attivi</div>
-        </div>
-        <div class="stat-card text-center">
-            <div class="text-4xl font-extrabold text-purple-400">{{ avg_score }}%</div>
-            <div class="text-slate-400 text-sm mt-1">Score medio compatibilità</div>
-        </div>
-    </div>
+ <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-10">
+ <div class="stat-card text-center">
+ <div class="text-4xl font-extrabold text-green-400">{{ total_bandi }}</div>
+ <div class="text-slate-400 text-sm mt-1">Bandi disponibili</div>
+ </div>
+ <div class="stat-card text-center">
+ <div class="text-4xl font-extrabold text-blue-400">{{ active_matches }}</div>
+ <div class="text-slate-400 text-sm mt-1">Match attivi</div>
+ </div>
+ <div class="stat-card text-center">
+ <div class="text-4xl font-extrabold text-purple-400">{{ avg_score }}%</div>
+ <div class="text-slate-400 text-sm mt-1">Score medio compatibilità</div>
+ </div>
+ </div>
 
-    <!-- UPLOAD VISURA -->
-    <div class="mb-10 p-6 rounded-2xl" style="background:#1e293b; border:1px solid #334155;">
-        <h2 class="text-xl font-bold text-white mb-1">📄 Analizza la tua Visura Camerale</h2>
-        <p class="text-slate-400 text-sm mb-6">
-            Carica il PDF della visura camerale ordinaria. In 30 secondi la nostra AI trova tutti i bandi compatibili con la tua impresa.
-        </p>
+ <!-- UPLOAD VISURA -->
+ <div class="mb-10 p-6 rounded-2xl" style="background:#1e293b; border:1px solid #334155;">
+ <h2 class="text-xl font-bold text-white mb-1">Analizza la tua Visura Camerale</h2>
+ <p class="text-slate-400 text-sm mb-6">
+ Carica il PDF della visura camerale ordinaria. In 30 secondi la nostra AI trova tutti i bandi compatibili con la tua impresa.
+ </p>
 
-        <form id="upload-form" enctype="multipart/form-data">
-            <div class="upload-box p-10 text-center mb-4" id="upload-box"
-                 onclick="document.getElementById('file-input').click()">
-                <div class="text-5xl mb-3">📄</div>
-                <p class="font-bold text-white mb-1">Trascina il PDF qui oppure clicca per scegliere</p>
-                <p class="text-slate-500 text-sm mb-4">Solo PDF nativo (non scansionato) — Max 10MB</p>
-                <button type="button"
-                        onclick="event.stopPropagation(); document.getElementById('file-input').click()"
-                        class="px-6 py-2.5 rounded-xl font-bold text-white text-sm"
-                        style="background: linear-gradient(135deg,#22c55e,#16a34a);">
-                    Scegli file PDF
-                </button>
-                <input type="file" id="file-input" name="visura" accept=".pdf"
-                       onchange="onFileSelected(this)" class="hidden">
-            </div>
+ <form id="upload-form" enctype="multipart/form-data">
+ <div class="upload-box p-10 text-center mb-4" id="upload-box"
+ onclick="document.getElementById('file-input').click()">
+ <div class="text-5xl mb-3"></div>
+ <p class="font-bold text-white mb-1">Trascina il PDF qui oppure clicca per scegliere</p>
+ <p class="text-slate-500 text-sm mb-4">Solo PDF nativo (non scansionato) — Max 10MB</p>
+ <button type="button"
+ onclick="event.stopPropagation(); document.getElementById('file-input').click()"
+ class="px-6 py-2.5 rounded-xl font-bold text-white text-sm"
+ style="background: linear-gradient(135deg,#22c55e,#16a34a);">
+ Scegli file PDF
+ </button>
+ <input type="file" id="file-input" name="visura" accept=".pdf"
+ onchange="onFileSelected(this)" class="hidden">
+ </div>
 
-            <div id="file-tag" class="hidden file-tag px-4 py-2 mb-4 flex items-center gap-2 text-green-400 text-sm font-semibold">
-                ✅ <span id="file-name"></span>
-                <button type="button" onclick="resetFile()" class="ml-auto text-slate-500 hover:text-red-400 text-xs">✕ Rimuovi</button>
-            </div>
+ <div id="file-tag" class="hidden file-tag px-4 py-2 mb-4 flex items-center gap-2 text-green-400 text-sm font-semibold">
+ <span id="file-name"></span>
+ <button type="button" onclick="resetFile()" class="ml-auto text-slate-500 hover:text-red-400 text-xs"> Rimuovi</button>
+ </div>
 
-            <div id="error-msg" class="hidden mb-4 px-4 py-3 rounded-lg text-red-400 text-sm"
-                 style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);"></div>
+ <div id="error-msg" class="hidden mb-4 px-4 py-3 rounded-lg text-red-400 text-sm"
+ style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3);"></div>
 
-            <div id="form-extra" class="hidden border-t border-slate-700 pt-6 mt-2">
-                <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">
-                    Dati integrativi — opzionali, migliorano la precisione
-                </p>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                    <div>
-                        <label class="block text-xs text-slate-400 font-semibold mb-1">Finalità dell'investimento</label>
-                        <select name="finalita_investimento"
-                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none">
-                            <option value="">-- Seleziona --</option>
-                            <option value="digitalizzazione">Digitalizzazione / IT</option>
-                            <option value="macchinari">Acquisto macchinari</option>
-                            <option value="ricerca">Ricerca e sviluppo</option>
-                            <option value="internazionalizzazione">Internazionalizzazione</option>
-                            <option value="green">Transizione green / sostenibilità</option>
-                            <option value="assunzioni">Nuove assunzioni</option>
-                            <option value="formazione">Formazione dipendenti</option>
-                            <option value="altro">Altro</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-400 font-semibold mb-1">Budget investimento (€)</label>
-                        <input type="number" name="budget_investimento" placeholder="es. 50000" min="0"
-                               class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none">
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-400 font-semibold mb-1">Condizione occupazionale</label>
-                        <select name="condizione_occupazionale"
-                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none">
-                            <option value="">-- Seleziona --</option>
-                            <option value="assunzioni_previste">Prevedo nuove assunzioni</option>
-                            <option value="stabile">Organico stabile</option>
-                            <option value="riduzione">Riduzione personale</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs text-slate-400 font-semibold mb-1">Hai già usato aiuti De Minimis?</label>
-                        <select name="de_minimis"
-                                class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none">
-                            <option value="no">No</option>
-                            <option value="si">Sì</option>
-                        </select>
-                    </div>
-                </div>
-                <button type="button" id="btn-analizza" onclick="avviaAnalisi()"
-                        class="w-full py-4 rounded-xl font-bold text-white text-base transition"
-                        style="background: linear-gradient(135deg,#3b82f6,#8b5cf6);">
-                    🔍 Avvia Analisi Bandi
-                </button>
-            </div>
+ <div id="form-extra" class="hidden border-t border-slate-700 pt-6 mt-2">
+ <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">
+ Dati integrativi — opzionali, migliorano la precisione
+ </p>
+ <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+ <div>
+ <label class="block text-xs text-slate-400 font-semibold mb-1">Finalità dell'investimento</label>
+ <select name="finalita_investimento"
+ class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none">
+ <option value="">-- Seleziona --</option>
+ <option value="digitalizzazione">Digitalizzazione / IT</option>
+ <option value="macchinari">Acquisto macchinari</option>
+ <option value="ricerca">Ricerca e sviluppo</option>
+ <option value="internazionalizzazione">Internazionalizzazione</option>
+ <option value="green">Transizione green / sostenibilità</option>
+ <option value="assunzioni">Nuove assunzioni</option>
+ <option value="formazione">Formazione dipendenti</option>
+ <option value="altro">Altro</option>
+ </select>
+ </div>
+ <div>
+ <label class="block text-xs text-slate-400 font-semibold mb-1">Budget investimento (€)</label>
+ <input type="number" name="budget_investimento" placeholder="es. 50000" min="0"
+ class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none">
+ </div>
+ <div>
+ <label class="block text-xs text-slate-400 font-semibold mb-1">Condizione occupazionale</label>
+ <select name="condizione_occupazionale"
+ class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none">
+ <option value="">-- Seleziona --</option>
+ <option value="assunzioni_previste">Prevedo nuove assunzioni</option>
+ <option value="stabile">Organico stabile</option>
+ <option value="riduzione">Riduzione personale</option>
+ </select>
+ </div>
+ <div>
+ <label class="block text-xs text-slate-400 font-semibold mb-1">Hai già usato aiuti De Minimis?</label>
+ <select name="de_minimis"
+ class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none">
+ <option value="no">No</option>
+ <option value="si">Sì</option>
+ </select>
+ </div>
+ </div>
+ <button type="button" id="btn-analizza" onclick="avviaAnalisi()"
+ class="w-full py-4 rounded-xl font-bold text-white text-base transition"
+ style="background: linear-gradient(135deg,#3b82f6,#8b5cf6);">
+ Avvia Analisi Bandi
+ </button>
+ </div>
 
-            <div id="progress-wrap" class="hidden mt-6">
-                <div class="w-full bg-slate-900 rounded-full h-2 mb-3 overflow-hidden">
-                    <div id="progress-fill" class="progress-fill h-full rounded-full"
-                         style="width:0%; background: linear-gradient(90deg,#3b82f6,#8b5cf6);"></div>
-                </div>
-                <p id="progress-text" class="text-center text-slate-400 text-sm">Caricamento in corso...</p>
-            </div>
-        </form>
-    </div>
+ <div id="progress-wrap" class="hidden mt-6">
+ <div class="w-full bg-slate-900 rounded-full h-2 mb-3 overflow-hidden">
+ <div id="progress-fill" class="progress-fill h-full rounded-full"
+ style="width:0%; background: linear-gradient(90deg,#3b82f6,#8b5cf6);"></div>
+ </div>
+ <p id="progress-text" class="text-center text-slate-400 text-sm">Caricamento in corso...</p>
+ </div>
+ </form>
+ </div>
 
-    <div class="mb-6 flex items-center justify-between">
-        <h2 class="text-lg font-bold text-white">📋 Bandi Recenti</h2>
-        <a href="/bandi" class="text-blue-400 text-sm hover:underline">Vedi tutti →</a>
-    </div>
+ <div class="mb-6 flex items-center justify-between">
+ <h2 class="text-lg font-bold text-white"> Bandi Recenti</h2>
+ <a href="/bandi" class="text-blue-400 text-sm hover:underline">Vedi tutti →</a>
+ </div>
 
-    {% if bandi %}
-    <div class="overflow-x-auto rounded-xl" style="border:1px solid #1e293b;">
-        <table class="w-full text-sm">
-            <thead>
-                <tr class="text-left text-xs text-slate-500 uppercase tracking-wider"
-                    style="background:#1e293b; border-bottom:1px solid #334155;">
-                    <th class="px-4 py-3">Bando</th>
-                    <th class="px-4 py-3">Fonte</th>
-                    <th class="px-4 py-3">Scadenza</th>
-                    <th class="px-4 py-3">Score</th>
-                    <th class="px-4 py-3"></th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for bando in bandi %}
-                <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
-                    <td class="px-4 py-3 font-medium text-white max-w-xs truncate">{{ bando.titolo }}</td>
-                    <td class="px-4 py-3 text-slate-400">{{ bando.categoria }}</td>
-                    <td class="px-4 py-3 text-slate-400">{{ bando.scadenza }}</td>
-                    <td class="px-4 py-3">
-                        <span class="px-2 py-1 rounded text-xs font-semibold
-                            {% if bando.score >= 70 %}score-green
-                            {% elif bando.score >= 40 %}score-yellow
-                            {% else %}score-red{% endif %}">
-                            {{ bando.score }}%
-                        </span>
-                    </td>
-                    <td class="px-4 py-3">
-                        <a href="/bandi/{{ bando.id }}" class="text-blue-400 text-xs hover:underline">Dettagli →</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-    {% else %}
-    <div class="text-center py-16 text-slate-500">
-        <div class="text-5xl mb-4">🔍</div>
-        <p class="text-lg font-semibold mb-2">Nessun bando disponibile</p>
-        <p class="text-sm">Carica la tua visura per iniziare il matching automatico</p>
-    </div>
-    {% endif %}
+ {% if bandi %}
+ <div class="overflow-x-auto rounded-xl" style="border:1px solid #1e293b;">
+ <table class="w-full text-sm">
+ <thead>
+ <tr class="text-left text-xs text-slate-500 uppercase tracking-wider"
+ style="background:#1e293b; border-bottom:1px solid #334155;">
+ <th class="px-4 py-3">Bando</th>
+ <th class="px-4 py-3">Fonte</th>
+ <th class="px-4 py-3">Scadenza</th>
+ <th class="px-4 py-3">Score</th>
+ <th class="px-4 py-3"></th>
+ </tr>
+ </thead>
+ <tbody>
+ {% for bando in bandi %}
+ <tr class="border-b border-slate-800 hover:bg-slate-800/30 transition">
+ <td class="px-4 py-3 font-medium text-white max-w-xs truncate">{{ bando.titolo }}</td>
+ <td class="px-4 py-3 text-slate-400">{{ bando.categoria }}</td>
+ <td class="px-4 py-3 text-slate-400">{{ bando.scadenza }}</td>
+ <td class="px-4 py-3">
+ <span class="px-2 py-1 rounded text-xs font-semibold
+ {% if bando.score>= 70 %}score-green
+ {% elif bando.score>= 40 %}score-yellow
+ {% else %}score-red{% endif %}">
+ {{ bando.score }}%
+ </span>
+ </td>
+ <td class="px-4 py-3">
+ <a href="/bandi/{{ bando.id }}" class="text-blue-400 text-xs hover:underline">Dettagli →</a>
+ </td>
+ </tr>
+ {% endfor %}
+ </tbody>
+ </table>
+ </div>
+ {% else %}
+ <div class="text-center py-16 text-slate-500">
+ <div class="text-5xl mb-4"></div>
+ <p class="text-lg font-semibold mb-2">Nessun bando disponibile</p>
+ <p class="text-sm">Carica la tua visura per iniziare il matching automatico</p>
+ </div>
+ {% endif %}
 
-    <p class="text-slate-600 text-xs text-right mt-4">Ultimo aggiornamento: {{ last_update }}</p>
+ <p class="text-slate-600 text-xs text-right mt-4">Ultimo aggiornamento: {{ last_update }}</p>
 </main>
 
 <script>
@@ -218,90 +218,90 @@ const uploadBox = document.getElementById('upload-box');
 uploadBox.addEventListener('dragover', (e) => { e.preventDefault(); uploadBox.classList.add('dragover'); });
 uploadBox.addEventListener('dragleave', () => uploadBox.classList.remove('dragover'));
 uploadBox.addEventListener('drop', (e) => {
-    e.preventDefault();
-    uploadBox.classList.remove('dragover');
-    const file = e.dataTransfer.files[0];
-    if (file && file.type === 'application/pdf') {
-        const dt = new DataTransfer();
-        dt.items.add(file);
-        document.getElementById('file-input').files = dt.files;
-        mostraFileScelto(file.name);
-    } else {
-        mostraErrore('Formato non supportato. Carica un PDF nativo.');
-    }
+ e.preventDefault();
+ uploadBox.classList.remove('dragover');
+ const file = e.dataTransfer.files[0];
+ if (file && file.type === 'application/pdf') {
+ const dt = new DataTransfer();
+ dt.items.add(file);
+ document.getElementById('file-input').files = dt.files;
+ mostraFileScelto(file.name);
+ } else {
+ mostraErrore('Formato non supportato. Carica un PDF nativo.');
+ }
 });
 
 function onFileSelected(input) {
-    const file = input.files[0];
-    if (!file) return;
-    if (file.type !== 'application/pdf') { mostraErrore('Formato non supportato. Carica un PDF nativo.'); return; }
-    if (file.size > 10 * 1024 * 1024) { mostraErrore('File troppo grande. Massimo 10MB.'); return; }
-    mostraFileScelto(file.name);
+ const file = input.files[0];
+ if (!file) return;
+ if (file.type !== 'application/pdf') { mostraErrore('Formato non supportato. Carica un PDF nativo.'); return; }
+ if (file.size> 10 * 1024 * 1024) { mostraErrore('File troppo grande. Massimo 10MB.'); return; }
+ mostraFileScelto(file.name);
 }
 
 function mostraFileScelto(nome) {
-    document.getElementById('file-name').textContent = nome;
-    document.getElementById('file-tag').classList.remove('hidden');
-    document.getElementById('form-extra').classList.remove('hidden');
-    document.getElementById('error-msg').classList.add('hidden');
+ document.getElementById('file-name').textContent = nome;
+ document.getElementById('file-tag').classList.remove('hidden');
+ document.getElementById('form-extra').classList.remove('hidden');
+ document.getElementById('error-msg').classList.add('hidden');
 }
 
 function resetFile() {
-    document.getElementById('file-input').value = '';
-    document.getElementById('file-tag').classList.add('hidden');
-    document.getElementById('form-extra').classList.add('hidden');
-    document.getElementById('error-msg').classList.add('hidden');
+ document.getElementById('file-input').value = '';
+ document.getElementById('file-tag').classList.add('hidden');
+ document.getElementById('form-extra').classList.add('hidden');
+ document.getElementById('error-msg').classList.add('hidden');
 }
 
 function mostraErrore(msg) {
-    const el = document.getElementById('error-msg');
-    el.textContent = msg;
-    el.classList.remove('hidden');
+ const el = document.getElementById('error-msg');
+ el.textContent = msg;
+ el.classList.remove('hidden');
 }
 
 function avviaAnalisi() {
-    const fileInput = document.getElementById('file-input');
-    if (!fileInput.files[0]) { mostraErrore('Seleziona prima un file PDF.'); return; }
-    document.getElementById('form-extra').classList.add('hidden');
-    document.getElementById('upload-box').style.pointerEvents = 'none';
-    document.getElementById('progress-wrap').classList.remove('hidden');
-    const fill = document.getElementById('progress-fill');
-    const text = document.getElementById('progress-text');
-    const steps = [
-        { w: 12, t: 'Caricamento PDF...' },
-        { w: 28, t: 'Estrazione testo dalla visura...' },
-        { w: 48, t: 'Analisi ATECO e sede legale...' },
-        { w: 65, t: 'Calcolo compatibilità con i bandi...' },
-        { w: 82, t: 'Generazione semaforo di compatibilità...' },
-        { w: 94, t: 'Finalizzazione risultati...' },
-    ];
-    let i = 0;
-    const interval = setInterval(() => {
-        if (i < steps.length) { fill.style.width = steps[i].w + '%'; text.textContent = steps[i].t; i++; }
-    }, 700);
-    const formData = new FormData(document.getElementById('upload-form'));
-    fetch('/analisi/analizza', { method: 'POST', body: formData })
-        .then(r => r.json())
-        .then(data => {
-            clearInterval(interval);
-            if (data.redirect) {
-                fill.style.width = '100%';
-                text.textContent = '✅ Analisi completata! Reindirizzamento...';
-                setTimeout(() => { window.location.href = data.redirect; }, 600);
-            } else if (data.error) {
-                document.getElementById('progress-wrap').classList.add('hidden');
-                document.getElementById('upload-box').style.pointerEvents = 'auto';
-                document.getElementById('form-extra').classList.remove('hidden');
-                mostraErrore('Errore: ' + data.error);
-            }
-        })
-        .catch(() => {
-            clearInterval(interval);
-            document.getElementById('progress-wrap').classList.add('hidden');
-            document.getElementById('upload-box').style.pointerEvents = 'auto';
-            document.getElementById('form-extra').classList.remove('hidden');
-            mostraErrore('Errore di connessione. Riprova tra qualche secondo.');
-        });
+ const fileInput = document.getElementById('file-input');
+ if (!fileInput.files[0]) { mostraErrore('Seleziona prima un file PDF.'); return; }
+ document.getElementById('form-extra').classList.add('hidden');
+ document.getElementById('upload-box').style.pointerEvents = 'none';
+ document.getElementById('progress-wrap').classList.remove('hidden');
+ const fill = document.getElementById('progress-fill');
+ const text = document.getElementById('progress-text');
+ const steps = [
+ { w: 12, t: 'Caricamento PDF...' },
+ { w: 28, t: 'Estrazione testo dalla visura...' },
+ { w: 48, t: 'Analisi ATECO e sede legale...' },
+ { w: 65, t: 'Calcolo compatibilità con i bandi...' },
+ { w: 82, t: 'Generazione semaforo di compatibilità...' },
+ { w: 94, t: 'Finalizzazione risultati...' },
+ ];
+ let i = 0;
+ const interval = setInterval(() => {
+ if (i < steps.length) { fill.style.width = steps[i].w + '%'; text.textContent = steps[i].t; i++; }
+ }, 700);
+ const formData = new FormData(document.getElementById('upload-form'));
+ fetch('/analisi/analizza', { method: 'POST', body: formData })
+ .then(r => r.json())
+ .then(data => {
+ clearInterval(interval);
+ if (data.redirect) {
+ fill.style.width = '100%';
+ text.textContent = ' Analisi completata! Reindirizzamento...';
+ setTimeout(() => { window.location.href = data.redirect; }, 600);
+ } else if (data.error) {
+ document.getElementById('progress-wrap').classList.add('hidden');
+ document.getElementById('upload-box').style.pointerEvents = 'auto';
+ document.getElementById('form-extra').classList.remove('hidden');
+ mostraErrore('Errore: ' + data.error);
+ }
+ })
+ .catch(() => {
+ clearInterval(interval);
+ document.getElementById('progress-wrap').classList.add('hidden');
+ document.getElementById('upload-box').style.pointerEvents = 'auto';
+ document.getElementById('form-extra').classList.remove('hidden');
+ mostraErrore('Errore di connessione. Riprova tra qualche secondo.');
+ });
 }
 </script>
 </body>

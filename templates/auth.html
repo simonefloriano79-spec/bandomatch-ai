@@ -1,243 +1,247 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}BandoMatch.ai - Autenticazione{% endblock %}</title>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BandoMatch AI - Accedi{% endblock %}</title>
+    <link rel="icon" type="image/png" href="/static/img/favicon.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-        }
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .input-focus:focus {
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        .logo-text {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
-        }
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-    </style>
+ <style>
+ body {
+ background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+ }
+ .glass-effect {
+ background: rgba(255, 255, 255, 0.05);
+ backdrop-filter: blur(10px);
+ border: 1px solid rgba(255, 255, 255, 0.1);
+ }
+ .input-focus:focus {
+ box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+ }
+ .logo-text {
+ background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+ -webkit-background-clip: text;
+ -webkit-text-fill-color: transparent;
+ background-clip: text;
+ }
+ .btn-primary {
+ background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+ transition: all 0.3s ease;
+ }
+ .btn-primary:hover {
+ transform: translateY(-2px);
+ box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+ }
+ .btn-primary:active {
+ transform: translateY(0);
+ }
+ </style>
 </head>
 <body class="min-h-screen flex items-center justify-center py-12 px-4">
-    <div class="w-full max-w-md">
+ <div class="w-full max-w-md">
         <!-- Logo -->
         <div class="text-center mb-12">
-            <h1 class="logo-text text-4xl font-bold mb-2">BandoMatch.ai</h1>
-            <p class="text-gray-400 text-sm">Trova i bandi che fanno per te</p>
+            <a href="/" style="text-decoration:none;display:inline-flex;align-items:center;gap:12px;justify-content:center;">
+                <img src="/static/img/logo_nav.png" alt="BandoMatch AI" style="width:56px;height:56px;object-fit:contain;border-radius:50%;">
+                <h1 class="text-4xl font-bold" style="color:#fff;">Bando<span style="color:#22c55e;">Match</span> AI</h1>
+            </a>
+            <p class="text-gray-400 text-sm mt-3">Semaforo Verde per i tuoi Finanziamenti</p>
         </div>
 
-        <!-- Tab Navigation -->
-        <div class="flex mb-8 glass-effect rounded-lg p-1">
-            <button 
-                onclick="showTab('login')" 
-                id="login-tab"
-                class="flex-1 py-2 px-4 rounded-md font-medium transition-all duration-300 text-white bg-blue-600">
-                Accedi
-            </button>
-            <button 
-                onclick="showTab('register')" 
-                id="register-tab"
-                class="flex-1 py-2 px-4 rounded-md font-medium transition-all duration-300 text-gray-400 hover:text-gray-300">
-                Registrati
-            </button>
-        </div>
+ <!-- Tab Navigation -->
+ <div class="flex mb-8 glass-effect rounded-lg p-1">
+ <button 
+ onclick="showTab('login')" 
+ id="login-tab"
+ class="flex-1 py-2 px-4 rounded-md font-medium transition-all duration-300 text-white bg-blue-600">
+ Accedi
+ </button>
+ <button 
+ onclick="showTab('register')" 
+ id="register-tab"
+ class="flex-1 py-2 px-4 rounded-md font-medium transition-all duration-300 text-gray-400 hover:text-gray-300">
+ Registrati
+ </button>
+ </div>
 
-        <!-- Login Form -->
-        <div id="login-form" class="glass-effect rounded-2xl p-8 mb-6">
-            <h2 class="text-2xl font-bold text-white mb-6">Accedi al tuo account</h2>
-            
-            {% with messages = get_flashed_messages(category_filter=['login_error']) %}
-                {% if messages %}
-                    <div class="bg-red-900/30 border border-red-600 rounded-lg p-4 mb-6">
-                        <p class="text-red-200 text-sm">{{ messages[0] }}</p>
-                    </div>
-                {% endif %}
-            {% endwith %}
+ <!-- Login Form -->
+ <div id="login-form" class="glass-effect rounded-2xl p-8 mb-6">
+ <h2 class="text-2xl font-bold text-white mb-6">Accedi al tuo account</h2>
+ 
+ {% with messages = get_flashed_messages(category_filter=['login_error']) %}
+ {% if messages %}
+ <div class="bg-red-900/30 border border-red-600 rounded-lg p-4 mb-6">
+ <p class="text-red-200 text-sm">{{ messages[0] }}</p>
+ </div>
+ {% endif %}
+ {% endwith %}
 
-            <form method="POST" action="{{ url_for('auth.login') }}" class="space-y-4">
-                <div>
-                    <label for="login-email" class="block text-gray-300 text-sm font-medium mb-2">
-                        Email
-                    </label>
-                    <input 
-                        type="email" 
-                        id="login-email"
-                        name="email" 
-                        required
-                        placeholder="tua@email.com"
-                        class="input-focus w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-blue-500 outline-none transition-colors"
-                    >
-                </div>
+ <form method="POST" action="{{ url_for('auth.login') }}" class="space-y-4">
+ <div>
+ <label for="login-email" class="block text-gray-300 text-sm font-medium mb-2">
+ Email
+ </label>
+ <input 
+ type="email" 
+ id="login-email"
+ name="email" 
+ required
+ placeholder="tua@email.com"
+ class="input-focus w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-blue-500 outline-none transition-colors"
+>
+ </div>
 
-                <div>
-                    <label for="login-password" class="block text-gray-300 text-sm font-medium mb-2">
-                        Password
-                    </label>
-                    <input 
-                        type="password" 
-                        id="login-password"
-                        name="password" 
-                        required
-                        placeholder="••••••••"
-                        class="input-focus w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-blue-500 outline-none transition-colors"
-                    >
-                </div>
+ <div>
+ <label for="login-password" class="block text-gray-300 text-sm font-medium mb-2">
+ Password
+ </label>
+ <input 
+ type="password" 
+ id="login-password"
+ name="password" 
+ required
+ placeholder="••••••••"
+ class="input-focus w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-blue-500 outline-none transition-colors"
+>
+ </div>
 
-                <div class="flex items-center justify-between pt-2">
-                    <label class="flex items-center">
-                        <input 
-                            type="checkbox" 
-                            name="remember" 
-                            class="w-4 h-4 bg-gray-800 border-gray-700 rounded cursor-pointer accent-blue-600"
-                        >
-                        <span class="ml-2 text-sm text-gray-400">Ricordami</span>
-                    </label>
-                    <a href="#" class="text-sm text-blue-400 hover:text-blue-300 transition-colors">
-                        Password dimenticata?
-                    </a>
-                </div>
+ <div class="flex items-center justify-between pt-2">
+ <label class="flex items-center">
+ <input 
+ type="checkbox" 
+ name="remember" 
+ class="w-4 h-4 bg-gray-800 border-gray-700 rounded cursor-pointer accent-blue-600"
+>
+ <span class="ml-2 text-sm text-gray-400">Ricordami</span>
+ </label>
+ <a href="#" class="text-sm text-blue-400 hover:text-blue-300 transition-colors">
+ Password dimenticata?
+ </a>
+ </div>
 
-                <button 
-                    type="submit"
-                    class="btn-primary w-full py-3 px-4 rounded-lg font-semibold text-white mt-6"
-                >
-                    Accedi
-                </button>
-            </form>
-        </div>
+ <button 
+ type="submit"
+ class="btn-primary w-full py-3 px-4 rounded-lg font-semibold text-white mt-6"
+>
+ Accedi
+ </button>
+ </form>
+ </div>
 
-        <!-- Register Form (Hidden by default) -->
-        <div id="register-form" class="glass-effect rounded-2xl p-8 mb-6 hidden">
-            <h2 class="text-2xl font-bold text-white mb-6">Crea un nuovo account</h2>
-            
-            {% with messages = get_flashed_messages(category_filter=['register_error']) %}
-                {% if messages %}
-                    <div class="bg-red-900/30 border border-red-600 rounded-lg p-4 mb-6">
-                        <p class="text-red-200 text-sm">{{ messages[0] }}</p>
-                    </div>
-                {% endif %}
-            {% endwith %}
+ <!-- Register Form (Hidden by default) -->
+ <div id="register-form" class="glass-effect rounded-2xl p-8 mb-6 hidden">
+ <h2 class="text-2xl font-bold text-white mb-6">Crea un nuovo account</h2>
+ 
+ {% with messages = get_flashed_messages(category_filter=['register_error']) %}
+ {% if messages %}
+ <div class="bg-red-900/30 border border-red-600 rounded-lg p-4 mb-6">
+ <p class="text-red-200 text-sm">{{ messages[0] }}</p>
+ </div>
+ {% endif %}
+ {% endwith %}
 
-            {% with messages = get_flashed_messages(category_filter=['register_success']) %}
-                {% if messages %}
-                    <div class="bg-green-900/30 border border-green-600 rounded-lg p-4 mb-6">
-                        <p class="text-green-200 text-sm">{{ messages[0] }}</p>
-                    </div>
-                {% endif %}
-            {% endwith %}
+ {% with messages = get_flashed_messages(category_filter=['register_success']) %}
+ {% if messages %}
+ <div class="bg-green-900/30 border border-green-600 rounded-lg p-4 mb-6">
+ <p class="text-green-200 text-sm">{{ messages[0] }}</p>
+ </div>
+ {% endif %}
+ {% endwith %}
 
-            <form method="POST" action="{{ url_for('auth.register') }}" class="space-y-4">
-                <div>
-                    <label for="register-email" class="block text-gray-300 text-sm font-medium mb-2">
-                        Email
-                    </label>
-                    <input 
-                        type="email" 
-                        id="register-email"
-                        name="email" 
-                        required
-                        placeholder="tua@email.com"
-                        class="input-focus w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-blue-500 outline-none transition-colors"
-                    >
-                </div>
+ <form method="POST" action="{{ url_for('auth.register') }}" class="space-y-4">
+ <div>
+ <label for="register-email" class="block text-gray-300 text-sm font-medium mb-2">
+ Email
+ </label>
+ <input 
+ type="email" 
+ id="register-email"
+ name="email" 
+ required
+ placeholder="tua@email.com"
+ class="input-focus w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-blue-500 outline-none transition-colors"
+>
+ </div>
 
-                <div>
-                    <label for="register-password" class="block text-gray-300 text-sm font-medium mb-2">
-                        Password
-                    </label>
-                    <input 
-                        type="password" 
-                        id="register-password"
-                        name="password" 
-                        required
-                        placeholder="Minimo 8 caratteri"
-                        class="input-focus w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-blue-500 outline-none transition-colors"
-                    >
-                    <p class="text-gray-500 text-xs mt-2">Utilizza almeno 8 caratteri, numeri e caratteri speciali</p>
-                </div>
+ <div>
+ <label for="register-password" class="block text-gray-300 text-sm font-medium mb-2">
+ Password
+ </label>
+ <input 
+ type="password" 
+ id="register-password"
+ name="password" 
+ required
+ placeholder="Minimo 8 caratteri"
+ class="input-focus w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-blue-500 outline-none transition-colors"
+>
+ <p class="text-gray-500 text-xs mt-2">Utilizza almeno 8 caratteri, numeri e caratteri speciali</p>
+ </div>
 
-                <div>
-                    <label for="register-password-confirm" class="block text-gray-300 text-sm font-medium mb-2">
-                        Conferma Password
-                    </label>
-                    <input 
-                        type="password" 
-                        id="register-password-confirm"
-                        name="password_confirm" 
-                        required
-                        placeholder="••••••••"
-                        class="input-focus w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-blue-500 outline-none transition-colors"
-                    >
-                </div>
+ <div>
+ <label for="register-password-confirm" class="block text-gray-300 text-sm font-medium mb-2">
+ Conferma Password
+ </label>
+ <input 
+ type="password" 
+ id="register-password-confirm"
+ name="password_confirm" 
+ required
+ placeholder="••••••••"
+ class="input-focus w-full bg-gray-800/50 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-500 focus:border-blue-500 outline-none transition-colors"
+>
+ </div>
 
-                <div class="flex items-start">
-                    <input 
-                        type="checkbox" 
-                        name="terms" 
-                        required
-                        class="w-4 h-4 bg-gray-800 border-gray-700 rounded cursor-pointer accent-blue-600 mt-1"
-                    >
-                    <span class="ml-2 text-sm text-gray-400">
-                        Accetto i <a href="#" class="text-blue-400 hover:text-blue-300 transition-colors">Termini di Servizio</a> e la <a href="#" class="text-blue-400 hover:text-blue-300 transition-colors">Privacy Policy</a>
-                    </span>
-                </div>
+ <div class="flex items-start">
+ <input 
+ type="checkbox" 
+ name="terms" 
+ required
+ class="w-4 h-4 bg-gray-800 border-gray-700 rounded cursor-pointer accent-blue-600 mt-1"
+>
+ <span class="ml-2 text-sm text-gray-400">
+ Accetto i <a href="#" class="text-blue-400 hover:text-blue-300 transition-colors">Termini di Servizio</a> e la <a href="#" class="text-blue-400 hover:text-blue-300 transition-colors">Privacy Policy</a>
+ </span>
+ </div>
 
-                <button 
-                    type="submit"
-                    class="btn-primary w-full py-3 px-4 rounded-lg font-semibold text-white mt-6"
-                >
-                    Registrati
-                </button>
-            </form>
-        </div>
+ <button 
+ type="submit"
+ class="btn-primary w-full py-3 px-4 rounded-lg font-semibold text-white mt-6"
+>
+ Registrati
+ </button>
+ </form>
+ </div>
 
-        <!-- Footer -->
-        <div class="text-center text-gray-500 text-sm">
-            <p>© 2024 BandoMatch.ai - Tutti i diritti riservati</p>
-        </div>
-    </div>
+ <!-- Footer -->
+ <div class="text-center text-gray-500 text-sm">
+            <p>© 2026 BandoMatch AI - Tutti i diritti riservati</p>
+ </div>
+ </div>
 
-    <script>
-        function showTab(tabName) {
-            // Hide all forms
-            document.getElementById('login-form').classList.add('hidden');
-            document.getElementById('register-form').classList.add('hidden');
-            
-            // Remove active state from all tabs
-            document.getElementById('login-tab').classList.remove('bg-blue-600');
-            document.getElementById('login-tab').classList.add('text-gray-400', 'hover:text-gray-300');
-            document.getElementById('register-tab').classList.remove('bg-blue-600');
-            document.getElementById('register-tab').classList.add('text-gray-400', 'hover:text-gray-300');
-            
-            // Show selected form
-            if (tabName === 'login') {
-                document.getElementById('login-form').classList.remove('hidden');
-                document.getElementById('login-tab').classList.remove('text-gray-400', 'hover:text-gray-300');
-                document.getElementById('login-tab').classList.add('bg-blue-600', 'text-white');
-            } else if (tabName === 'register') {
-                document.getElementById('register-form').classList.remove('hidden');
-                document.getElementById('register-tab').classList.remove('text-gray-400', 'hover:text-gray-300');
-                document.getElementById('register-tab').classList.add('bg-blue-600', 'text-white');
-            }
-        }
-    </script>
+ <script>
+ function showTab(tabName) {
+ // Hide all forms
+ document.getElementById('login-form').classList.add('hidden');
+ document.getElementById('register-form').classList.add('hidden');
+ 
+ // Remove active state from all tabs
+ document.getElementById('login-tab').classList.remove('bg-blue-600');
+ document.getElementById('login-tab').classList.add('text-gray-400', 'hover:text-gray-300');
+ document.getElementById('register-tab').classList.remove('bg-blue-600');
+ document.getElementById('register-tab').classList.add('text-gray-400', 'hover:text-gray-300');
+ 
+ // Show selected form
+ if (tabName === 'login') {
+ document.getElementById('login-form').classList.remove('hidden');
+ document.getElementById('login-tab').classList.remove('text-gray-400', 'hover:text-gray-300');
+ document.getElementById('login-tab').classList.add('bg-blue-600', 'text-white');
+ } else if (tabName === 'register') {
+ document.getElementById('register-form').classList.remove('hidden');
+ document.getElementById('register-tab').classList.remove('text-gray-400', 'hover:text-gray-300');
+ document.getElementById('register-tab').classList.add('bg-blue-600', 'text-white');
+ }
+ }
+ </script>
 </body>
 </html>

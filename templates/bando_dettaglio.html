@@ -4,186 +4,186 @@
 
 {% block content %}
 <div class="min-h-screen bg-gray-900 text-white py-8 px-4 sm:px-6 lg:px-8">
-  <div class="max-w-4xl mx-auto">
-    <!-- Header con bottone torna indietro -->
-    <div class="mb-8 flex items-center justify-between">
-      <a href="{{ url_for('dashboard.index') }}" class="inline-flex items-center text-indigo-400 hover:text-indigo-300 transition-colors">
-        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-        Torna alla Dashboard
-      </a>
-    </div>
+ <div class="max-w-4xl mx-auto">
+ <!-- Header con bottone torna indietro -->
+ <div class="mb-8 flex items-center justify-between">
+ <a href="{{ url_for('dashboard.index') }}" class="inline-flex items-center text-indigo-400 hover:text-indigo-300 transition-colors">
+ <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+ </svg>
+ Torna alla Dashboard
+ </a>
+ </div>
 
-    <!-- Card principale -->
-    <div class="bg-gray-800 rounded-lg shadow-xl overflow-hidden border border-gray-700">
-      <!-- Sezione header con titolo e fonte -->
-      <div class="bg-gradient-to-r from-indigo-600 to-blue-600 p-8">
-        <div class="flex items-start justify-between mb-4">
-          <div class="flex-1">
-            <h1 class="text-3xl sm:text-4xl font-bold mb-2">{{ bando.titolo }}</h1>
-            <p class="text-indigo-100 text-lg">Fonte: {{ bando.fonte }}</p>
-          </div>
-          <!-- Badge stato -->
-          <div class="ml-4">
-            {% if bando.stato == 'aperto' %}
-              <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-green-500 text-white">
-                <span class="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></span>
-                Aperto
-              </span>
-            {% elif bando.stato == 'chiuso' %}
-              <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-red-500 text-white">
-                Chiuso
-              </span>
-            {% elif bando.stato == 'prossimamente' %}
-              <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-yellow-500 text-gray-900">
-                Prossimamente
-              </span>
-            {% else %}
-              <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-gray-500 text-white">
-                {{ bando.stato|upper }}
-              </span>
-            {% endif %}
-          </div>
-        </div>
-      </div>
+ <!-- Card principale -->
+ <div class="bg-gray-800 rounded-lg shadow-xl overflow-hidden border border-gray-700">
+ <!-- Sezione header con titolo e fonte -->
+ <div class="bg-gradient-to-r from-indigo-600 to-blue-600 p-8">
+ <div class="flex items-start justify-between mb-4">
+ <div class="flex-1">
+ <h1 class="text-3xl sm:text-4xl font-bold mb-2">{{ bando.titolo }}</h1>
+ <p class="text-indigo-100 text-lg">Fonte: {{ bando.fonte }}</p>
+ </div>
+ <!-- Badge stato -->
+ <div class="ml-4">
+ {% if bando.stato == 'aperto' %}
+ <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-green-500 text-white">
+ <span class="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></span>
+ Aperto
+ </span>
+ {% elif bando.stato == 'chiuso' %}
+ <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-red-500 text-white">
+ Chiuso
+ </span>
+ {% elif bando.stato == 'prossimamente' %}
+ <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-yellow-500 text-gray-900">
+ Prossimamente
+ </span>
+ {% else %}
+ <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold bg-gray-500 text-white">
+ {{ bando.stato|upper }}
+ </span>
+ {% endif %}
+ </div>
+ </div>
+ </div>
 
-      <!-- Contenuto principale -->
-      <div class="p-8">
-        <!-- Sezione Date e Importi -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <!-- Date -->
-          <div class="space-y-4">
-            <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
-              <svg class="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h18M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-              </svg>
-              Timeline
-            </h2>
-            <div class="bg-gray-700 rounded-lg p-4 border-l-4 border-green-500">
-              <p class="text-sm text-gray-300 mb-1">Data di apertura</p>
-              <p class="text-lg font-semibold text-white">{{ bando.data_apertura.strftime('%d/%m/%Y') if bando.data_apertura else 'N/A' }}</p>
-            </div>
-            <div class="bg-gray-700 rounded-lg p-4 border-l-4 border-red-500">
-              <p class="text-sm text-gray-300 mb-1">Data di scadenza</p>
-              <p class="text-lg font-semibold text-white">{{ bando.data_scadenza.strftime('%d/%m/%Y') if bando.data_scadenza else 'N/A' }}</p>
-            </div>
-          </div>
+ <!-- Contenuto principale -->
+ <div class="p-8">
+ <!-- Sezione Date e Importi -->
+ <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+ <!-- Date -->
+ <div class="space-y-4">
+ <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+ <svg class="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h18M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+ </svg>
+ Timeline
+ </h2>
+ <div class="bg-gray-700 rounded-lg p-4 border-l-4 border-green-500">
+ <p class="text-sm text-gray-300 mb-1">Data di apertura</p>
+ <p class="text-lg font-semibold text-white">{{ bando.data_apertura.strftime('%d/%m/%Y') if bando.data_apertura else 'N/A' }}</p>
+ </div>
+ <div class="bg-gray-700 rounded-lg p-4 border-l-4 border-red-500">
+ <p class="text-sm text-gray-300 mb-1">Data di scadenza</p>
+ <p class="text-lg font-semibold text-white">{{ bando.data_scadenza.strftime('%d/%m/%Y') if bando.data_scadenza else 'N/A' }}</p>
+ </div>
+ </div>
 
-          <!-- Importi e percentuali -->
-          <div class="space-y-4">
-            <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
-              <svg class="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              Importi
-            </h2>
-            <div class="bg-gray-700 rounded-lg p-4">
-              <p class="text-sm text-gray-300 mb-1">Massimale agevolazione</p>
-              <p class="text-2xl font-bold text-indigo-400">€ {{ '{:,.2f}'.format(bando.massimale_agevolazione) if bando.massimale_agevolazione else '0,00' }}</p>
-            </div>
-            <div class="bg-gray-700 rounded-lg p-4">
-              <p class="text-sm text-gray-300 mb-1">Percentuale fondo perduto</p>
-              <p class="text-2xl font-bold text-green-400">{{ bando.percentuale_fondo_perduto }}%</p>
-            </div>
-          </div>
-        </div>
+ <!-- Importi e percentuali -->
+ <div class="space-y-4">
+ <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+ <svg class="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+ </svg>
+ Importi
+ </h2>
+ <div class="bg-gray-700 rounded-lg p-4">
+ <p class="text-sm text-gray-300 mb-1">Massimale agevolazione</p>
+ <p class="text-2xl font-bold text-indigo-400">€ {{ '{:,.2f}'.format(bando.massimale_agevolazione) if bando.massimale_agevolazione else '0,00' }}</p>
+ </div>
+ <div class="bg-gray-700 rounded-lg p-4">
+ <p class="text-sm text-gray-300 mb-1">Percentuale fondo perduto</p>
+ <p class="text-2xl font-bold text-green-400">{{ bando.percentuale_fondo_perduto }}%</p>
+ </div>
+ </div>
+ </div>
 
-        <!-- Divider -->
-        <div class="border-t border-gray-700 my-8"></div>
+ <!-- Divider -->
+ <div class="border-t border-gray-700 my-8"></div>
 
-        <!-- Score Compatibilità -->
-        <div class="mb-8">
-          <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
-            <svg class="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-            </svg>
-            Score Compatibilità
-          </h2>
-          <div class="bg-gray-700 rounded-lg p-6">
-            <div class="flex items-center justify-between mb-3">
-              <span class="text-lg font-semibold text-white">Compatibilità della tua azienda</span>
-              <span class="text-2xl font-bold text-indigo-400">{{ bando.score_compatibilita }}%</span>
-            </div>
-            <!-- Barra di progresso colorata -->
-            <div class="w-full bg-gray-600 rounded-full h-3 overflow-hidden">
-              {% set score = bando.score_compatibilita %}
-              {% if score >= 80 %}
-                <div class="h-full bg-green-500 transition-all duration-300" style="width: {{ score }}%"></div>
-              {% elif score >= 60 %}
-                <div class="h-full bg-yellow-500 transition-all duration-300" style="width: {{ score }}%"></div>
-              {% elif score >= 40 %}
-                <div class="h-full bg-orange-500 transition-all duration-300" style="width: {{ score }}%"></div>
-              {% else %}
-                <div class="h-full bg-red-500 transition-all duration-300" style="width: {{ score }}%"></div>
-              {% endif %}
-            </div>
-            <p class="text-xs text-gray-400 mt-2">
-              {% if score >= 80 %}
-                Altamente compatibile con le tue esigenze
-              {% elif score >= 60 %}
-                Buon livello di compatibilità
-              {% elif score >= 40 %}
-                Compatibilità moderata
-              {% else %}
-                Basso livello di compatibilità
-              {% endif %}
-            </p>
-          </div>
-        </div>
+ <!-- Score Compatibilità -->
+ <div class="mb-8">
+ <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+ <svg class="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+ </svg>
+ Score Compatibilità
+ </h2>
+ <div class="bg-gray-700 rounded-lg p-6">
+ <div class="flex items-center justify-between mb-3">
+ <span class="text-lg font-semibold text-white">Compatibilità della tua azienda</span>
+ <span class="text-2xl font-bold text-indigo-400">{{ bando.score_compatibilita }}%</span>
+ </div>
+ <!-- Barra di progresso colorata -->
+ <div class="w-full bg-gray-600 rounded-full h-3 overflow-hidden">
+ {% set score = bando.score_compatibilita %}
+ {% if score>= 80 %}
+ <div class="h-full bg-green-500 transition-all duration-300" style="width: {{ score }}%"></div>
+ {% elif score>= 60 %}
+ <div class="h-full bg-yellow-500 transition-all duration-300" style="width: {{ score }}%"></div>
+ {% elif score>= 40 %}
+ <div class="h-full bg-orange-500 transition-all duration-300" style="width: {{ score }}%"></div>
+ {% else %}
+ <div class="h-full bg-red-500 transition-all duration-300" style="width: {{ score }}%"></div>
+ {% endif %}
+ </div>
+ <p class="text-xs text-gray-400 mt-2">
+ {% if score>= 80 %}
+ Altamente compatibile con le tue esigenze
+ {% elif score>= 60 %}
+ Buon livello di compatibilità
+ {% elif score>= 40 %}
+ Compatibilità moderata
+ {% else %}
+ Basso livello di compatibilità
+ {% endif %}
+ </p>
+ </div>
+ </div>
 
-        <!-- Motivazioni Compatibilità -->
-        <div class="mb-8">
-          <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
-            <svg class="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-            </svg>
-            Motivazioni di Compatibilità
-          </h2>
-          <div class="space-y-3">
-            {% if bando.motivazioni_compatibilita %}
-              {% for motivazione in bando.motivazioni_compatibilita %}
-                <div class="flex items-start bg-gray-700 rounded-lg p-4 border-l-4 border-indigo-400 hover:bg-gray-600 transition-colors">
-                  <svg class="w-5 h-5 text-green-400 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                  </svg>
-                  <p class="text-gray-100">{{ motivazione }}</p>
-                </div>
-              {% endfor %}
-            {% else %}
-              <div class="flex items-center text-gray-400 bg-gray-700 rounded-lg p-4">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                </svg>
-                Nessuna motivazione di compatibilità disponibile
-              </div>
-            {% endif %}
-          </div>
-        </div>
+ <!-- Motivazioni Compatibilità -->
+ <div class="mb-8">
+ <h2 class="text-xl font-semibold text-white mb-4 flex items-center">
+ <svg class="w-5 h-5 mr-2 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+ </svg>
+ Motivazioni di Compatibilità
+ </h2>
+ <div class="space-y-3">
+ {% if bando.motivazioni_compatibilita %}
+ {% for motivazione in bando.motivazioni_compatibilita %}
+ <div class="flex items-start bg-gray-700 rounded-lg p-4 border-l-4 border-indigo-400 hover:bg-gray-600 transition-colors">
+ <svg class="w-5 h-5 text-green-400 mr-3 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+ <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+ </svg>
+ <p class="text-gray-100">{{ motivazione }}</p>
+ </div>
+ {% endfor %}
+ {% else %}
+ <div class="flex items-center text-gray-400 bg-gray-700 rounded-lg p-4">
+ <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+ </svg>
+ Nessuna motivazione di compatibilità disponibile
+ </div>
+ {% endif %}
+ </div>
+ </div>
 
-        <!-- Divider -->
-        <div class="border-t border-gray-700 my-8"></div>
+ <!-- Divider -->
+ <div class="border-t border-gray-700 my-8"></div>
 
-        <!-- Bottone di azione principale -->
-        <div class="flex gap-4">
-          <a href="{{ url_for('dashboard.index') }}" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors text-center">
-            Torna alla Dashboard
-          </a>
-          {% if bando.stato == 'aperto' %}
-            <button onclick="handleApply()" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
-              Candidati a questo Bando
-            </button>
-          {% endif %}
-        </div>
-      </div>
-    </div>
-  </div>
+ <!-- Bottone di azione principale -->
+ <div class="flex gap-4">
+ <a href="{{ url_for('dashboard.index') }}" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors text-center">
+ Torna alla Dashboard
+ </a>
+ {% if bando.stato == 'aperto' %}
+ <button onclick="handleApply()" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors">
+ Candidati a questo Bando
+ </button>
+ {% endif %}
+ </div>
+ </div>
+ </div>
+ </div>
 </div>
 
 <script>
-  function handleApply() {
-    // TODO: Implementare logica di candidatura
-    alert('Funzionalità di candidatura in arrivo!');
-  }
+ function handleApply() {
+ // TODO: Implementare logica di candidatura
+ alert('Funzionalità di candidatura in arrivo!');
+ }
 </script>
 {% endblock %}

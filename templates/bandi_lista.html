@@ -1,213 +1,213 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bandi Disponibili — BandoMatch AI</title>
-    <link rel="icon" type="image/png" href="/static/img/favicon.png">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root { --navy:#0d1b2a; --navy2:#1a2a3a; --green:#22c55e; --yellow:#eab308; --red:#ef4444; --border:#2d4a6a; --muted:#64748b; }
-        *,*::before,*::after{box-sizing:border-box;}
-        html{scroll-behavior:smooth;overflow-x:hidden;}
-        body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--navy);color:#e2e8f0;min-height:100vh;overflow-x:hidden;}
-        .navbar{position:sticky;top:0;z-index:100;background:rgba(13,27,42,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(34,197,94,.12);padding:0 1.5rem;height:68px;display:flex;align-items:center;justify-content:space-between;}
-        .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
-        .nav-logo img{width:40px;height:40px;object-fit:contain;border-radius:50%;}
-        .nav-logo-text{font-size:1.1rem;font-weight:900;color:#fff;}
-        .nav-logo-text span{color:var(--green);}
-        .nav-links{display:flex;align-items:center;gap:1.25rem;}
-        .nav-links a{color:#94a3b8;text-decoration:none;font-size:.875rem;font-weight:500;transition:color .2s;}
-        .nav-links a:hover{color:#fff;}
-        .nav-links a.active{color:var(--green);font-weight:700;}
-        .nav-cta{background:linear-gradient(135deg,var(--green),#16a34a);color:#fff!important;font-weight:800!important;font-size:.875rem!important;padding:.45rem 1.1rem;border-radius:8px;text-decoration:none;transition:all .2s;box-shadow:0 0 14px rgba(34,197,94,.2);}
-        .nav-cta:hover{box-shadow:0 0 24px rgba(34,197,94,.4);transform:translateY(-1px);}
-        .page-hero{background:linear-gradient(135deg,rgba(34,197,94,.05),rgba(59,130,246,.05));border-bottom:1px solid var(--border);padding:2.5rem 1.5rem;text-align:center;}
-        .page-hero h1{font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:900;color:#fff;margin-bottom:.5rem;}
-        .page-hero h1 span{color:var(--green);}
-        .page-hero p{color:var(--muted);font-size:.95rem;}
-        .stats-bar{background:var(--navy2);border-bottom:1px solid var(--border);padding:.875rem 1.5rem;display:flex;flex-wrap:wrap;justify-content:center;gap:2rem;}
-        .stat-item{text-align:center;}
-        .stat-num{font-size:1.4rem;font-weight:900;}
-        .stat-label{font-size:.65rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
-        .main-layout{max-width:1100px;margin:0 auto;padding:2rem 1.5rem;display:grid;grid-template-columns:260px 1fr;gap:1.75rem;}
-        @media(max-width:768px){.main-layout{grid-template-columns:1fr;}.sidebar{display:none;}}
-        .filter-card{background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:1.25rem;position:sticky;top:84px;}
-        .filter-title{font-size:.8rem;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem;}
-        .filter-group{margin-bottom:1.25rem;}
-        .filter-label{font-size:.75rem;font-weight:600;color:#94a3b8;margin-bottom:.4rem;display:block;}
-        .filter-select,.filter-input{width:100%;background:rgba(13,27,42,.7);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem;color:#e2e8f0;font-size:.82rem;transition:border-color .2s;}
-        .filter-select:focus,.filter-input:focus{outline:none;border-color:var(--green);}
-        .filter-btn{width:100%;background:linear-gradient(135deg,var(--green),#16a34a);color:#fff;font-weight:800;font-size:.875rem;padding:.65rem;border-radius:10px;border:none;cursor:pointer;transition:all .2s;}
-        .filter-btn:hover{box-shadow:0 0 18px rgba(34,197,94,.35);transform:translateY(-1px);}
-        .filter-reset{display:block;text-align:center;margin-top:.5rem;font-size:.75rem;color:var(--muted);text-decoration:none;transition:color .2s;}
-        .filter-reset:hover{color:#94a3b8;}
-        .bandi-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;}
-        .bandi-count{font-size:.82rem;color:var(--muted);}
-        .bandi-count strong{color:#fff;}
-        .bando-card{background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:1.25rem 1.5rem;margin-bottom:.875rem;transition:transform .2s,border-color .2s;display:flex;gap:1.25rem;align-items:flex-start;}
-        .bando-card:hover{transform:translateY(-2px);border-color:rgba(34,197,94,.25);}
-        .bando-card.verde{border-left:3px solid var(--green);}
-        .bando-card.giallo{border-left:3px solid var(--yellow);}
-        .bando-card.rosso{border-left:3px solid var(--red);}
-        .bando-card.neutro{border-left:3px solid var(--border);}
-        .bando-semaforo{width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
-        .sem-verde-bg{background:rgba(34,197,94,.12);}
-        .sem-giallo-bg{background:rgba(234,179,8,.12);}
-        .sem-rosso-bg{background:rgba(239,68,68,.1);}
-        .sem-neutro-bg{background:rgba(100,116,139,.12);}
-        .bando-body{flex:1;min-width:0;}
-        .bando-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin-bottom:.4rem;}
-        .bando-title{font-size:.975rem;font-weight:800;color:#fff;}
-        .bando-badge{font-size:.65rem;font-weight:800;padding:.2rem .65rem;border-radius:100px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;flex-shrink:0;}
-        .badge-aperto{background:rgba(34,197,94,.15);color:#86efac;}
-        .badge-chiuso{background:rgba(100,116,139,.2);color:#94a3b8;}
-        .badge-scaduto{background:rgba(239,68,68,.12);color:#fca5a5;}
-        .badge-valutaz{background:rgba(234,179,8,.15);color:#fef08a;}
-        .bando-meta{font-size:.78rem;color:var(--muted);margin-bottom:.6rem;}
-        .bando-meta strong{color:#94a3b8;}
-        .bando-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
-        .bando-valore{font-size:.82rem;font-weight:700;color:var(--green);}
-        .bando-link{font-size:.78rem;font-weight:700;color:#3b82f6;text-decoration:none;transition:color .2s;}
-        .bando-link:hover{color:#60a5fa;}
-        .empty-state{text-align:center;padding:4rem 2rem;background:var(--navy2);border:1px solid var(--border);border-radius:20px;}
-        .empty-icon{font-size:3rem;margin-bottom:1rem;}
-        .empty-title{font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:.5rem;}
-        .empty-sub{font-size:.875rem;color:var(--muted);margin-bottom:1.5rem;}
-        .empty-cta{display:inline-block;background:linear-gradient(135deg,var(--green),#16a34a);color:#fff;font-weight:800;font-size:.875rem;padding:.7rem 1.75rem;border-radius:10px;text-decoration:none;}
-        .pagination{display:flex;justify-content:center;align-items:center;gap:.5rem;margin-top:2rem;flex-wrap:wrap;}
-        .page-btn{background:var(--navy2);border:1px solid var(--border);color:#94a3b8;font-size:.82rem;font-weight:600;padding:.45rem .875rem;border-radius:8px;text-decoration:none;transition:all .2s;}
-        .page-btn:hover{border-color:var(--green);color:#fff;}
-        .page-btn.current{background:var(--green);border-color:var(--green);color:#fff;}
-        .page-info{font-size:.78rem;color:var(--muted);padding:0 .5rem;}
-        footer{background:rgba(13,27,42,.9);border-top:1px solid var(--border);padding:1.5rem;text-align:center;font-size:.75rem;color:#334155;margin-top:3rem;}
-        footer a{color:#475569;text-decoration:none;margin:0 .5rem;}
-        footer a:hover{color:#94a3b8;}
-        .flash{padding:.75rem 1.25rem;border-radius:10px;margin:1rem auto;max-width:600px;font-size:.875rem;font-weight:600;}
-        .flash-error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5;}
-        .flash-success{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#86efac;}
-        .flash-warning{background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.3);color:#fef08a;}
-    </style>
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <title>Bandi Disponibili — BandoMatch AI</title>
+ <link rel="icon" type="image/png" href="/static/img/favicon.png">
+ <script src="https://cdn.tailwindcss.com"></script>
+ <style>
+ :root { --navy:#0d1b2a; --navy2:#1a2a3a; --green:#22c55e; --yellow:#eab308; --red:#ef4444; --border:#2d4a6a; --muted:#64748b; }
+ *,*::before,*::after{box-sizing:border-box;}
+ html{scroll-behavior:smooth;overflow-x:hidden;}
+ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--navy);color:#e2e8f0;min-height:100vh;overflow-x:hidden;}
+ .navbar{position:sticky;top:0;z-index:100;background:rgba(13,27,42,.95);backdrop-filter:blur(20px);border-bottom:1px solid rgba(34,197,94,.12);padding:0 1.5rem;height:68px;display:flex;align-items:center;justify-content:space-between;}
+ .nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none;}
+ .nav-logo img{width:40px;height:40px;object-fit:contain;border-radius:50%;}
+ .nav-logo-text{font-size:1.1rem;font-weight:900;color:#fff;}
+ .nav-logo-text span{color:var(--green);}
+ .nav-links{display:flex;align-items:center;gap:1.25rem;}
+ .nav-links a{color:#94a3b8;text-decoration:none;font-size:.875rem;font-weight:500;transition:color .2s;}
+ .nav-links a:hover{color:#fff;}
+ .nav-links a.active{color:var(--green);font-weight:700;}
+ .nav-cta{background:linear-gradient(135deg,var(--green),#16a34a);color:#fff!important;font-weight:800!important;font-size:.875rem!important;padding:.45rem 1.1rem;border-radius:8px;text-decoration:none;transition:all .2s;box-shadow:0 0 14px rgba(34,197,94,.2);}
+ .nav-cta:hover{box-shadow:0 0 24px rgba(34,197,94,.4);transform:translateY(-1px);}
+ .page-hero{background:linear-gradient(135deg,rgba(34,197,94,.05),rgba(59,130,246,.05));border-bottom:1px solid var(--border);padding:2.5rem 1.5rem;text-align:center;}
+ .page-hero h1{font-size:clamp(1.6rem,3.5vw,2.4rem);font-weight:900;color:#fff;margin-bottom:.5rem;}
+ .page-hero h1 span{color:var(--green);}
+ .page-hero p{color:var(--muted);font-size:.95rem;}
+ .stats-bar{background:var(--navy2);border-bottom:1px solid var(--border);padding:.875rem 1.5rem;display:flex;flex-wrap:wrap;justify-content:center;gap:2rem;}
+ .stat-item{text-align:center;}
+ .stat-num{font-size:1.4rem;font-weight:900;}
+ .stat-label{font-size:.65rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.08em;}
+ .main-layout{max-width:1100px;margin:0 auto;padding:2rem 1.5rem;display:grid;grid-template-columns:260px 1fr;gap:1.75rem;}
+ @media(max-width:768px){.main-layout{grid-template-columns:1fr;}.sidebar{display:none;}}
+ .filter-card{background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:1.25rem;position:sticky;top:84px;}
+ .filter-title{font-size:.8rem;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem;}
+ .filter-group{margin-bottom:1.25rem;}
+ .filter-label{font-size:.75rem;font-weight:600;color:#94a3b8;margin-bottom:.4rem;display:block;}
+ .filter-select,.filter-input{width:100%;background:rgba(13,27,42,.7);border:1px solid var(--border);border-radius:8px;padding:.5rem .75rem;color:#e2e8f0;font-size:.82rem;transition:border-color .2s;}
+ .filter-select:focus,.filter-input:focus{outline:none;border-color:var(--green);}
+ .filter-btn{width:100%;background:linear-gradient(135deg,var(--green),#16a34a);color:#fff;font-weight:800;font-size:.875rem;padding:.65rem;border-radius:10px;border:none;cursor:pointer;transition:all .2s;}
+ .filter-btn:hover{box-shadow:0 0 18px rgba(34,197,94,.35);transform:translateY(-1px);}
+ .filter-reset{display:block;text-align:center;margin-top:.5rem;font-size:.75rem;color:var(--muted);text-decoration:none;transition:color .2s;}
+ .filter-reset:hover{color:#94a3b8;}
+ .bandi-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.75rem;}
+ .bandi-count{font-size:.82rem;color:var(--muted);}
+ .bandi-count strong{color:#fff;}
+ .bando-card{background:var(--navy2);border:1px solid var(--border);border-radius:16px;padding:1.25rem 1.5rem;margin-bottom:.875rem;transition:transform .2s,border-color .2s;display:flex;gap:1.25rem;align-items:flex-start;}
+ .bando-card:hover{transform:translateY(-2px);border-color:rgba(34,197,94,.25);}
+ .bando-card.verde{border-left:3px solid var(--green);}
+ .bando-card.giallo{border-left:3px solid var(--yellow);}
+ .bando-card.rosso{border-left:3px solid var(--red);}
+ .bando-card.neutro{border-left:3px solid var(--border);}
+ .bando-semaforo{width:44px;height:44px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem;}
+ .sem-verde-bg{background:rgba(34,197,94,.12);}
+ .sem-giallo-bg{background:rgba(234,179,8,.12);}
+ .sem-rosso-bg{background:rgba(239,68,68,.1);}
+ .sem-neutro-bg{background:rgba(100,116,139,.12);}
+ .bando-body{flex:1;min-width:0;}
+ .bando-top{display:flex;align-items:flex-start;justify-content:space-between;gap:.75rem;flex-wrap:wrap;margin-bottom:.4rem;}
+ .bando-title{font-size:.975rem;font-weight:800;color:#fff;}
+ .bando-badge{font-size:.65rem;font-weight:800;padding:.2rem .65rem;border-radius:100px;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap;flex-shrink:0;}
+ .badge-aperto{background:rgba(34,197,94,.15);color:#86efac;}
+ .badge-chiuso{background:rgba(100,116,139,.2);color:#94a3b8;}
+ .badge-scaduto{background:rgba(239,68,68,.12);color:#fca5a5;}
+ .badge-valutaz{background:rgba(234,179,8,.15);color:#fef08a;}
+ .bando-meta{font-size:.78rem;color:var(--muted);margin-bottom:.6rem;}
+ .bando-meta strong{color:#94a3b8;}
+ .bando-footer{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem;}
+ .bando-valore{font-size:.82rem;font-weight:700;color:var(--green);}
+ .bando-link{font-size:.78rem;font-weight:700;color:#3b82f6;text-decoration:none;transition:color .2s;}
+ .bando-link:hover{color:#60a5fa;}
+ .empty-state{text-align:center;padding:4rem 2rem;background:var(--navy2);border:1px solid var(--border);border-radius:20px;}
+ .empty-icon{font-size:3rem;margin-bottom:1rem;}
+ .empty-title{font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:.5rem;}
+ .empty-sub{font-size:.875rem;color:var(--muted);margin-bottom:1.5rem;}
+ .empty-cta{display:inline-block;background:linear-gradient(135deg,var(--green),#16a34a);color:#fff;font-weight:800;font-size:.875rem;padding:.7rem 1.75rem;border-radius:10px;text-decoration:none;}
+ .pagination{display:flex;justify-content:center;align-items:center;gap:.5rem;margin-top:2rem;flex-wrap:wrap;}
+ .page-btn{background:var(--navy2);border:1px solid var(--border);color:#94a3b8;font-size:.82rem;font-weight:600;padding:.45rem .875rem;border-radius:8px;text-decoration:none;transition:all .2s;}
+ .page-btn:hover{border-color:var(--green);color:#fff;}
+ .page-btn.current{background:var(--green);border-color:var(--green);color:#fff;}
+ .page-info{font-size:.78rem;color:var(--muted);padding:0 .5rem;}
+ footer{background:rgba(13,27,42,.9);border-top:1px solid var(--border);padding:1.5rem;text-align:center;font-size:.75rem;color:#334155;margin-top:3rem;}
+ footer a{color:#475569;text-decoration:none;margin:0 .5rem;}
+ footer a:hover{color:#94a3b8;}
+ .flash{padding:.75rem 1.25rem;border-radius:10px;margin:1rem auto;max-width:600px;font-size:.875rem;font-weight:600;}
+ .flash-error{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5;}
+ .flash-success{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:#86efac;}
+ .flash-warning{background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.3);color:#fef08a;}
+ </style>
 </head>
 <body>
 <nav class="navbar">
-    <a href="/" class="nav-logo">
-        <img src="/static/img/logo_nav.png" alt="BandoMatch AI">
-        <span class="nav-logo-text">Bando<span>Match</span> AI</span>
-    </a>
-    <div class="nav-links">
-        <a href="/bandi/" class="active">🟢 Bandi Disponibili</a>
-        <a href="/#come-funziona">Come funziona</a>
-        <a href="/#prezzi">Prezzi</a>
-        <a href="/#faq">FAQ</a>
-        <a href="/auth/login">Accedi</a>
-        <a href="/auth/register" class="nav-cta">Registrati gratis →</a>
-    </div>
+ <a href="/" class="nav-logo">
+ <img src="/static/img/logo_nav.png" alt="BandoMatch AI">
+ <span class="nav-logo-text">Bando<span>Match</span> AI</span>
+ </a>
+ <div class="nav-links">
+ <a href="/bandi/" class="active">Bandi Disponibili</a>
+ <a href="/#come-funziona">Come funziona</a>
+ <a href="/#prezzi">Prezzi</a>
+ <a href="/#faq">FAQ</a>
+ <a href="/auth/login">Accedi</a>
+ <a href="/auth/register" class="nav-cta">Registrati gratis →</a>
+ </div>
 </nav>
 <div class="page-hero">
-    <h1>Bandi <span>Disponibili</span></h1>
-    <p>Esplora tutti i finanziamenti pubblici attivi. Carica la tua visura per il matching personalizzato.</p>
+ <h1>Bandi <span>Disponibili</span></h1>
+ <p>Esplora tutti i finanziamenti pubblici attivi. Carica la tua visura per il matching personalizzato.</p>
 </div>
 <div class="stats-bar">
-    <div class="stat-item"><div class="stat-num" style="color:var(--green);">{{ bandi|length if bandi else 0 }}</div><div class="stat-label">Bandi trovati</div></div>
-    <div class="stat-item"><div class="stat-num" style="color:#3b82f6;">€200K</div><div class="stat-label">Valore medio</div></div>
-    <div class="stat-item"><div class="stat-num" style="color:#8b5cf6;">20</div><div class="stat-label">Regioni coperte</div></div>
-    <div class="stat-item"><div class="stat-num" style="color:var(--yellow);">Oggi</div><div class="stat-label">Ultimo aggiornamento</div></div>
+ <div class="stat-item"><div class="stat-num" style="color:var(--green);">{{ bandi|length if bandi else 0 }}</div><div class="stat-label">Bandi trovati</div></div>
+ <div class="stat-item"><div class="stat-num" style="color:#3b82f6;">€200K</div><div class="stat-label">Valore medio</div></div>
+ <div class="stat-item"><div class="stat-num" style="color:#8b5cf6;">20</div><div class="stat-label">Regioni coperte</div></div>
+ <div class="stat-item"><div class="stat-num" style="color:var(--yellow);">Oggi</div><div class="stat-label">Ultimo aggiornamento</div></div>
 </div>
 {% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category, message in messages %}<div class="flash flash-{{ category }}">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}
 <div class="main-layout">
-    <aside class="sidebar">
-        <div class="filter-card">
-            <div class="filter-title">🔍 Filtra Bandi</div>
-            <form method="GET" action="/bandi/">
-                <div class="filter-group">
-                    <label class="filter-label">Cerca per titolo</label>
-                    <input type="text" name="search" class="filter-input" placeholder="es. Resto al Sud..." value="{{ search or '' }}">
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">Stato</label>
-                    <select name="stato" class="filter-select">
-                        <option value="">Tutti gli stati</option>
-                        <option value="aperto" {% if stato == 'aperto' %}selected{% endif %}>🟢 Aperto</option>
-                        <option value="in_scadenza" {% if stato == 'in_scadenza' %}selected{% endif %}>🟡 In scadenza (7gg)</option>
-                        <option value="chiuso" {% if stato == 'chiuso' %}selected{% endif %}>🔴 Chiuso</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label class="filter-label">Categoria</label>
-                    <select name="categoria" class="filter-select">
-                        <option value="">Tutte le categorie</option>
-                        {% for cat in categorie %}<option value="{{ cat }}" {% if categoria == cat %}selected{% endif %}>{{ cat }}</option>{% endfor %}
-                    </select>
-                </div>
-                <button type="submit" class="filter-btn">Applica Filtri</button>
-                <a href="/bandi/" class="filter-reset">✕ Rimuovi filtri</a>
-            </form>
-            <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border);">
-                <div class="filter-title">🚀 Matching Personale</div>
-                <p style="font-size:.78rem;color:var(--muted);margin-bottom:.875rem;line-height:1.6;">Carica la tua visura camerale per vedere solo i bandi compatibili con la tua impresa.</p>
-                <a href="/analisi/analizza" style="display:block;text-align:center;background:linear-gradient(135deg,var(--green),#16a34a);color:#fff;font-weight:800;font-size:.82rem;padding:.65rem;border-radius:10px;text-decoration:none;">📄 Analizza la tua impresa</a>
-            </div>
-        </div>
-    </aside>
-    <main>
-        <div class="bandi-header">
-            <div class="bandi-count">{% if bandi %}Trovati <strong>{{ bandi|length }}</strong> bandi{% if search %} per "<strong>{{ search }}</strong>"{% endif %}{% else %}Nessun bando trovato{% endif %}</div>
-            <div style="display:flex;gap:.5rem;align-items:center;">
-                <a href="/bandi/?stato=aperto" style="font-size:.75rem;color:var(--green);text-decoration:none;font-weight:700;border:1px solid rgba(34,197,94,.3);padding:.3rem .75rem;border-radius:6px;">Solo aperti</a>
-                <a href="/auth/register" style="font-size:.75rem;color:#3b82f6;text-decoration:none;font-weight:700;border:1px solid rgba(59,130,246,.3);padding:.3rem .75rem;border-radius:6px;">+ Analisi AI</a>
-            </div>
-        </div>
-        {% if bandi %}
-            {% for bando in bandi %}
-                {% set stato_bando = bando.stato | lower if bando.stato else 'neutro' %}
-                {% if stato_bando == 'aperto' %}{% set card_class = 'verde' %}{% set sem_class = 'sem-verde-bg' %}{% set sem_icon = '🟢' %}{% set badge_class = 'badge-aperto' %}{% set badge_text = 'Aperto' %}
-                {% elif stato_bando == 'in_valutazione' %}{% set card_class = 'giallo' %}{% set sem_class = 'sem-giallo-bg' %}{% set sem_icon = '🟡' %}{% set badge_class = 'badge-valutaz' %}{% set badge_text = 'In Valutazione' %}
-                {% elif stato_bando == 'scaduto' or stato_bando == 'chiuso' %}{% set card_class = 'rosso' %}{% set sem_class = 'sem-rosso-bg' %}{% set sem_icon = '🔴' %}{% set badge_class = 'badge-scaduto' %}{% set badge_text = stato_bando | capitalize %}
-                {% else %}{% set card_class = 'neutro' %}{% set sem_class = 'sem-neutro-bg' %}{% set sem_icon = '⚪' %}{% set badge_class = 'badge-chiuso' %}{% set badge_text = stato_bando | capitalize %}{% endif %}
-                <div class="bando-card {{ card_class }}">
-                    <div class="bando-semaforo {{ sem_class }}">{{ sem_icon }}</div>
-                    <div class="bando-body">
-                        <div class="bando-top">
-                            <div class="bando-title">{{ bando.titolo }}</div>
-                            <span class="bando-badge {{ badge_class }}">{{ badge_text }}</span>
-                        </div>
-                        <div class="bando-meta">
-                            {% if bando.fonte %}<strong>Fonte:</strong> {{ bando.fonte }} &nbsp;·&nbsp; {% endif %}
-                            {% if bando.regioni_ammesse %}<strong>Regione:</strong> {{ bando.regioni_ammesse[0] if bando.regioni_ammesse else "Nazionale" }} &nbsp;·&nbsp; {% endif %}
-                            {% if bando.fonte %}<strong>Fonte:</strong> {{ bando.fonte }}{% endif %}
-                        </div>
-                        {% if bando.descrizione %}<p style="font-size:.8rem;color:#64748b;margin-bottom:.6rem;line-height:1.5;">{{ bando.descrizione[:140] }}{% if bando.descrizione|length > 140 %}...{% endif %}</p>{% endif %}
-                        <div class="bando-footer">
-                            <div>
-                                {% if bando.massimale_agevolazione %}<span class="bando-valore">💰 fino a €{{ "{:,.0f}".format(bando.massimale_agevolazione) }}</span>{% endif %}
-                                {% if bando.data_scadenza %}<span style="font-size:.75rem;color:var(--muted);margin-left:.75rem;">📅 Scad. {{ bando.data_scadenza.strftime('%d/%m/%Y') if bando.data_scadenza else 'N/D' }}</span>{% endif %}
-                            </div>
-                            <a href="/bandi/{{ bando.id }}" class="bando-link">Dettagli →</a>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-            {% if total_pages and total_pages > 1 %}
-                <div class="pagination">
-                    {% if page > 1 %}<a href="/bandi/?page={{ page - 1 }}{% if search %}&search={{ search }}{% endif %}{% if stato %}&stato={{ stato }}{% endif %}{% if categoria %}&categoria={{ categoria }}{% endif %}" class="page-btn">← Precedente</a>{% endif %}
-                    {% for p in range(1, total_pages + 1) %}{% if p == page %}<span class="page-btn current">{{ p }}</span>{% elif p <= 3 or p >= total_pages - 2 or (p >= page - 1 and p <= page + 1) %}<a href="/bandi/?page={{ p }}{% if search %}&search={{ search }}{% endif %}{% if stato %}&stato={{ stato }}{% endif %}{% if categoria %}&categoria={{ categoria }}{% endif %}" class="page-btn">{{ p }}</a>{% elif p == 4 or p == total_pages - 3 %}<span class="page-info">...</span>{% endif %}{% endfor %}
-                    {% if page < total_pages %}<a href="/bandi/?page={{ page + 1 }}{% if search %}&search={{ search }}{% endif %}{% if stato %}&stato={{ stato }}{% endif %}{% if categoria %}&categoria={{ categoria }}{% endif %}" class="page-btn">Successiva →</a>{% endif %}
-                </div>
-            {% endif %}
-        {% else %}
-            <div class="empty-state">
-                <div class="empty-icon">🔍</div>
-                <div class="empty-title">Nessun bando trovato</div>
-                <div class="empty-sub">{% if search or stato or categoria %}Prova a modificare i filtri per trovare le opportunità che cerchi.{% else %}Il database dei bandi è in fase di popolamento. Torna presto!<br>Nel frattempo, analizza la tua impresa per ricevere alert personalizzati.{% endif %}</div>
-                {% if search or stato or categoria %}<a href="/bandi/" class="empty-cta">Rimuovi filtri</a>{% else %}<a href="/analisi/analizza" class="empty-cta">📄 Analizza la tua impresa</a>{% endif %}
-            </div>
-        {% endif %}
-    </main>
+ <aside class="sidebar">
+ <div class="filter-card">
+ <div class="filter-title"> Filtra Bandi</div>
+ <form method="GET" action="/bandi/">
+ <div class="filter-group">
+ <label class="filter-label">Cerca per titolo</label>
+ <input type="text" name="search" class="filter-input" placeholder="es. Resto al Sud..." value="{{ search or '' }}">
+ </div>
+ <div class="filter-group">
+ <label class="filter-label">Stato</label>
+ <select name="stato" class="filter-select">
+ <option value="">Tutti gli stati</option>
+ <option value="aperto" {% if stato == 'aperto' %}selected{% endif %}>Aperto</option>
+ <option value="in_scadenza" {% if stato == 'in_scadenza' %}selected{% endif %}>In scadenza (7gg)</option>
+ <option value="chiuso" {% if stato == 'chiuso' %}selected{% endif %}>Chiuso</option>
+ </select>
+ </div>
+ <div class="filter-group">
+ <label class="filter-label">Categoria</label>
+ <select name="categoria" class="filter-select">
+ <option value="">Tutte le categorie</option>
+ {% for cat in categorie %}<option value="{{ cat }}" {% if categoria == cat %}selected{% endif %}>{{ cat }}</option>{% endfor %}
+ </select>
+ </div>
+ <button type="submit" class="filter-btn">Applica Filtri</button>
+ <a href="/bandi/" class="filter-reset"> Rimuovi filtri</a>
+ </form>
+ <div style="margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border);">
+ <div class="filter-title"> Matching Personale</div>
+ <p style="font-size:.78rem;color:var(--muted);margin-bottom:.875rem;line-height:1.6;">Carica la tua visura camerale per vedere solo i bandi compatibili con la tua impresa.</p>
+ <a href="/analisi/analizza" style="display:block;text-align:center;background:linear-gradient(135deg,var(--green),#16a34a);color:#fff;font-weight:800;font-size:.82rem;padding:.65rem;border-radius:10px;text-decoration:none;">Analizza la tua impresa</a>
+ </div>
+ </div>
+ </aside>
+ <main>
+ <div class="bandi-header">
+ <div class="bandi-count">{% if bandi %}Trovati <strong>{{ bandi|length }}</strong> bandi{% if search %} per "<strong>{{ search }}</strong>"{% endif %}{% else %}Nessun bando trovato{% endif %}</div>
+ <div style="display:flex;gap:.5rem;align-items:center;">
+ <a href="/bandi/?stato=aperto" style="font-size:.75rem;color:var(--green);text-decoration:none;font-weight:700;border:1px solid rgba(34,197,94,.3);padding:.3rem .75rem;border-radius:6px;">Solo aperti</a>
+ <a href="/auth/register" style="font-size:.75rem;color:#3b82f6;text-decoration:none;font-weight:700;border:1px solid rgba(59,130,246,.3);padding:.3rem .75rem;border-radius:6px;">+ Analisi AI</a>
+ </div>
+ </div>
+ {% if bandi %}
+ {% for bando in bandi %}
+ {% set stato_bando = bando.stato | lower if bando.stato else 'neutro' %}
+ {% if stato_bando == 'aperto' %}{% set card_class = 'verde' %}{% set sem_class = 'sem-verde-bg' %}{% set sem_icon = 'Verde' %}{% set badge_class = 'badge-aperto' %}{% set badge_text = 'Aperto' %}
+ {% elif stato_bando == 'in_valutazione' %}{% set card_class = 'giallo' %}{% set sem_class = 'sem-giallo-bg' %}{% set sem_icon = 'Giallo' %}{% set badge_class = 'badge-valutaz' %}{% set badge_text = 'In Valutazione' %}
+ {% elif stato_bando == 'scaduto' or stato_bando == 'chiuso' %}{% set card_class = 'rosso' %}{% set sem_class = 'sem-rosso-bg' %}{% set sem_icon = '' %}{% set badge_class = 'badge-scaduto' %}{% set badge_text = stato_bando | capitalize %}
+ {% else %}{% set card_class = 'neutro' %}{% set sem_class = 'sem-neutro-bg' %}{% set sem_icon = '' %}{% set badge_class = 'badge-chiuso' %}{% set badge_text = stato_bando | capitalize %}{% endif %}
+ <div class="bando-card {{ card_class }}">
+ <div class="bando-semaforo {{ sem_class }}">{{ sem_icon }}</div>
+ <div class="bando-body">
+ <div class="bando-top">
+ <div class="bando-title">{{ bando.titolo }}</div>
+ <span class="bando-badge {{ badge_class }}">{{ badge_text }}</span>
+ </div>
+ <div class="bando-meta">
+ {% if bando.fonte %}<strong>Fonte:</strong> {{ bando.fonte }} &nbsp;·&nbsp; {% endif %}
+ {% if bando.regioni_ammesse %}<strong>Regione:</strong> {{ bando.regioni_ammesse[0] if bando.regioni_ammesse else "Nazionale" }} &nbsp;·&nbsp; {% endif %}
+ {% if bando.fonte %}<strong>Fonte:</strong> {{ bando.fonte }}{% endif %}
+ </div>
+ {% if bando.descrizione %}<p style="font-size:.8rem;color:#64748b;margin-bottom:.6rem;line-height:1.5;">{{ bando.descrizione[:140] }}{% if bando.descrizione|length> 140 %}...{% endif %}</p>{% endif %}
+ <div class="bando-footer">
+ <div>
+ {% if bando.massimale_agevolazione %}<span class="bando-valore"> fino a €{{ "{:,.0f}".format(bando.massimale_agevolazione) }}</span>{% endif %}
+ {% if bando.data_scadenza %}<span style="font-size:.75rem;color:var(--muted);margin-left:.75rem;"> Scad. {{ bando.data_scadenza.strftime('%d/%m/%Y') if bando.data_scadenza else 'N/D' }}</span>{% endif %}
+ </div>
+ <a href="/bandi/{{ bando.id }}" class="bando-link">Dettagli →</a>
+ </div>
+ </div>
+ </div>
+ {% endfor %}
+ {% if total_pages and total_pages> 1 %}
+ <div class="pagination">
+ {% if page> 1 %}<a href="/bandi/?page={{ page - 1 }}{% if search %}&search={{ search }}{% endif %}{% if stato %}&stato={{ stato }}{% endif %}{% if categoria %}&categoria={{ categoria }}{% endif %}" class="page-btn">← Precedente</a>{% endif %}
+ {% for p in range(1, total_pages + 1) %}{% if p == page %}<span class="page-btn current">{{ p }}</span>{% elif p <= 3 or p>= total_pages - 2 or (p>= page - 1 and p <= page + 1) %}<a href="/bandi/?page={{ p }}{% if search %}&search={{ search }}{% endif %}{% if stato %}&stato={{ stato }}{% endif %}{% if categoria %}&categoria={{ categoria }}{% endif %}" class="page-btn">{{ p }}</a>{% elif p == 4 or p == total_pages - 3 %}<span class="page-info">...</span>{% endif %}{% endfor %}
+ {% if page < total_pages %}<a href="/bandi/?page={{ page + 1 }}{% if search %}&search={{ search }}{% endif %}{% if stato %}&stato={{ stato }}{% endif %}{% if categoria %}&categoria={{ categoria }}{% endif %}" class="page-btn">Successiva →</a>{% endif %}
+ </div>
+ {% endif %}
+ {% else %}
+ <div class="empty-state">
+ <div class="empty-icon"></div>
+ <div class="empty-title">Nessun bando trovato</div>
+ <div class="empty-sub">{% if search or stato or categoria %}Prova a modificare i filtri per trovare le opportunità che cerchi.{% else %}Il database dei bandi è in fase di popolamento. Torna presto!<br>Nel frattempo, analizza la tua impresa per ricevere alert personalizzati.{% endif %}</div>
+ {% if search or stato or categoria %}<a href="/bandi/" class="empty-cta">Rimuovi filtri</a>{% else %}<a href="/analisi/analizza" class="empty-cta">Analizza la tua impresa</a>{% endif %}
+ </div>
+ {% endif %}
+ </main>
 </div>
 <footer>
-    <a href="/">BandoMatch AI</a> <a href="/bandi/">Bandi Disponibili</a> <a href="/auth/login">Accedi</a> <a href="/auth/register">Registrati</a>
-    <br><br>© 2026 BandoMatch AI — Tutti i diritti riservati
+ <a href="/">BandoMatch AI</a> <a href="/bandi/">Bandi Disponibili</a> <a href="/auth/login">Accedi</a> <a href="/auth/register">Registrati</a>
+ <br><br>© 2026 BandoMatch AI — Tutti i diritti riservati
 </footer>
 </body>
 </html>

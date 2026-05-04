@@ -1,836 +1,836 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="BandoMatch AI — Trova in 30 secondi tutti i finanziamenti pubblici compatibili con la tua impresa. Carica la visura camerale, la nostra AI fa il resto.">
-    <meta property="og:title" content="BandoMatch AI — Semaforo Verde per i tuoi Finanziamenti">
-    <meta property="og:description" content="Carica la visura camerale. In 30 secondi la nostra AI trova tutti i bandi compatibili con la tua impresa.">
-    <meta property="og:image" content="/static/img/logo_og.png">
-    <title>BandoMatch AI — Trova i Finanziamenti Pubblici per la Tua Impresa</title>
-    <link rel="icon" type="image/png" href="/static/img/favicon.png">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        :root {
-            --navy:    #0d1b2a;
-            --navy2:   #1a2a3a;
-            --navy3:   #243447;
-            --green:   #22c55e;
-            --yellow:  #eab308;
-            --red:     #ef4444;
-            --border:  #2d4a6a;
-            --text:    #e2e8f0;
-            --muted:   #64748b;
-        }
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; overflow-x: hidden; }
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: var(--navy);
-            color: var(--text);
-            overflow-x: hidden;
-            width: 100%;
-        }
+ <meta charset="UTF-8">
+ <meta name="viewport" content="width=device-width, initial-scale=1.0">
+ <meta name="description" content="BandoMatch AI — Trova in 30 secondi tutti i finanziamenti pubblici compatibili con la tua impresa. Carica la visura camerale, la nostra AI fa il resto.">
+ <meta property="og:title" content="BandoMatch AI — Semaforo Verde per i tuoi Finanziamenti">
+ <meta property="og:description" content="Carica la visura camerale. In 30 secondi la nostra AI trova tutti i bandi compatibili con la tua impresa.">
+ <meta property="og:image" content="/static/img/logo_og.png">
+ <title>BandoMatch AI — Trova i Finanziamenti Pubblici per la Tua Impresa</title>
+ <link rel="icon" type="image/png" href="/static/img/favicon.png">
+ <script src="https://cdn.tailwindcss.com"></script>
+ <style>
+ :root {
+ --navy: #0d1b2a;
+ --navy2: #1a2a3a;
+ --navy3: #243447;
+ --green: #22c55e;
+ --yellow: #eab308;
+ --red: #ef4444;
+ --border: #2d4a6a;
+ --text: #e2e8f0;
+ --muted: #64748b;
+ }
+ *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+ html { scroll-behavior: smooth; overflow-x: hidden; }
+ body {
+ font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+ background: var(--navy);
+ color: var(--text);
+ overflow-x: hidden;
+ width: 100%;
+ }
 
-        /* ── Navbar ── */
-        .navbar {
-            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-            background: rgba(13,27,42,0.92);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(34,197,94,0.12);
-            padding: 0 1.5rem;
-            height: 68px;
-            display: flex; align-items: center; justify-content: space-between;
-            width: 100%;
-        }
-        .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0; }
-        .nav-logo img { width: 44px; height: 44px; object-fit: contain; border-radius: 50%; }
-        .nav-logo-text { font-size: 1.15rem; font-weight: 900; color: #fff; letter-spacing: -0.02em; }
-        .nav-logo-text span { color: var(--green); }
-        .nav-links { display: flex; align-items: center; gap: 1.25rem; flex-wrap: nowrap; }
-        .nav-links a {
-            color: #94a3b8; text-decoration: none; font-size: 0.875rem; font-weight: 500;
-            transition: color 0.2s; white-space: nowrap;
-        }
-        .nav-links a:hover { color: #fff; }
-        .nav-links a.nav-bandi {
-            color: var(--green); font-weight: 700;
-            border: 1px solid rgba(34,197,94,0.3);
-            padding: 0.3rem 0.75rem; border-radius: 6px;
-            transition: all 0.2s;
-        }
-        .nav-links a.nav-bandi:hover { background: rgba(34,197,94,0.1); color: #86efac; }
-        .nav-cta {
-            background: linear-gradient(135deg, var(--green), #16a34a);
-            color: #fff; font-weight: 800; font-size: 0.875rem;
-            padding: 0.5rem 1.25rem; border-radius: 8px;
-            text-decoration: none; transition: all 0.2s;
-            white-space: nowrap; flex-shrink: 0;
-            box-shadow: 0 0 16px rgba(34,197,94,0.25);
-        }
-        .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 0 24px rgba(34,197,94,0.4); }
+ /* ── Navbar ── */
+ .navbar {
+ position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+ background: rgba(13,27,42,0.92);
+ backdrop-filter: blur(20px);
+ border-bottom: 1px solid rgba(34,197,94,0.12);
+ padding: 0 1.5rem;
+ height: 68px;
+ display: flex; align-items: center; justify-content: space-between;
+ width: 100%;
+ }
+ .nav-logo { display: flex; align-items: center; gap: 12px; text-decoration: none; flex-shrink: 0; }
+ .nav-logo img { width: 44px; height: 44px; object-fit: contain; border-radius: 50%; }
+ .nav-logo-text { font-size: 1.15rem; font-weight: 900; color: #fff; letter-spacing: -0.02em; }
+ .nav-logo-text span { color: var(--green); }
+ .nav-links { display: flex; align-items: center; gap: 1.25rem; flex-wrap: nowrap; }
+ .nav-links a {
+ color: #94a3b8; text-decoration: none; font-size: 0.875rem; font-weight: 500;
+ transition: color 0.2s; white-space: nowrap;
+ }
+ .nav-links a:hover { color: #fff; }
+ .nav-links a.nav-bandi {
+ color: var(--green); font-weight: 700;
+ border: 1px solid rgba(34,197,94,0.3);
+ padding: 0.3rem 0.75rem; border-radius: 6px;
+ transition: all 0.2s;
+ }
+ .nav-links a.nav-bandi:hover { background: rgba(34,197,94,0.1); color: #86efac; }
+ .nav-cta {
+ background: linear-gradient(135deg, var(--green), #16a34a);
+ color: #fff; font-weight: 800; font-size: 0.875rem;
+ padding: 0.5rem 1.25rem; border-radius: 8px;
+ text-decoration: none; transition: all 0.2s;
+ white-space: nowrap; flex-shrink: 0;
+ box-shadow: 0 0 16px rgba(34,197,94,0.25);
+ }
+ .nav-cta:hover { transform: translateY(-1px); box-shadow: 0 0 24px rgba(34,197,94,0.4); }
 
-        /* ── Ticker ── */
-        .ticker-wrap {
-            background: rgba(34,197,94,0.06);
-            border-bottom: 1px solid rgba(34,197,94,0.15);
-            padding: 0.5rem 0;
-            overflow: hidden;
-            margin-top: 68px;
-            width: 100%;
-        }
-        .ticker-track {
-            display: flex; gap: 3rem;
-            animation: ticker 35s linear infinite;
-            white-space: nowrap;
-            width: max-content;
-        }
-        .ticker-item { font-size: 0.8rem; color: #86efac; font-weight: 600; }
-        .ticker-dot { color: var(--green); margin-right: 0.5rem; }
-        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+ /* ── Ticker ── */
+ .ticker-wrap {
+ background: rgba(34,197,94,0.06);
+ border-bottom: 1px solid rgba(34,197,94,0.15);
+ padding: 0.5rem 0;
+ overflow: hidden;
+ margin-top: 68px;
+ width: 100%;
+ }
+ .ticker-track {
+ display: flex; gap: 3rem;
+ animation: ticker 35s linear infinite;
+ white-space: nowrap;
+ width: max-content;
+ }
+ .ticker-item { font-size: 0.8rem; color: #86efac; font-weight: 600; }
+ .ticker-dot { color: var(--green); margin-right: 0.5rem; }
+ @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        /* ── Hero ── */
-        .hero {
-            min-height: calc(100vh - 96px);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            text-align: center;
-            padding: 4rem 1.5rem 3rem;
-            position: relative;
-            overflow: hidden;
-            width: 100%;
-        }
-        .hero::before {
-            content: '';
-            position: absolute; top: -150px; left: 50%; transform: translateX(-50%);
-            width: min(700px, 100vw); height: 700px;
-            background: radial-gradient(ellipse, rgba(34,197,94,0.07) 0%, transparent 70%);
-            pointer-events: none;
-        }
-        .hero-badge {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: rgba(34,197,94,0.1);
-            border: 1px solid rgba(34,197,94,0.3);
-            color: #86efac; font-size: 0.8rem; font-weight: 700;
-            padding: 0.4rem 1rem; border-radius: 100px;
-            margin-bottom: 2rem;
-            animation: fadeInDown 0.6s ease;
-        }
-        .hero-badge-dot {
-            width: 7px; height: 7px; border-radius: 50%; background: var(--green);
-            animation: pulse-dot 2s infinite;
-        }
-        @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.5)} }
-        .hero h1 {
-            font-size: clamp(2rem, 5.5vw, 3.8rem);
-            font-weight: 900; line-height: 1.1;
-            color: #fff;
-            margin-bottom: 1.5rem;
-            animation: fadeInUp 0.7s ease 0.1s both;
-            max-width: 820px;
-        }
-        .hero h1 .accent-green { color: var(--green); }
-        .hero h1 .accent-grad {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .hero-sub {
-            font-size: clamp(0.95rem, 2.2vw, 1.15rem);
-            color: #94a3b8; max-width: 580px; line-height: 1.75;
-            margin-bottom: 2.5rem;
-            animation: fadeInUp 0.7s ease 0.2s both;
-        }
-        .hero-stats {
-            display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem;
-            margin-bottom: 2.5rem;
-            animation: fadeInUp 0.7s ease 0.3s both;
-        }
-        .hero-stat { text-align: center; }
-        .hero-stat-num { font-size: 1.9rem; font-weight: 900; }
-        .hero-stat-label { font-size: 0.7rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+ /* ── Hero ── */
+ .hero {
+ min-height: calc(100vh - 96px);
+ display: flex; flex-direction: column; align-items: center; justify-content: center;
+ text-align: center;
+ padding: 4rem 1.5rem 3rem;
+ position: relative;
+ overflow: hidden;
+ width: 100%;
+ }
+ .hero::before {
+ content: '';
+ position: absolute; top: -150px; left: 50%; transform: translateX(-50%);
+ width: min(700px, 100vw); height: 700px;
+ background: radial-gradient(ellipse, rgba(34,197,94,0.07) 0%, transparent 70%);
+ pointer-events: none;
+ }
+ .hero-badge {
+ display: inline-flex; align-items: center; gap: 8px;
+ background: rgba(34,197,94,0.1);
+ border: 1px solid rgba(34,197,94,0.3);
+ color: #86efac; font-size: 0.8rem; font-weight: 700;
+ padding: 0.4rem 1rem; border-radius: 100px;
+ margin-bottom: 2rem;
+ animation: fadeInDown 0.6s ease;
+ }
+ .hero-badge-dot {
+ width: 7px; height: 7px; border-radius: 50%; background: var(--green);
+ animation: pulse-dot 2s infinite;
+ }
+ @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.5)} }
+ .hero h1 {
+ font-size: clamp(2rem, 5.5vw, 3.8rem);
+ font-weight: 900; line-height: 1.1;
+ color: #fff;
+ margin-bottom: 1.5rem;
+ animation: fadeInUp 0.7s ease 0.1s both;
+ max-width: 820px;
+ }
+ .hero h1 .accent-green { color: var(--green); }
+ .hero h1 .accent-grad {
+ background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+ -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+ background-clip: text;
+ }
+ .hero-sub {
+ font-size: clamp(0.95rem, 2.2vw, 1.15rem);
+ color: #94a3b8; max-width: 580px; line-height: 1.75;
+ margin-bottom: 2.5rem;
+ animation: fadeInUp 0.7s ease 0.2s both;
+ }
+ .hero-stats {
+ display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem;
+ margin-bottom: 2.5rem;
+ animation: fadeInUp 0.7s ease 0.3s both;
+ }
+ .hero-stat { text-align: center; }
+ .hero-stat-num { font-size: 1.9rem; font-weight: 900; }
+ .hero-stat-label { font-size: 0.7rem; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
 
-        /* ── Semaforo indicator ── */
-        .semaforo-indicator {
-            display: flex; align-items: center; gap: 6px;
-            background: rgba(13,27,42,0.6); border: 1px solid var(--border);
-            padding: 0.4rem 1rem; border-radius: 100px;
-            margin-bottom: 2rem;
-            animation: fadeInUp 0.7s ease 0.35s both;
-        }
-        .sem-light {
-            width: 12px; height: 12px; border-radius: 50%;
-        }
-        .sem-light.red    { background: var(--red);    box-shadow: 0 0 6px var(--red); }
-        .sem-light.yellow { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
-        .sem-light.green  { background: var(--green);  box-shadow: 0 0 8px var(--green); animation: glow-green 2s infinite; }
-        @keyframes glow-green { 0%,100%{box-shadow:0 0 6px var(--green)} 50%{box-shadow:0 0 16px var(--green)} }
-        .sem-text { font-size: 0.8rem; color: #86efac; font-weight: 700; margin-left: 4px; }
+ /* ── Semaforo indicator ── */
+ .semaforo-indicator {
+ display: flex; align-items: center; gap: 6px;
+ background: rgba(13,27,42,0.6); border: 1px solid var(--border);
+ padding: 0.4rem 1rem; border-radius: 100px;
+ margin-bottom: 2rem;
+ animation: fadeInUp 0.7s ease 0.35s both;
+ }
+ .sem-light {
+ width: 12px; height: 12px; border-radius: 50%;
+ }
+ .sem-light.red { background: var(--red); box-shadow: 0 0 6px var(--red); }
+ .sem-light.yellow { background: var(--yellow); box-shadow: 0 0 6px var(--yellow); }
+ .sem-light.green { background: var(--green); box-shadow: 0 0 8px var(--green); animation: glow-green 2s infinite; }
+ @keyframes glow-green { 0%,100%{box-shadow:0 0 6px var(--green)} 50%{box-shadow:0 0 16px var(--green)} }
+ .sem-text { font-size: 0.8rem; color: #86efac; font-weight: 700; margin-left: 4px; }
 
-        /* ── Upload box ── */
-        .hero-upload {
-            background: rgba(26,42,58,0.9);
-            border: 2px dashed var(--border);
-            border-radius: 18px;
-            padding: 2.5rem 2rem;
-            max-width: 500px; width: 100%;
-            cursor: pointer;
-            transition: border-color 0.3s, background 0.3s, transform 0.2s;
-            animation: fadeInUp 0.7s ease 0.4s both;
-        }
-        .hero-upload:hover, .hero-upload.dragover {
-            border-color: var(--green);
-            background: rgba(34,197,94,0.04);
-            transform: translateY(-2px);
-        }
-        .hero-upload-icon { font-size: 3rem; margin-bottom: 0.75rem; }
-        .hero-upload-title { font-size: 1.05rem; font-weight: 800; color: #fff; margin-bottom: 0.4rem; }
-        .hero-upload-sub { font-size: 0.82rem; color: var(--muted); margin-bottom: 1.5rem; }
-        .hero-upload-btn {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--green), #16a34a);
-            color: #fff; font-weight: 900; font-size: 1rem;
-            padding: 0.85rem 2rem; border-radius: 10px;
-            border: none; cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
-            box-shadow: 0 0 20px rgba(34,197,94,0.3);
-        }
-        .hero-upload-btn:hover { transform: translateY(-2px); box-shadow: 0 0 32px rgba(34,197,94,0.5); }
-        .hero-trust { font-size: 0.75rem; color: #475569; margin-top: 1rem; }
+ /* ── Upload box ── */
+ .hero-upload {
+ background: rgba(26,42,58,0.9);
+ border: 2px dashed var(--border);
+ border-radius: 18px;
+ padding: 2.5rem 2rem;
+ max-width: 500px; width: 100%;
+ cursor: pointer;
+ transition: border-color 0.3s, background 0.3s, transform 0.2s;
+ animation: fadeInUp 0.7s ease 0.4s both;
+ }
+ .hero-upload:hover, .hero-upload.dragover {
+ border-color: var(--green);
+ background: rgba(34,197,94,0.04);
+ transform: translateY(-2px);
+ }
+ .hero-upload-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+ .hero-upload-title { font-size: 1.05rem; font-weight: 800; color: #fff; margin-bottom: 0.4rem; }
+ .hero-upload-sub { font-size: 0.82rem; color: var(--muted); margin-bottom: 1.5rem; }
+ .hero-upload-btn {
+ display: inline-block;
+ background: linear-gradient(135deg, var(--green), #16a34a);
+ color: #fff; font-weight: 900; font-size: 1rem;
+ padding: 0.85rem 2rem; border-radius: 10px;
+ border: none; cursor: pointer;
+ transition: transform 0.2s, box-shadow 0.2s;
+ box-shadow: 0 0 20px rgba(34,197,94,0.3);
+ }
+ .hero-upload-btn:hover { transform: translateY(-2px); box-shadow: 0 0 32px rgba(34,197,94,0.5); }
+ .hero-trust { font-size: 0.75rem; color: #475569; margin-top: 1rem; }
 
-        /* ── Sections ── */
-        section { padding: 5rem 1.5rem; width: 100%; }
-        .container { max-width: 1000px; margin: 0 auto; width: 100%; }
-        .section-label {
-            display: inline-block;
-            font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em;
-            color: var(--green); margin-bottom: 0.75rem;
-        }
-        .section-title {
-            font-size: clamp(1.7rem, 3.5vw, 2.6rem);
-            font-weight: 900; color: #fff; line-height: 1.2;
-            margin-bottom: 0.75rem;
-        }
-        .section-sub { font-size: 1rem; color: var(--muted); max-width: 540px; margin: 0 auto 3rem; line-height: 1.7; }
+ /* ── Sections ── */
+ section { padding: 5rem 1.5rem; width: 100%; }
+ .container { max-width: 1000px; margin: 0 auto; width: 100%; }
+ .section-label {
+ display: inline-block;
+ font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.12em;
+ color: var(--green); margin-bottom: 0.75rem;
+ }
+ .section-title {
+ font-size: clamp(1.7rem, 3.5vw, 2.6rem);
+ font-weight: 900; color: #fff; line-height: 1.2;
+ margin-bottom: 0.75rem;
+ }
+ .section-sub { font-size: 1rem; color: var(--muted); max-width: 540px; margin: 0 auto 3rem; line-height: 1.7; }
 
-        /* ── Steps ── */
-        .steps-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-            gap: 1.25rem;
-        }
-        .step-card {
-            background: var(--navy2);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 1.75rem 1.5rem;
-            transition: transform 0.3s, border-color 0.3s;
-        }
-        .step-card:hover { transform: translateY(-5px); border-color: var(--green); }
-        .step-num {
-            width: 34px; height: 34px; border-radius: 50%;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            color: #fff; font-weight: 900; font-size: 0.85rem;
-            display: flex; align-items: center; justify-content: center;
-            margin-bottom: 0.75rem;
-        }
-        .step-icon { font-size: 1.8rem; margin-bottom: 0.6rem; }
-        .step-title { font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 0.4rem; }
-        .step-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
+ /* ── Steps ── */
+ .steps-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+ gap: 1.25rem;
+ }
+ .step-card {
+ background: var(--navy2);
+ border: 1px solid var(--border);
+ border-radius: 16px;
+ padding: 1.75rem 1.5rem;
+ transition: transform 0.3s, border-color 0.3s;
+ }
+ .step-card:hover { transform: translateY(-5px); border-color: var(--green); }
+ .step-num {
+ width: 34px; height: 34px; border-radius: 50%;
+ background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+ color: #fff; font-weight: 900; font-size: 0.85rem;
+ display: flex; align-items: center; justify-content: center;
+ margin-bottom: 0.75rem;
+ }
+ .step-icon { font-size: 1.8rem; margin-bottom: 0.6rem; }
+ .step-title { font-size: 0.95rem; font-weight: 800; color: #fff; margin-bottom: 0.4rem; }
+ .step-desc { font-size: 0.82rem; color: var(--muted); line-height: 1.6; }
 
-        /* ── Semaforo demo ── */
-        .semaforo-section { background: rgba(26,42,58,0.4); }
-        .semaforo-demo {
-            max-width: 720px; margin: 0 auto;
-            background: var(--navy2); border: 1px solid var(--border);
-            border-radius: 20px; overflow: hidden;
-        }
-        .semaforo-header {
-            background: rgba(13,27,42,0.7);
-            padding: 0.875rem 1.5rem;
-            border-bottom: 1px solid var(--border);
-            display: flex; align-items: center; gap: 0.5rem;
-        }
-        .sem-dot { width: 10px; height: 10px; border-radius: 50%; }
-        .semaforo-header-title { font-size: 0.8rem; color: var(--muted); margin-left: 0.5rem; font-weight: 600; }
-        .semaforo-body { padding: 1.25rem; }
-        .semaforo-row {
-            display: flex; align-items: center; justify-content: space-between;
-            padding: 0.875rem 1rem; border-radius: 10px; margin-bottom: 0.625rem;
-            border: 1px solid transparent;
-            transition: transform 0.2s;
-            gap: 0.75rem;
-        }
-        .semaforo-row:hover { transform: translateX(4px); }
-        .sem-verde  { background: rgba(34,197,94,0.07);  border-color: rgba(34,197,94,0.2); }
-        .sem-giallo { background: rgba(234,179,8,0.07);  border-color: rgba(234,179,8,0.2); }
-        .sem-rosso  { background: rgba(239,68,68,0.05);  border-color: rgba(239,68,68,0.15); }
-        .sem-badge {
-            font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.65rem;
-            border-radius: 100px; text-transform: uppercase; letter-spacing: 0.04em;
-            white-space: nowrap; flex-shrink: 0;
-        }
-        .badge-verde  { background: rgba(34,197,94,0.18);  color: #86efac; }
-        .badge-giallo { background: rgba(234,179,8,0.18);  color: #fef08a; }
-        .badge-rosso  { background: rgba(239,68,68,0.12);  color: #fca5a5; }
-        .sem-name { font-size: 0.875rem; font-weight: 700; color: #fff; }
-        .sem-val  { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
-        .sem-bar-wrap { width: 70px; height: 5px; background: rgba(255,255,255,0.07); border-radius: 3px; overflow: hidden; flex-shrink: 0; }
-        .sem-bar { height: 100%; border-radius: 3px; }
+ /* ── Semaforo demo ── */
+ .semaforo-section { background: rgba(26,42,58,0.4); }
+ .semaforo-demo {
+ max-width: 720px; margin: 0 auto;
+ background: var(--navy2); border: 1px solid var(--border);
+ border-radius: 20px; overflow: hidden;
+ }
+ .semaforo-header {
+ background: rgba(13,27,42,0.7);
+ padding: 0.875rem 1.5rem;
+ border-bottom: 1px solid var(--border);
+ display: flex; align-items: center; gap: 0.5rem;
+ }
+ .sem-dot { width: 10px; height: 10px; border-radius: 50%; }
+ .semaforo-header-title { font-size: 0.8rem; color: var(--muted); margin-left: 0.5rem; font-weight: 600; }
+ .semaforo-body { padding: 1.25rem; }
+ .semaforo-row {
+ display: flex; align-items: center; justify-content: space-between;
+ padding: 0.875rem 1rem; border-radius: 10px; margin-bottom: 0.625rem;
+ border: 1px solid transparent;
+ transition: transform 0.2s;
+ gap: 0.75rem;
+ }
+ .semaforo-row:hover { transform: translateX(4px); }
+ .sem-verde { background: rgba(34,197,94,0.07); border-color: rgba(34,197,94,0.2); }
+ .sem-giallo { background: rgba(234,179,8,0.07); border-color: rgba(234,179,8,0.2); }
+ .sem-rosso { background: rgba(239,68,68,0.05); border-color: rgba(239,68,68,0.15); }
+ .sem-badge {
+ font-size: 0.68rem; font-weight: 800; padding: 0.2rem 0.65rem;
+ border-radius: 100px; text-transform: uppercase; letter-spacing: 0.04em;
+ white-space: nowrap; flex-shrink: 0;
+ }
+ .badge-verde { background: rgba(34,197,94,0.18); color: #86efac; }
+ .badge-giallo { background: rgba(234,179,8,0.18); color: #fef08a; }
+ .badge-rosso { background: rgba(239,68,68,0.12); color: #fca5a5; }
+ .sem-name { font-size: 0.875rem; font-weight: 700; color: #fff; }
+ .sem-val { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+ .sem-bar-wrap { width: 70px; height: 5px; background: rgba(255,255,255,0.07); border-radius: 3px; overflow: hidden; flex-shrink: 0; }
+ .sem-bar { height: 100%; border-radius: 3px; }
 
-        /* ── Pricing ── */
-        .pricing-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 1.25rem;
-        }
-        .price-card {
-            background: var(--navy2);
-            border: 1px solid var(--border);
-            border-radius: 20px; padding: 1.75rem 1.5rem;
-            position: relative; transition: transform 0.3s;
-        }
-        .price-card:hover { transform: translateY(-6px); }
-        .price-card.featured {
-            border-color: var(--green);
-            background: linear-gradient(160deg, rgba(34,197,94,0.05), var(--navy2));
-        }
-        .price-popular {
-            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
-            background: linear-gradient(135deg, var(--green), #16a34a);
-            color: #fff; font-size: 0.68rem; font-weight: 800;
-            padding: 0.22rem 0.9rem; border-radius: 100px;
-            text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap;
-        }
-        .price-name { font-size: 0.95rem; font-weight: 700; color: #94a3b8; margin-bottom: 0.4rem; }
-        .price-amount { font-size: 2.2rem; font-weight: 900; color: #fff; margin-bottom: 0.2rem; }
-        .price-amount span { font-size: 0.9rem; color: var(--muted); font-weight: 400; }
-        .price-desc { font-size: 0.8rem; color: var(--muted); margin-bottom: 1.25rem; }
-        .price-features { list-style: none; margin-bottom: 1.5rem; }
-        .price-features li {
-            font-size: 0.82rem; padding: 0.35rem 0;
-            display: flex; align-items: center; gap: 0.5rem;
-            border-bottom: 1px solid rgba(255,255,255,0.04);
-        }
-        .price-features li:last-child { border-bottom: none; }
-        .feat-ok { color: var(--green); font-size: 0.9rem; flex-shrink: 0; }
-        .feat-no { color: #475569; font-size: 0.9rem; flex-shrink: 0; }
-        .feat-text-no { color: #475569; }
-        .price-btn {
-            display: block; width: 100%;
-            padding: 0.8rem; border-radius: 10px;
-            font-weight: 800; font-size: 0.875rem; text-align: center;
-            text-decoration: none; transition: all 0.2s;
-            border: none; cursor: pointer;
-        }
-        .btn-green  { background: linear-gradient(135deg,var(--green),#16a34a); color:#fff; }
-        .btn-green:hover  { box-shadow: 0 0 20px rgba(34,197,94,0.4); transform: translateY(-1px); }
-        .btn-outline { background: transparent; color: #94a3b8; border: 1px solid var(--border); }
-        .btn-outline:hover { border-color: #94a3b8; color: #fff; }
-        .btn-purple { background: linear-gradient(135deg,#8b5cf6,#6d28d9); color:#fff; }
-        .btn-purple:hover { box-shadow: 0 0 20px rgba(139,92,246,0.4); transform: translateY(-1px); }
-        .btn-blue   { background: linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; }
-        .btn-blue:hover   { box-shadow: 0 0 20px rgba(59,130,246,0.4); transform: translateY(-1px); }
+ /* ── Pricing ── */
+ .pricing-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+ gap: 1.25rem;
+ }
+ .price-card {
+ background: var(--navy2);
+ border: 1px solid var(--border);
+ border-radius: 20px; padding: 1.75rem 1.5rem;
+ position: relative; transition: transform 0.3s;
+ }
+ .price-card:hover { transform: translateY(-6px); }
+ .price-card.featured {
+ border-color: var(--green);
+ background: linear-gradient(160deg, rgba(34,197,94,0.05), var(--navy2));
+ }
+ .price-popular {
+ position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+ background: linear-gradient(135deg, var(--green), #16a34a);
+ color: #fff; font-size: 0.68rem; font-weight: 800;
+ padding: 0.22rem 0.9rem; border-radius: 100px;
+ text-transform: uppercase; letter-spacing: 0.08em; white-space: nowrap;
+ }
+ .price-name { font-size: 0.95rem; font-weight: 700; color: #94a3b8; margin-bottom: 0.4rem; }
+ .price-amount { font-size: 2.2rem; font-weight: 900; color: #fff; margin-bottom: 0.2rem; }
+ .price-amount span { font-size: 0.9rem; color: var(--muted); font-weight: 400; }
+ .price-desc { font-size: 0.8rem; color: var(--muted); margin-bottom: 1.25rem; }
+ .price-features { list-style: none; margin-bottom: 1.5rem; }
+ .price-features li {
+ font-size: 0.82rem; padding: 0.35rem 0;
+ display: flex; align-items: center; gap: 0.5rem;
+ border-bottom: 1px solid rgba(255,255,255,0.04);
+ }
+ .price-features li:last-child { border-bottom: none; }
+ .feat-ok { color: var(--green); font-size: 0.9rem; flex-shrink: 0; }
+ .feat-no { color: #475569; font-size: 0.9rem; flex-shrink: 0; }
+ .feat-text-no { color: #475569; }
+ .price-btn {
+ display: block; width: 100%;
+ padding: 0.8rem; border-radius: 10px;
+ font-weight: 800; font-size: 0.875rem; text-align: center;
+ text-decoration: none; transition: all 0.2s;
+ border: none; cursor: pointer;
+ }
+ .btn-green { background: linear-gradient(135deg,var(--green),#16a34a); color:#fff; }
+ .btn-green:hover { box-shadow: 0 0 20px rgba(34,197,94,0.4); transform: translateY(-1px); }
+ .btn-outline { background: transparent; color: #94a3b8; border: 1px solid var(--border); }
+ .btn-outline:hover { border-color: #94a3b8; color: #fff; }
+ .btn-purple { background: linear-gradient(135deg,#8b5cf6,#6d28d9); color:#fff; }
+ .btn-purple:hover { box-shadow: 0 0 20px rgba(139,92,246,0.4); transform: translateY(-1px); }
+ .btn-blue { background: linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; }
+ .btn-blue:hover { box-shadow: 0 0 20px rgba(59,130,246,0.4); transform: translateY(-1px); }
 
-        /* ── Testimonianze ── */
-        .testi-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1.25rem;
-        }
-        .testi-card {
-            background: var(--navy2); border: 1px solid var(--border);
-            border-radius: 16px; padding: 1.5rem;
-            transition: transform 0.3s, border-color 0.3s;
-        }
-        .testi-card:hover { transform: translateY(-4px); border-color: rgba(34,197,94,0.25); }
-        .testi-stars { color: #fbbf24; font-size: 0.9rem; margin-bottom: 0.875rem; }
-        .testi-quote { font-size: 0.875rem; color: #cbd5e1; line-height: 1.7; margin-bottom: 1.1rem; font-style: italic; }
-        .testi-author { display: flex; align-items: center; gap: 0.75rem; }
-        .testi-avatar {
-            width: 38px; height: 38px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 800; font-size: 0.95rem; color: #fff; flex-shrink: 0;
-        }
-        .testi-name { font-weight: 700; font-size: 0.875rem; color: #fff; }
-        .testi-role { font-size: 0.72rem; color: var(--muted); }
+ /* ── Testimonianze ── */
+ .testi-grid {
+ display: grid;
+ grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+ gap: 1.25rem;
+ }
+ .testi-card {
+ background: var(--navy2); border: 1px solid var(--border);
+ border-radius: 16px; padding: 1.5rem;
+ transition: transform 0.3s, border-color 0.3s;
+ }
+ .testi-card:hover { transform: translateY(-4px); border-color: rgba(34,197,94,0.25); }
+ .testi-stars { color: #fbbf24; font-size: 0.9rem; margin-bottom: 0.875rem; }
+ .testi-quote { font-size: 0.875rem; color: #cbd5e1; line-height: 1.7; margin-bottom: 1.1rem; font-style: italic; }
+ .testi-author { display: flex; align-items: center; gap: 0.75rem; }
+ .testi-avatar {
+ width: 38px; height: 38px; border-radius: 50%;
+ display: flex; align-items: center; justify-content: center;
+ font-weight: 800; font-size: 0.95rem; color: #fff; flex-shrink: 0;
+ }
+ .testi-name { font-weight: 700; font-size: 0.875rem; color: #fff; }
+ .testi-role { font-size: 0.72rem; color: var(--muted); }
 
-        /* ── FAQ ── */
-        .faq-list { max-width: 680px; margin: 0 auto; }
-        .faq-item { border-bottom: 1px solid var(--border); }
-        .faq-question {
-            width: 100%; text-align: left; background: none; border: none;
-            color: #fff; font-size: 0.95rem; font-weight: 600;
-            padding: 1.1rem 0;
-            display: flex; justify-content: space-between; align-items: center;
-            cursor: pointer; transition: color 0.2s; gap: 1rem;
-        }
-        .faq-question:hover { color: var(--green); }
-        .faq-icon { font-size: 1.1rem; transition: transform 0.3s; color: var(--muted); flex-shrink: 0; }
-        .faq-answer {
-            font-size: 0.875rem; color: #94a3b8; line-height: 1.7;
-            max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s;
-        }
-        .faq-answer.open { max-height: 300px; padding-bottom: 1.1rem; }
-        .faq-icon.open { transform: rotate(45deg); color: var(--green); }
+ /* ── FAQ ── */
+ .faq-list { max-width: 680px; margin: 0 auto; }
+ .faq-item { border-bottom: 1px solid var(--border); }
+ .faq-question {
+ width: 100%; text-align: left; background: none; border: none;
+ color: #fff; font-size: 0.95rem; font-weight: 600;
+ padding: 1.1rem 0;
+ display: flex; justify-content: space-between; align-items: center;
+ cursor: pointer; transition: color 0.2s; gap: 1rem;
+ }
+ .faq-question:hover { color: var(--green); }
+ .faq-icon { font-size: 1.1rem; transition: transform 0.3s; color: var(--muted); flex-shrink: 0; }
+ .faq-answer {
+ font-size: 0.875rem; color: #94a3b8; line-height: 1.7;
+ max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s;
+ }
+ .faq-answer.open { max-height: 300px; padding-bottom: 1.1rem; }
+ .faq-icon.open { transform: rotate(45deg); color: var(--green); }
 
-        /* ── CTA finale ── */
-        .cta-final {
-            background: linear-gradient(135deg, rgba(34,197,94,0.07), rgba(59,130,246,0.07));
-            border-top: 1px solid rgba(34,197,94,0.12);
-            border-bottom: 1px solid rgba(59,130,246,0.12);
-            text-align: center; padding: 5rem 1.5rem;
-        }
-        .cta-final h2 { font-size: clamp(1.7rem,3.5vw,2.6rem); font-weight: 900; color: #fff; margin-bottom: 0.875rem; }
-        .cta-final p { color: var(--muted); font-size: 1rem; margin-bottom: 2.25rem; max-width: 480px; margin-left: auto; margin-right: auto; }
-        .cta-btn-big {
-            display: inline-block;
-            background: linear-gradient(135deg, var(--green), #16a34a);
-            color: #fff; font-weight: 900; font-size: 1.05rem;
-            padding: 1rem 2.5rem; border-radius: 12px;
-            text-decoration: none; transition: all 0.2s;
-            box-shadow: 0 0 28px rgba(34,197,94,0.3);
-        }
-        .cta-btn-big:hover { transform: translateY(-3px); box-shadow: 0 0 48px rgba(34,197,94,0.5); }
+ /* ── CTA finale ── */
+ .cta-final {
+ background: linear-gradient(135deg, rgba(34,197,94,0.07), rgba(59,130,246,0.07));
+ border-top: 1px solid rgba(34,197,94,0.12);
+ border-bottom: 1px solid rgba(59,130,246,0.12);
+ text-align: center; padding: 5rem 1.5rem;
+ }
+ .cta-final h2 { font-size: clamp(1.7rem,3.5vw,2.6rem); font-weight: 900; color: #fff; margin-bottom: 0.875rem; }
+ .cta-final p { color: var(--muted); font-size: 1rem; margin-bottom: 2.25rem; max-width: 480px; margin-left: auto; margin-right: auto; }
+ .cta-btn-big {
+ display: inline-block;
+ background: linear-gradient(135deg, var(--green), #16a34a);
+ color: #fff; font-weight: 900; font-size: 1.05rem;
+ padding: 1rem 2.5rem; border-radius: 12px;
+ text-decoration: none; transition: all 0.2s;
+ box-shadow: 0 0 28px rgba(34,197,94,0.3);
+ }
+ .cta-btn-big:hover { transform: translateY(-3px); box-shadow: 0 0 48px rgba(34,197,94,0.5); }
 
-        /* ── Footer ── */
-        footer {
-            background: rgba(13,27,42,0.9);
-            border-top: 1px solid var(--border);
-            padding: 1.75rem 1.5rem;
-            display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
-            gap: 1rem; width: 100%;
-        }
-        .footer-logo { display: flex; align-items: center; gap: 10px; }
-        .footer-logo img { width: 32px; height: 32px; border-radius: 50%; }
-        .footer-logo-text { font-size: 0.95rem; font-weight: 800; color: #fff; }
-        .footer-logo-text span { color: var(--green); }
-        .footer-links { display: flex; gap: 1.25rem; flex-wrap: wrap; }
-        .footer-links a { font-size: 0.78rem; color: #475569; text-decoration: none; transition: color 0.2s; }
-        .footer-links a:hover { color: #94a3b8; }
-        .footer-copy { font-size: 0.72rem; color: #334155; }
+ /* ── Footer ── */
+ footer {
+ background: rgba(13,27,42,0.9);
+ border-top: 1px solid var(--border);
+ padding: 1.75rem 1.5rem;
+ display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+ gap: 1rem; width: 100%;
+ }
+ .footer-logo { display: flex; align-items: center; gap: 10px; }
+ .footer-logo img { width: 32px; height: 32px; border-radius: 50%; }
+ .footer-logo-text { font-size: 0.95rem; font-weight: 800; color: #fff; }
+ .footer-logo-text span { color: var(--green); }
+ .footer-links { display: flex; gap: 1.25rem; flex-wrap: wrap; }
+ .footer-links a { font-size: 0.78rem; color: #475569; text-decoration: none; transition: color 0.2s; }
+ .footer-links a:hover { color: #94a3b8; }
+ .footer-copy { font-size: 0.72rem; color: #334155; }
 
-        /* ── Animazioni ── */
-        @keyframes fadeInDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes fadeInUp   { from{opacity:0;transform:translateY(30px)}  to{opacity:1;transform:translateY(0)} }
-        .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.6s ease, transform 0.6s ease; }
-        .reveal.visible { opacity: 1; transform: translateY(0); }
+ /* ── Animazioni ── */
+ @keyframes fadeInDown { from{opacity:0;transform:translateY(-20px)} to{opacity:1;transform:translateY(0)} }
+ @keyframes fadeInUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+ .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.6s ease, transform 0.6s ease; }
+ .reveal.visible { opacity: 1; transform: translateY(0); }
 
-        /* ── Mobile ── */
-        @media (max-width: 768px) {
-            .nav-links { display: none; }
-            .nav-mobile-cta { display: flex !important; }
-        }
-        @media (min-width: 769px) {
-            .nav-mobile-cta { display: none !important; }
-        }
-    </style>
+ /* ── Mobile ── */
+ @media (max-width: 768px) {
+ .nav-links { display: none; }
+ .nav-mobile-cta { display: flex !important; }
+ }
+ @media (min-width: 769px) {
+ .nav-mobile-cta { display: none !important; }
+ }
+ </style>
 </head>
 <body>
 
 <!-- NAVBAR -->
 <nav class="navbar">
-    <a href="/" class="nav-logo">
-        <img src="/static/img/logo_nav.png" alt="BandoMatch AI Logo">
-        <span class="nav-logo-text">Bando<span>Match</span> AI</span>
-    </a>
-    <div class="nav-links">
-        <a href="/bandi/">🟢 Bandi Disponibili</a>
-        <a href="#come-funziona">Come funziona</a>
-        <a href="#prezzi">Prezzi</a>
-        <a href="#faq">FAQ</a>
-        <a href="/auth/login">Accedi</a>
-        <a href="/auth/register" class="nav-cta">Registrati gratis →</a>
-    </div>
-    <a href="/auth/register" class="nav-cta nav-mobile-cta" style="display:none;">Inizia gratis</a>
+ <a href="/" class="nav-logo">
+ <img src="/static/img/logo_nav.png" alt="BandoMatch AI Logo">
+ <span class="nav-logo-text">Bando<span>Match</span> AI</span>
+ </a>
+ <div class="nav-links">
+ <a href="/bandi/">Bandi Disponibili</a>
+ <a href="#come-funziona">Come funziona</a>
+ <a href="#prezzi">Prezzi</a>
+ <a href="#faq">FAQ</a>
+ <a href="/auth/login">Accedi</a>
+ <a href="/auth/register" class="nav-cta">Registrati gratis →</a>
+ </div>
+ <a href="/auth/register" class="nav-cta nav-mobile-cta" style="display:none;">Inizia gratis</a>
 </nav>
 
 <!-- TICKER -->
 <div class="ticker-wrap">
-    <div class="ticker-track">
-        <span class="ticker-item"><span class="ticker-dot">●</span>Resto al Sud 2.0 — fino a €200.000</span>
-        <span class="ticker-item"><span class="ticker-dot">●</span>PR FESR Abruzzo Digitalizzazione — fino a €150.000</span>
-        <span class="ticker-item"><span class="ticker-dot">●</span>Decontribuzione Sud — risparmio fino al 30%</span>
-        <span class="ticker-item"><span class="ticker-dot">●</span>Abruzzo Micro Prestiti — fino a €80.000 a tasso 0%</span>
-        <span class="ticker-item"><span class="ticker-dot">●</span>Nuovi bandi aggiornati ogni giorno alle 06:00</span>
-        <span class="ticker-item"><span class="ticker-dot">●</span>Resto al Sud 2.0 — fino a €200.000</span>
-        <span class="ticker-item"><span class="ticker-dot">●</span>PR FESR Abruzzo Digitalizzazione — fino a €150.000</span>
-        <span class="ticker-item"><span class="ticker-dot">●</span>Decontribuzione Sud — risparmio fino al 30%</span>
-        <span class="ticker-item"><span class="ticker-dot">●</span>Abruzzo Micro Prestiti — fino a €80.000 a tasso 0%</span>
-        <span class="ticker-item"><span class="ticker-dot">●</span>Nuovi bandi aggiornati ogni giorno alle 06:00</span>
-    </div>
+ <div class="ticker-track">
+ <span class="ticker-item"><span class="ticker-dot">·</span>Resto al Sud 2.0 — fino a €200.000</span>
+ <span class="ticker-item"><span class="ticker-dot">·</span>PR FESR Abruzzo Digitalizzazione — fino a €150.000</span>
+ <span class="ticker-item"><span class="ticker-dot">·</span>Decontribuzione Sud — risparmio fino al 30%</span>
+ <span class="ticker-item"><span class="ticker-dot">·</span>Abruzzo Micro Prestiti — fino a €80.000 a tasso 0%</span>
+ <span class="ticker-item"><span class="ticker-dot">·</span>Nuovi bandi aggiornati ogni giorno alle 06:00</span>
+ <span class="ticker-item"><span class="ticker-dot">·</span>Resto al Sud 2.0 — fino a €200.000</span>
+ <span class="ticker-item"><span class="ticker-dot">·</span>PR FESR Abruzzo Digitalizzazione — fino a €150.000</span>
+ <span class="ticker-item"><span class="ticker-dot">·</span>Decontribuzione Sud — risparmio fino al 30%</span>
+ <span class="ticker-item"><span class="ticker-dot">·</span>Abruzzo Micro Prestiti — fino a €80.000 a tasso 0%</span>
+ <span class="ticker-item"><span class="ticker-dot">·</span>Nuovi bandi aggiornati ogni giorno alle 06:00</span>
+ </div>
 </div>
 
 <!-- HERO -->
 <section class="hero">
-    <div class="hero-badge">
-        <span class="hero-badge-dot"></span>
-        Powered by AI — Aggiornato ogni giorno
-    </div>
-    <h1>
-        Stai lasciando sul tavolo<br>
-        <span class="accent-green">migliaia di euro</span> in<br>
-        <span class="accent-grad">finanziamenti pubblici</span>
-    </h1>
-    <p class="hero-sub">
-        Carica la tua Visura Camerale. In <strong style="color:#fff;">30 secondi</strong> la nostra AI analizza la tua impresa
-        e ti mostra tutti i bandi compatibili con il sistema a Semaforo.
-        <strong style="color:#fff;">Zero compilazione manuale.</strong>
-    </p>
-    <div class="semaforo-indicator">
-        <span class="sem-light red"></span>
-        <span class="sem-light yellow"></span>
-        <span class="sem-light green"></span>
-        <span class="sem-text">Semaforo Verde per i tuoi Finanziamenti</span>
-    </div>
-    <div class="hero-stats">
-        <div class="hero-stat">
-            <div class="hero-stat-num" style="color:var(--green);">4M+</div>
-            <div class="hero-stat-label">PMI italiane</div>
-        </div>
-        <div class="hero-stat">
-            <div class="hero-stat-num" style="color:#3b82f6;">€200K</div>
-            <div class="hero-stat-label">Valore medio bandi</div>
-        </div>
-        <div class="hero-stat">
-            <div class="hero-stat-num" style="color:#8b5cf6;">30s</div>
-            <div class="hero-stat-label">Tempo analisi</div>
-        </div>
-        <div class="hero-stat">
-            <div class="hero-stat-num" style="color:var(--yellow);">97%</div>
-            <div class="hero-stat-label">Precisione matching</div>
-        </div>
-    </div>
+ <div class="hero-badge">
+ <span class="hero-badge-dot"></span>
+ Powered by AI — Aggiornato ogni giorno
+ </div>
+ <h1>
+ Stai lasciando sul tavolo<br>
+ <span class="accent-green">migliaia di euro</span> in<br>
+ <span class="accent-grad">finanziamenti pubblici</span>
+ </h1>
+ <p class="hero-sub">
+ Carica la tua Visura Camerale. In <strong style="color:#fff;">30 secondi</strong> la nostra AI analizza la tua impresa
+ e ti mostra tutti i bandi compatibili con il sistema a Semaforo.
+ <strong style="color:#fff;">Zero compilazione manuale.</strong>
+ </p>
+ <div class="semaforo-indicator">
+ <span class="sem-light red"></span>
+ <span class="sem-light yellow"></span>
+ <span class="sem-light green"></span>
+ <span class="sem-text">Semaforo Verde per i tuoi Finanziamenti</span>
+ </div>
+ <div class="hero-stats">
+ <div class="hero-stat">
+ <div class="hero-stat-num" style="color:var(--green);">4M+</div>
+ <div class="hero-stat-label">PMI italiane</div>
+ </div>
+ <div class="hero-stat">
+ <div class="hero-stat-num" style="color:#3b82f6;">€200K</div>
+ <div class="hero-stat-label">Valore medio bandi</div>
+ </div>
+ <div class="hero-stat">
+ <div class="hero-stat-num" style="color:#8b5cf6;">30s</div>
+ <div class="hero-stat-label">Tempo analisi</div>
+ </div>
+ <div class="hero-stat">
+ <div class="hero-stat-num" style="color:var(--yellow);">97%</div>
+ <div class="hero-stat-label">Precisione matching</div>
+ </div>
+ </div>
 
-    <div class="hero-upload" id="hero-upload-box" onclick="document.getElementById('hero-file').click()">
-        <div class="hero-upload-icon">📄</div>
-        <div class="hero-upload-title">Carica la tua Visura Camerale</div>
-        <div class="hero-upload-sub">Solo PDF nativo (non scansionato) — Analisi gratuita</div>
-        <button class="hero-upload-btn" onclick="event.stopPropagation(); document.getElementById('hero-file').click()">
-            🚀 Analizza Gratis Ora
-        </button>
-        <input type="file" id="hero-file" accept=".pdf" style="display:none;" onchange="heroFileSelected(this)">
-        <div id="hero-file-tag" style="display:none; margin-top:1rem; color:#86efac; font-size:0.85rem; font-weight:600;"></div>
-        <div id="hero-progress" style="display:none; margin-top:1rem;">
-            <div style="width:100%; background:rgba(255,255,255,0.07); border-radius:4px; height:6px; overflow:hidden;">
-                <div id="hero-progress-fill" style="height:100%; width:0%; background:linear-gradient(90deg,var(--green),#3b82f6); border-radius:4px; transition:width 0.5s;"></div>
-            </div>
-            <p id="hero-progress-text" style="font-size:0.78rem; color:var(--muted); margin-top:0.5rem;">Caricamento...</p>
-        </div>
-    </div>
-    <p class="hero-trust">🔒 I tuoi dati sono al sicuro. Non vengono condivisi con terzi. Crittografia SSL 256-bit.</p>
+ <div class="hero-upload" id="hero-upload-box" onclick="document.getElementById('hero-file').click()">
+ <div class="hero-upload-icon"></div>
+ <div class="hero-upload-title">Carica la tua Visura Camerale</div>
+ <div class="hero-upload-sub">Solo PDF nativo (non scansionato) — Analisi gratuita</div>
+ <button class="hero-upload-btn" onclick="event.stopPropagation(); document.getElementById('hero-file').click()">
+ Analizza Gratis Ora
+ </button>
+ <input type="file" id="hero-file" accept=".pdf" style="display:none;" onchange="heroFileSelected(this)">
+ <div id="hero-file-tag" style="display:none; margin-top:1rem; color:#86efac; font-size:0.85rem; font-weight:600;"></div>
+ <div id="hero-progress" style="display:none; margin-top:1rem;">
+ <div style="width:100%; background:rgba(255,255,255,0.07); border-radius:4px; height:6px; overflow:hidden;">
+ <div id="hero-progress-fill" style="height:100%; width:0%; background:linear-gradient(90deg,var(--green),#3b82f6); border-radius:4px; transition:width 0.5s;"></div>
+ </div>
+ <p id="hero-progress-text" style="font-size:0.78rem; color:var(--muted); margin-top:0.5rem;">Caricamento...</p>
+ </div>
+ </div>
+ <p class="hero-trust">I tuoi dati sono al sicuro. Non vengono condivisi con terzi. Crittografia SSL 256-bit.</p>
 </section>
 
 <!-- COME FUNZIONA -->
 <section id="come-funziona" style="text-align:center;">
-    <div class="container">
-        <div class="reveal">
-            <span class="section-label">Il processo</span>
-            <h2 class="section-title">Come funziona</h2>
-            <p class="section-sub">Tre passi. Trenta secondi. Migliaia di euro trovati.</p>
-        </div>
-        <div class="steps-grid reveal">
-            <div class="step-card">
-                <div class="step-icon">📄</div>
-                <div class="step-num">1</div>
-                <div class="step-title">Carica la Visura</div>
-                <div class="step-desc">Scarica la tua Visura Camerale dal sito della Camera di Commercio e caricala qui. Solo PDF nativo, nessuna scansione.</div>
-            </div>
-            <div class="step-card">
-                <div class="step-icon">🤖</div>
-                <div class="step-num">2</div>
-                <div class="step-title">L'AI Analizza</div>
-                <div class="step-desc">La nostra AI estrae automaticamente ATECO, sede, età soci, capitale sociale e forma giuridica. Zero compilazione manuale.</div>
-            </div>
-            <div class="step-card">
-                <div class="step-icon">🚦</div>
-                <div class="step-num">3</div>
-                <div class="step-title">Ricevi il Semaforo</div>
-                <div class="step-desc">Verde = compatibile, Giallo = quasi compatibile, Rosso = non compatibile. Sai subito dove candidarti e perché.</div>
-            </div>
-            <div class="step-card">
-                <div class="step-icon">🔔</div>
-                <div class="step-num">4</div>
-                <div class="step-title">Alert Automatici</div>
-                <div class="step-desc">Ogni mattina alle 8:00 ricevi una email con i nuovi bandi compatibili. Il bando cerca te, non il contrario.</div>
-            </div>
-        </div>
-    </div>
+ <div class="container">
+ <div class="reveal">
+ <span class="section-label">Il processo</span>
+ <h2 class="section-title">Come funziona</h2>
+ <p class="section-sub">Tre passi. Trenta secondi. Migliaia di euro trovati.</p>
+ </div>
+ <div class="steps-grid reveal">
+ <div class="step-card">
+ <div class="step-icon"></div>
+ <div class="step-num">1</div>
+ <div class="step-title">Carica la Visura</div>
+ <div class="step-desc">Scarica la tua Visura Camerale dal sito della Camera di Commercio e caricala qui. Solo PDF nativo, nessuna scansione.</div>
+ </div>
+ <div class="step-card">
+ <div class="step-icon"></div>
+ <div class="step-num">2</div>
+ <div class="step-title">L'AI Analizza</div>
+ <div class="step-desc">La nostra AI estrae automaticamente ATECO, sede, età soci, capitale sociale e forma giuridica. Zero compilazione manuale.</div>
+ </div>
+ <div class="step-card">
+ <div class="step-icon"></div>
+ <div class="step-num">3</div>
+ <div class="step-title">Ricevi il Semaforo</div>
+ <div class="step-desc">Verde = compatibile, Giallo = quasi compatibile, Rosso = non compatibile. Sai subito dove candidarti e perché.</div>
+ </div>
+ <div class="step-card">
+ <div class="step-icon"></div>
+ <div class="step-num">4</div>
+ <div class="step-title">Alert Automatici</div>
+ <div class="step-desc">Ogni mattina alle 8:00 ricevi una email con i nuovi bandi compatibili. Il bando cerca te, non il contrario.</div>
+ </div>
+ </div>
+ </div>
 </section>
 
 <!-- DEMO SEMAFORO -->
 <section class="semaforo-section" style="text-align:center;">
-    <div class="container">
-        <div class="reveal">
-            <span class="section-label">Anteprima risultati</span>
-            <h2 class="section-title">Il sistema a Semaforo</h2>
-            <p class="section-sub">Ecco come appare il tuo report di compatibilità. Verde, Giallo, Rosso — sai subito cosa fare.</p>
-        </div>
-        <div class="semaforo-demo reveal">
-            <div class="semaforo-header">
-                <div class="sem-dot" style="background:#ef4444;"></div>
-                <div class="sem-dot" style="background:#fbbf24;"></div>
-                <div class="sem-dot" style="background:#22c55e;"></div>
-                <span class="semaforo-header-title">BandoMatch AI — Risultati analisi — TECH SOLUTIONS SRL — ATECO 62.01</span>
-            </div>
-            <div class="semaforo-body">
-                <div class="semaforo-row sem-verde">
-                    <div style="flex:1; min-width:0;">
-                        <div class="sem-name">Resto al Sud 2.0</div>
-                        <div class="sem-val">Invitalia · fino a €200.000 · ATTIVO</div>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:0.75rem;flex-shrink:0;">
-                        <div class="sem-bar-wrap"><div class="sem-bar" style="width:100%;background:var(--green);"></div></div>
-                        <span class="sem-badge badge-verde">🟢 Compatibile</span>
-                    </div>
-                </div>
-                <div class="semaforo-row sem-verde">
-                    <div style="flex:1; min-width:0;">
-                        <div class="sem-name">PR FESR Abruzzo — Digitalizzazione PMI</div>
-                        <div class="sem-val">Regione Abruzzo · fino a €150.000 · Scad. 30/06/2026</div>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:0.75rem;flex-shrink:0;">
-                        <div class="sem-bar-wrap"><div class="sem-bar" style="width:85%;background:var(--green);"></div></div>
-                        <span class="sem-badge badge-verde">🟢 Compatibile</span>
-                    </div>
-                </div>
-                <div class="semaforo-row sem-giallo">
-                    <div style="flex:1; min-width:0;">
-                        <div class="sem-name">Nuova Sabatini — Beni Strumentali</div>
-                        <div class="sem-val">MISE · fino a €4.000.000 · Scad. 31/12/2026</div>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:0.75rem;flex-shrink:0;">
-                        <div class="sem-bar-wrap"><div class="sem-bar" style="width:60%;background:var(--yellow);"></div></div>
-                        <span class="sem-badge badge-giallo">🟡 Condizionale</span>
-                    </div>
-                </div>
-                <div class="semaforo-row sem-rosso">
-                    <div style="flex:1; min-width:0;">
-                        <div class="sem-name">Incentivi Turismo — Regione Lazio</div>
-                        <div class="sem-val">Regione Lazio · fino a €100.000 · Scad. 15/05/2026</div>
-                    </div>
-                    <div style="display:flex;align-items:center;gap:0.75rem;flex-shrink:0;">
-                        <div class="sem-bar-wrap"><div class="sem-bar" style="width:10%;background:var(--red);"></div></div>
-                        <span class="sem-badge badge-rosso">🔴 Non idoneo</span>
-                    </div>
-                </div>
-                <div style="text-align:center; margin-top:1.25rem;">
-                    <a href="/auth/register" style="display:inline-block; background:linear-gradient(135deg,var(--green),#16a34a); color:#fff; font-weight:800; font-size:0.875rem; padding:0.7rem 1.75rem; border-radius:10px; text-decoration:none;">
-                        Analizza la tua impresa gratis →
-                    </a>
-                    <a href="/bandi/" style="display:inline-block; margin-left:0.75rem; background:transparent; color:#86efac; font-weight:700; font-size:0.875rem; padding:0.7rem 1.5rem; border-radius:10px; text-decoration:none; border:1px solid rgba(34,197,94,0.3);">
-                        Vedi tutti i bandi →
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+ <div class="container">
+ <div class="reveal">
+ <span class="section-label">Anteprima risultati</span>
+ <h2 class="section-title">Il sistema a Semaforo</h2>
+ <p class="section-sub">Ecco come appare il tuo report di compatibilità. Verde, Giallo, Rosso — sai subito cosa fare.</p>
+ </div>
+ <div class="semaforo-demo reveal">
+ <div class="semaforo-header">
+ <div class="sem-dot" style="background:#ef4444;"></div>
+ <div class="sem-dot" style="background:#fbbf24;"></div>
+ <div class="sem-dot" style="background:#22c55e;"></div>
+ <span class="semaforo-header-title">BandoMatch AI — Risultati analisi — TECH SOLUTIONS SRL — ATECO 62.01</span>
+ </div>
+ <div class="semaforo-body">
+ <div class="semaforo-row sem-verde">
+ <div style="flex:1; min-width:0;">
+ <div class="sem-name">Resto al Sud 2.0</div>
+ <div class="sem-val">Invitalia · fino a €200.000 · ATTIVO</div>
+ </div>
+ <div style="display:flex;align-items:center;gap:0.75rem;flex-shrink:0;">
+ <div class="sem-bar-wrap"><div class="sem-bar" style="width:100%;background:var(--green);"></div></div>
+ <span class="sem-badge badge-verde">Compatibile</span>
+ </div>
+ </div>
+ <div class="semaforo-row sem-verde">
+ <div style="flex:1; min-width:0;">
+ <div class="sem-name">PR FESR Abruzzo — Digitalizzazione PMI</div>
+ <div class="sem-val">Regione Abruzzo · fino a €150.000 · Scad. 30/06/2026</div>
+ </div>
+ <div style="display:flex;align-items:center;gap:0.75rem;flex-shrink:0;">
+ <div class="sem-bar-wrap"><div class="sem-bar" style="width:85%;background:var(--green);"></div></div>
+ <span class="sem-badge badge-verde">Compatibile</span>
+ </div>
+ </div>
+ <div class="semaforo-row sem-giallo">
+ <div style="flex:1; min-width:0;">
+ <div class="sem-name">Nuova Sabatini — Beni Strumentali</div>
+ <div class="sem-val">MISE · fino a €4.000.000 · Scad. 31/12/2026</div>
+ </div>
+ <div style="display:flex;align-items:center;gap:0.75rem;flex-shrink:0;">
+ <div class="sem-bar-wrap"><div class="sem-bar" style="width:60%;background:var(--yellow);"></div></div>
+ <span class="sem-badge badge-giallo">Condizionale</span>
+ </div>
+ </div>
+ <div class="semaforo-row sem-rosso">
+ <div style="flex:1; min-width:0;">
+ <div class="sem-name">Incentivi Turismo — Regione Lazio</div>
+ <div class="sem-val">Regione Lazio · fino a €100.000 · Scad. 15/05/2026</div>
+ </div>
+ <div style="display:flex;align-items:center;gap:0.75rem;flex-shrink:0;">
+ <div class="sem-bar-wrap"><div class="sem-bar" style="width:10%;background:var(--red);"></div></div>
+ <span class="sem-badge badge-rosso">Non idoneo</span>
+ </div>
+ </div>
+ <div style="text-align:center; margin-top:1.25rem;">
+ <a href="/auth/register" style="display:inline-block; background:linear-gradient(135deg,var(--green),#16a34a); color:#fff; font-weight:800; font-size:0.875rem; padding:0.7rem 1.75rem; border-radius:10px; text-decoration:none;">
+ Analizza la tua impresa gratis →
+ </a>
+ <a href="/bandi/" style="display:inline-block; margin-left:0.75rem; background:transparent; color:#86efac; font-weight:700; font-size:0.875rem; padding:0.7rem 1.5rem; border-radius:10px; text-decoration:none; border:1px solid rgba(34,197,94,0.3);">
+ Vedi tutti i bandi →
+ </a>
+ </div>
+ </div>
+ </div>
+ </div>
 </section>
 
 <!-- PREZZI -->
 <section id="prezzi" style="text-align:center;">
-    <div class="container">
-        <div class="reveal">
-            <span class="section-label">Piani e prezzi</span>
-            <h2 class="section-title">Prezzi semplici e trasparenti</h2>
-            <p class="section-sub">Nessun costo nascosto. Cancella quando vuoi.</p>
-        </div>
-        <div class="pricing-grid reveal">
-            <div class="price-card">
-                <div class="price-name">Free</div>
-                <div class="price-amount">€0 <span>/mese</span></div>
-                <div class="price-desc">Per chi vuole provare</div>
-                <ul class="price-features">
-                    <li><span class="feat-ok">✓</span> 1 analisi visura al mese</li>
-                    <li><span class="feat-ok">✓</span> Teaser semaforo (2 bandi)</li>
-                    <li><span class="feat-ok">✓</span> Accesso bandi pubblici</li>
-                    <li><span class="feat-no">✗</span> <span class="feat-text-no">Dettagli completi bandi</span></li>
-                    <li><span class="feat-no">✗</span> <span class="feat-text-no">Alert email giornalieri</span></li>
-                    <li><span class="feat-no">✗</span> <span class="feat-text-no">Dossier PDF</span></li>
-                </ul>
-                <a href="/auth/register" class="price-btn btn-outline">Inizia Gratis</a>
-            </div>
-            <div class="price-card featured">
-                <div class="price-popular">⭐ Più Popolare</div>
-                <div class="price-name">Premium</div>
-                <div class="price-amount">€9,90 <span>/mese</span></div>
-                <div class="price-desc">Per l'imprenditore che vuole agire</div>
-                <ul class="price-features">
-                    <li><span class="feat-ok">✓</span> Analisi visure illimitate</li>
-                    <li><span class="feat-ok">✓</span> Semaforo completo tutti i bandi</li>
-                    <li><span class="feat-ok">✓</span> Alert email giornalieri</li>
-                    <li><span class="feat-ok">✓</span> Dossier PDF scaricabile</li>
-                    <li><span class="feat-ok">✓</span> Simulatore punteggio</li>
-                    <li><span class="feat-ok">✓</span> Storico analisi</li>
-                </ul>
-                <a href="/auth/register?piano=premium" class="price-btn btn-green">Abbonati Ora</a>
-            </div>
-            <div class="price-card">
-                <div class="price-name">Pro</div>
-                <div class="price-amount">€29,90 <span>/mese</span></div>
-                <div class="price-desc">Per consulenti e commercialisti</div>
-                <ul class="price-features">
-                    <li><span class="feat-ok">✓</span> Tutto di Premium</li>
-                    <li><span class="feat-ok">✓</span> Reverse Matching</li>
-                    <li><span class="feat-ok">✓</span> Post Social automatici AI</li>
-                    <li><span class="feat-ok">✓</span> API access</li>
-                    <li><span class="feat-ok">✓</span> Multi-azienda (fino a 20)</li>
-                    <li><span class="feat-ok">✓</span> Supporto prioritario</li>
-                </ul>
-                <a href="/auth/register?piano=pro" class="price-btn btn-purple">Prova Pro</a>
-            </div>
-            <div class="price-card">
-                <div class="price-name">Consulenza</div>
-                <div class="price-amount">€49 <span>una tantum</span></div>
-                <div class="price-desc">Parla con un esperto di bandi</div>
-                <ul class="price-features">
-                    <li><span class="feat-ok">✓</span> Sessione 60 min con esperto</li>
-                    <li><span class="feat-ok">✓</span> Analisi visura personalizzata</li>
-                    <li><span class="feat-ok">✓</span> Piano d'azione bandi</li>
-                    <li><span class="feat-ok">✓</span> Supporto compilazione domanda</li>
-                    <li><span class="feat-ok">✓</span> Garanzia soddisfatti o rimborsati</li>
-                </ul>
-                <a href="/consulenza" class="price-btn btn-blue">Prenota Ora</a>
-            </div>
-        </div>
-    </div>
+ <div class="container">
+ <div class="reveal">
+ <span class="section-label">Piani e prezzi</span>
+ <h2 class="section-title">Prezzi semplici e trasparenti</h2>
+ <p class="section-sub">Nessun costo nascosto. Cancella quando vuoi.</p>
+ </div>
+ <div class="pricing-grid reveal">
+ <div class="price-card">
+ <div class="price-name">Free</div>
+ <div class="price-amount">€0 <span>/mese</span></div>
+ <div class="price-desc">Per chi vuole provare</div>
+ <ul class="price-features">
+ <li><span class="feat-ok"></span> 1 analisi visura al mese</li>
+ <li><span class="feat-ok"></span> Teaser semaforo (2 bandi)</li>
+ <li><span class="feat-ok"></span> Accesso bandi pubblici</li>
+ <li><span class="feat-no"></span> <span class="feat-text-no">Dettagli completi bandi</span></li>
+ <li><span class="feat-no"></span> <span class="feat-text-no">Alert email giornalieri</span></li>
+ <li><span class="feat-no"></span> <span class="feat-text-no">Dossier PDF</span></li>
+ </ul>
+ <a href="/auth/register" class="price-btn btn-outline">Inizia Gratis</a>
+ </div>
+ <div class="price-card featured">
+ <div class="price-popular">Più Popolare</div>
+ <div class="price-name">Premium</div>
+ <div class="price-amount">€9,90 <span>/mese</span></div>
+ <div class="price-desc">Per l'imprenditore che vuole agire</div>
+ <ul class="price-features">
+ <li><span class="feat-ok"></span> Analisi visure illimitate</li>
+ <li><span class="feat-ok"></span> Semaforo completo tutti i bandi</li>
+ <li><span class="feat-ok"></span> Alert email giornalieri</li>
+ <li><span class="feat-ok"></span> Dossier PDF scaricabile</li>
+ <li><span class="feat-ok"></span> Simulatore punteggio</li>
+ <li><span class="feat-ok"></span> Storico analisi</li>
+ </ul>
+ <a href="/auth/register?piano=premium" class="price-btn btn-green">Abbonati Ora</a>
+ </div>
+ <div class="price-card">
+ <div class="price-name">Pro</div>
+ <div class="price-amount">€29,90 <span>/mese</span></div>
+ <div class="price-desc">Per consulenti e commercialisti</div>
+ <ul class="price-features">
+ <li><span class="feat-ok"></span> Tutto di Premium</li>
+ <li><span class="feat-ok"></span> Reverse Matching</li>
+ <li><span class="feat-ok"></span> Post Social automatici AI</li>
+ <li><span class="feat-ok"></span> API access</li>
+ <li><span class="feat-ok"></span> Multi-azienda (fino a 20)</li>
+ <li><span class="feat-ok"></span> Supporto prioritario</li>
+ </ul>
+ <a href="/auth/register?piano=pro" class="price-btn btn-purple">Prova Pro</a>
+ </div>
+ <div class="price-card">
+ <div class="price-name">Consulenza</div>
+ <div class="price-amount">€49 <span>una tantum</span></div>
+ <div class="price-desc">Parla con un esperto di bandi</div>
+ <ul class="price-features">
+ <li><span class="feat-ok"></span> Sessione 60 min con esperto</li>
+ <li><span class="feat-ok"></span> Analisi visura personalizzata</li>
+ <li><span class="feat-ok"></span> Piano d'azione bandi</li>
+ <li><span class="feat-ok"></span> Supporto compilazione domanda</li>
+ <li><span class="feat-ok"></span> Garanzia soddisfatti o rimborsati</li>
+ </ul>
+ <a href="/consulenza" class="price-btn btn-blue">Prenota Ora</a>
+ </div>
+ </div>
+ </div>
 </section>
 
 <!-- TESTIMONIANZE -->
 <section style="text-align:center; background:rgba(26,42,58,0.35);">
-    <div class="container">
-        <div class="reveal">
-            <span class="section-label">Social proof</span>
-            <h2 class="section-title">Cosa dicono le PMI</h2>
-            <p class="section-sub">Imprenditori reali, risultati reali.</p>
-        </div>
-        <div class="testi-grid reveal">
-            <div class="testi-card">
-                <div class="testi-stars">★★★★★</div>
-                <p class="testi-quote">"Ho caricato la visura e in 30 secondi ho scoperto che avevo diritto a €200.000 con Resto al Sud. Non lo sapevo nemmeno! Il commercialista non me ne aveva mai parlato."</p>
-                <div class="testi-author">
-                    <div class="testi-avatar" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6);">M</div>
-                    <div>
-                        <div class="testi-name">Marco R.</div>
-                        <div class="testi-role">Titolare, SRL Tecnologica — Napoli</div>
-                    </div>
-                </div>
-            </div>
-            <div class="testi-card">
-                <div class="testi-stars">★★★★★</div>
-                <p class="testi-quote">"Uso il piano Pro per i miei clienti. In un mese ho trovato 3 bandi verdi per altrettante PMI. Uno strumento che vale 10 volte il costo dell'abbonamento."</p>
-                <div class="testi-author">
-                    <div class="testi-avatar" style="background:linear-gradient(135deg,var(--green),#16a34a);">L</div>
-                    <div>
-                        <div class="testi-name">Laura M.</div>
-                        <div class="testi-role">Consulente Aziendale — Milano</div>
-                    </div>
-                </div>
-            </div>
-            <div class="testi-card">
-                <div class="testi-stars">★★★★★</div>
-                <p class="testi-quote">"Finalmente un tool che non mi chiede di sapere cosa è un codice ATECO. Carico e basta. Il semaforo mi dice tutto. Semplice come Netflix."</p>
-                <div class="testi-author">
-                    <div class="testi-avatar" style="background:linear-gradient(135deg,#f59e0b,#d97706);">G</div>
-                    <div>
-                        <div class="testi-name">Giuseppe T.</div>
-                        <div class="testi-role">Artigiano — Bari</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+ <div class="container">
+ <div class="reveal">
+ <span class="section-label">Social proof</span>
+ <h2 class="section-title">Cosa dicono le PMI</h2>
+ <p class="section-sub">Imprenditori reali, risultati reali.</p>
+ </div>
+ <div class="testi-grid reveal">
+ <div class="testi-card">
+ <div class="testi-stars">5/5</div>
+ <p class="testi-quote">"Ho caricato la visura e in 30 secondi ho scoperto che avevo diritto a €200.000 con Resto al Sud. Non lo sapevo nemmeno! Il commercialista non me ne aveva mai parlato."</p>
+ <div class="testi-author">
+ <div class="testi-avatar" style="background:linear-gradient(135deg,#3b82f6,#8b5cf6);">M</div>
+ <div>
+ <div class="testi-name">Marco R.</div>
+ <div class="testi-role">Titolare, SRL Tecnologica — Napoli</div>
+ </div>
+ </div>
+ </div>
+ <div class="testi-card">
+ <div class="testi-stars">5/5</div>
+ <p class="testi-quote">"Uso il piano Pro per i miei clienti. In un mese ho trovato 3 bandi verdi per altrettante PMI. Uno strumento che vale 10 volte il costo dell'abbonamento."</p>
+ <div class="testi-author">
+ <div class="testi-avatar" style="background:linear-gradient(135deg,var(--green),#16a34a);">L</div>
+ <div>
+ <div class="testi-name">Laura M.</div>
+ <div class="testi-role">Consulente Aziendale — Milano</div>
+ </div>
+ </div>
+ </div>
+ <div class="testi-card">
+ <div class="testi-stars">5/5</div>
+ <p class="testi-quote">"Finalmente un tool che non mi chiede di sapere cosa è un codice ATECO. Carico e basta. Il semaforo mi dice tutto. Semplice come Netflix."</p>
+ <div class="testi-author">
+ <div class="testi-avatar" style="background:linear-gradient(135deg,#f59e0b,#d97706);">G</div>
+ <div>
+ <div class="testi-name">Giuseppe T.</div>
+ <div class="testi-role">Artigiano — Bari</div>
+ </div>
+ </div>
+ </div>
+ </div>
+ </div>
 </section>
 
 <!-- FAQ -->
 <section id="faq" style="text-align:center;">
-    <div class="container">
-        <div class="reveal">
-            <span class="section-label">Hai dubbi?</span>
-            <h2 class="section-title">Domande Frequenti</h2>
-        </div>
-        <div class="faq-list reveal">
-            <div class="faq-item">
-                <button class="faq-question" onclick="toggleFaq(this)">
-                    Che tipo di visura devo caricare?
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    Devi caricare la <strong>Visura Camerale Ordinaria</strong> in formato PDF nativo (non scansionata). Puoi scaricarla gratuitamente dal sito di <a href="https://www.registroimprese.it" target="_blank" style="color:var(--green);">Registro Imprese</a> o dal portale della tua Camera di Commercio. Le visure scansionate o in formato immagine non sono supportate.
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-question" onclick="toggleFaq(this)">
-                    I miei dati sono al sicuro?
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    Assolutamente sì. I tuoi dati vengono elaborati in modo sicuro con crittografia SSL 256-bit e non vengono mai condivisi con terzi. I file PDF vengono eliminati automaticamente dopo l'analisi. Rispettiamo pienamente il GDPR.
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-question" onclick="toggleFaq(this)">
-                    Quanto è preciso il matching?
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    Il nostro sistema raggiunge una precisione del 97% nel matching tra imprese e bandi. Analizziamo oltre 15 parametri per ogni bando: codice ATECO, regione, forma giuridica, età dell'impresa, numero dipendenti, capitale sociale e molto altro.
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-question" onclick="toggleFaq(this)">
-                    Con quale frequenza vengono aggiornati i bandi?
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    Il database dei bandi viene aggiornato ogni giorno alle 06:00. Monitoriamo oltre 200 fonti ufficiali tra cui Invitalia, MISE, Regioni, Camere di Commercio e fondi europei. Con il piano Premium ricevi un alert email ogni mattina alle 8:00 con i nuovi bandi compatibili.
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-question" onclick="toggleFaq(this)">
-                    Posso cancellare l'abbonamento quando voglio?
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    Sì, puoi cancellare in qualsiasi momento dalla tua area personale senza penali. L'abbonamento rimane attivo fino alla fine del periodo già pagato. Nessun vincolo, nessuna sorpresa.
-                </div>
-            </div>
-            <div class="faq-item">
-                <button class="faq-question" onclick="toggleFaq(this)">
-                    Il sistema funziona per tutte le regioni italiane?
-                    <span class="faq-icon">+</span>
-                </button>
-                <div class="faq-answer">
-                    Sì, BandoMatch AI copre tutte le 20 regioni italiane. Oltre ai bandi nazionali (MISE, Invitalia, CDP), monitoriamo i bandi regionali, provinciali e comunali. I bandi europei (PNRR, FESR, FSE) sono inclusi nel database.
-                </div>
-            </div>
-        </div>
-    </div>
+ <div class="container">
+ <div class="reveal">
+ <span class="section-label">Hai dubbi?</span>
+ <h2 class="section-title">Domande Frequenti</h2>
+ </div>
+ <div class="faq-list reveal">
+ <div class="faq-item">
+ <button class="faq-question" onclick="toggleFaq(this)">
+ Che tipo di visura devo caricare?
+ <span class="faq-icon">+</span>
+ </button>
+ <div class="faq-answer">
+ Devi caricare la <strong>Visura Camerale Ordinaria</strong> in formato PDF nativo (non scansionata). Puoi scaricarla gratuitamente dal sito di <a href="https://www.registroimprese.it" target="_blank" style="color:var(--green);">Registro Imprese</a> o dal portale della tua Camera di Commercio. Le visure scansionate o in formato immagine non sono supportate.
+ </div>
+ </div>
+ <div class="faq-item">
+ <button class="faq-question" onclick="toggleFaq(this)">
+ I miei dati sono al sicuro?
+ <span class="faq-icon">+</span>
+ </button>
+ <div class="faq-answer">
+ Assolutamente sì. I tuoi dati vengono elaborati in modo sicuro con crittografia SSL 256-bit e non vengono mai condivisi con terzi. I file PDF vengono eliminati automaticamente dopo l'analisi. Rispettiamo pienamente il GDPR.
+ </div>
+ </div>
+ <div class="faq-item">
+ <button class="faq-question" onclick="toggleFaq(this)">
+ Quanto è preciso il matching?
+ <span class="faq-icon">+</span>
+ </button>
+ <div class="faq-answer">
+ Il nostro sistema raggiunge una precisione del 97% nel matching tra imprese e bandi. Analizziamo oltre 15 parametri per ogni bando: codice ATECO, regione, forma giuridica, età dell'impresa, numero dipendenti, capitale sociale e molto altro.
+ </div>
+ </div>
+ <div class="faq-item">
+ <button class="faq-question" onclick="toggleFaq(this)">
+ Con quale frequenza vengono aggiornati i bandi?
+ <span class="faq-icon">+</span>
+ </button>
+ <div class="faq-answer">
+ Il database dei bandi viene aggiornato ogni giorno alle 06:00. Monitoriamo oltre 200 fonti ufficiali tra cui Invitalia, MISE, Regioni, Camere di Commercio e fondi europei. Con il piano Premium ricevi un alert email ogni mattina alle 8:00 con i nuovi bandi compatibili.
+ </div>
+ </div>
+ <div class="faq-item">
+ <button class="faq-question" onclick="toggleFaq(this)">
+ Posso cancellare l'abbonamento quando voglio?
+ <span class="faq-icon">+</span>
+ </button>
+ <div class="faq-answer">
+ Sì, puoi cancellare in qualsiasi momento dalla tua area personale senza penali. L'abbonamento rimane attivo fino alla fine del periodo già pagato. Nessun vincolo, nessuna sorpresa.
+ </div>
+ </div>
+ <div class="faq-item">
+ <button class="faq-question" onclick="toggleFaq(this)">
+ Il sistema funziona per tutte le regioni italiane?
+ <span class="faq-icon">+</span>
+ </button>
+ <div class="faq-answer">
+ Sì, BandoMatch AI copre tutte le 20 regioni italiane. Oltre ai bandi nazionali (MISE, Invitalia, CDP), monitoriamo i bandi regionali, provinciali e comunali. I bandi europei (PNRR, FESR, FSE) sono inclusi nel database.
+ </div>
+ </div>
+ </div>
+ </div>
 </section>
 
 <!-- CTA FINALE -->
 <section class="cta-final">
-    <div class="reveal">
-        <h2>Smetti di lasciare<br><span style="color:var(--green);">soldi sul tavolo</span></h2>
-        <p>Ogni giorno che passa senza conoscere i bandi compatibili è un giorno perso. L'analisi gratuita richiede 30 secondi.</p>
-        <a href="/auth/register" class="cta-btn-big">🚀 Analizza la tua Impresa Gratis</a>
-        <p style="margin-top:0.875rem; font-size:0.78rem; color:#475569;">Nessuna carta di credito richiesta · Cancella quando vuoi</p>
-    </div>
+ <div class="reveal">
+ <h2>Smetti di lasciare<br><span style="color:var(--green);">soldi sul tavolo</span></h2>
+ <p>Ogni giorno che passa senza conoscere i bandi compatibili è un giorno perso. L'analisi gratuita richiede 30 secondi.</p>
+ <a href="/auth/register" class="cta-btn-big">Analizza la tua Impresa Gratis</a>
+ <p style="margin-top:0.875rem; font-size:0.78rem; color:#475569;">Nessuna carta di credito richiesta · Cancella quando vuoi</p>
+ </div>
 </section>
 
 <!-- FOOTER -->
 <footer>
-    <div class="footer-logo">
-        <img src="/static/img/logo_nav.png" alt="BandoMatch AI">
-        <span class="footer-logo-text">Bando<span>Match</span> AI</span>
-    </div>
-    <div class="footer-links">
-        <a href="/bandi/">Bandi Disponibili</a>
-        <a href="/privacy">Privacy Policy</a>
-        <a href="/termini">Termini di Servizio</a>
-        <a href="/auth/login">Accedi</a>
-        <a href="/auth/register">Registrati</a>
-    </div>
-    <div class="footer-copy">© 2026 BandoMatch AI — Tutti i diritti riservati</div>
+ <div class="footer-logo">
+ <img src="/static/img/logo_nav.png" alt="BandoMatch AI">
+ <span class="footer-logo-text">Bando<span>Match</span> AI</span>
+ </div>
+ <div class="footer-links">
+ <a href="/bandi/">Bandi Disponibili</a>
+ <a href="/privacy">Privacy Policy</a>
+ <a href="/termini">Termini di Servizio</a>
+ <a href="/auth/login">Accedi</a>
+ <a href="/auth/register">Registrati</a>
+ </div>
+ <div class="footer-copy">© 2026 BandoMatch AI — Tutti i diritti riservati</div>
 </footer>
 
 <script>
@@ -839,76 +839,76 @@ const heroBox = document.getElementById('hero-upload-box');
 heroBox.addEventListener('dragover', e => { e.preventDefault(); heroBox.classList.add('dragover'); });
 heroBox.addEventListener('dragleave', () => heroBox.classList.remove('dragover'));
 heroBox.addEventListener('drop', e => {
-    e.preventDefault(); heroBox.classList.remove('dragover');
-    const file = e.dataTransfer.files[0];
-    if (file && file.type === 'application/pdf') {
-        const dt = new DataTransfer(); dt.items.add(file);
-        document.getElementById('hero-file').files = dt.files;
-        heroFileSelected(document.getElementById('hero-file'));
-    }
+ e.preventDefault(); heroBox.classList.remove('dragover');
+ const file = e.dataTransfer.files[0];
+ if (file && file.type === 'application/pdf') {
+ const dt = new DataTransfer(); dt.items.add(file);
+ document.getElementById('hero-file').files = dt.files;
+ heroFileSelected(document.getElementById('hero-file'));
+ }
 });
 
 function heroFileSelected(input) {
-    const file = input.files[0];
-    if (!file) return;
-    if (file.type !== 'application/pdf') { alert('Carica un file PDF nativo.'); return; }
-    if (file.size > 10 * 1024 * 1024) { alert('File troppo grande. Massimo 10MB.'); return; }
+ const file = input.files[0];
+ if (!file) return;
+ if (file.type !== 'application/pdf') { alert('Carica un file PDF nativo.'); return; }
+ if (file.size> 10 * 1024 * 1024) { alert('File troppo grande. Massimo 10MB.'); return; }
 
-    const tag = document.getElementById('hero-file-tag');
-    tag.textContent = '✅ ' + file.name;
-    tag.style.display = 'block';
+ const tag = document.getElementById('hero-file-tag');
+ tag.textContent = ' ' + file.name;
+ tag.style.display = 'block';
 
-    const prog = document.getElementById('hero-progress');
-    const fill = document.getElementById('hero-progress-fill');
-    const text = document.getElementById('hero-progress-text');
-    prog.style.display = 'block';
+ const prog = document.getElementById('hero-progress');
+ const fill = document.getElementById('hero-progress-fill');
+ const text = document.getElementById('hero-progress-text');
+ prog.style.display = 'block';
 
-    const steps = [
-        {w:15, t:'Caricamento PDF...'},
-        {w:35, t:'Estrazione testo...'},
-        {w:55, t:'Analisi ATECO e sede...'},
-        {w:75, t:'Calcolo compatibilità...'},
-        {w:90, t:'Generazione semaforo...'},
-    ];
-    let i = 0;
-    const iv = setInterval(() => {
-        if (i < steps.length) { fill.style.width = steps[i].w + '%'; text.textContent = steps[i].t; i++; }
-    }, 600);
+ const steps = [
+ {w:15, t:'Caricamento PDF...'},
+ {w:35, t:'Estrazione testo...'},
+ {w:55, t:'Analisi ATECO e sede...'},
+ {w:75, t:'Calcolo compatibilità...'},
+ {w:90, t:'Generazione semaforo...'},
+ ];
+ let i = 0;
+ const iv = setInterval(() => {
+ if (i < steps.length) { fill.style.width = steps[i].w + '%'; text.textContent = steps[i].t; i++; }
+ }, 600);
 
-    const fd = new FormData();
-    fd.append('visura', file);
-    fetch('/analisi/analizza', { method: 'POST', body: fd })
-        .then(r => r.json())
-        .then(data => {
-            clearInterval(iv);
-            if (data.redirect) {
-                fill.style.width = '100%'; text.textContent = '✅ Analisi completata!';
-                setTimeout(() => { window.location.href = data.redirect; }, 500);
-            } else {
-                fill.style.width = '100%'; text.textContent = 'Registrati per vedere i risultati...';
-                setTimeout(() => { window.location.href = '/auth/register'; }, 1000);
-            }
-        })
-        .catch(() => {
-            clearInterval(iv);
-            fill.style.width = '100%'; text.textContent = 'Registrati per vedere i risultati...';
-            setTimeout(() => { window.location.href = '/auth/register'; }, 800);
-        });
+ const fd = new FormData();
+ fd.append('visura', file);
+ fetch('/analisi/analizza', { method: 'POST', body: fd })
+ .then(r => r.json())
+ .then(data => {
+ clearInterval(iv);
+ if (data.redirect) {
+ fill.style.width = '100%'; text.textContent = ' Analisi completata!';
+ setTimeout(() => { window.location.href = data.redirect; }, 500);
+ } else {
+ fill.style.width = '100%'; text.textContent = 'Registrati per vedere i risultati...';
+ setTimeout(() => { window.location.href = '/auth/register'; }, 1000);
+ }
+ })
+ .catch(() => {
+ clearInterval(iv);
+ fill.style.width = '100%'; text.textContent = 'Registrati per vedere i risultati...';
+ setTimeout(() => { window.location.href = '/auth/register'; }, 800);
+ });
 }
 
 // ── FAQ accordion ──
 function toggleFaq(btn) {
-    const answer = btn.nextElementSibling;
-    const icon = btn.querySelector('.faq-icon');
-    const isOpen = answer.classList.contains('open');
-    document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
-    document.querySelectorAll('.faq-icon').forEach(i => i.classList.remove('open'));
-    if (!isOpen) { answer.classList.add('open'); icon.classList.add('open'); }
+ const answer = btn.nextElementSibling;
+ const icon = btn.querySelector('.faq-icon');
+ const isOpen = answer.classList.contains('open');
+ document.querySelectorAll('.faq-answer').forEach(a => a.classList.remove('open'));
+ document.querySelectorAll('.faq-icon').forEach(i => i.classList.remove('open'));
+ if (!isOpen) { answer.classList.add('open'); icon.classList.add('open'); }
 }
 
 // ── Scroll reveal ──
 const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+ entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
 }, { threshold: 0.08 });
 document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 </script>
