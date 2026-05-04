@@ -18,8 +18,25 @@ class Utente(UserMixin, db.Model):
     stripe_subscription_id = db.Column(db.String(255), nullable=True)
     stripe_customer_id     = db.Column(db.String(255), nullable=True)
     # Campi Enterprise: white-label e branding partner
-    nome_partner = db.Column(db.String(255), nullable=True)   # Es. "CNA Abruzzo"
-    logo_url     = db.Column(db.String(500), nullable=True)   # URL logo partner per PDF white-label
+    # NOTA: nome_partner e logo_url sono gestiti nella tabella clienti_enterprise
+    # per evitare migrazioni DB su Railway. Qui usiamo property per compatibilita'.
+    @property
+    def nome_partner(self):
+        """Restituisce il nome del partner Enterprise (stored in session/profile)."""
+        return getattr(self, '_nome_partner', None)
+
+    @nome_partner.setter
+    def nome_partner(self, value):
+        self._nome_partner = value
+
+    @property
+    def logo_url(self):
+        """Restituisce l'URL del logo partner Enterprise."""
+        return getattr(self, '_logo_url', None)
+
+    @logo_url.setter
+    def logo_url(self, value):
+        self._logo_url = value
 
     # Relazioni
     profilo_aziendale = db.relationship(

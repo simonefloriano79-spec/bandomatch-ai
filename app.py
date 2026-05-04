@@ -56,28 +56,6 @@ app.register_blueprint(admin_bp,      url_prefix='/admin')
 app.register_blueprint(enterprise_bp, url_prefix='/enterprise')
 
 with app.app_context():
-    # ── Migrazione sicura Enterprise (PRIMA di create_all) ──────────────────
-    # Aggiunge colonne nome_partner e logo_url alla tabella utenti se non esistono.
-    # Questo previene errori 500 su Railway quando il DB e' gia' esistente.
-    try:
-        from sqlalchemy import text, inspect as sa_inspect
-        with db.engine.connect() as conn:
-            dialect = db.engine.dialect.name
-            if dialect == 'postgresql':
-                # Verifica se le colonne esistono prima di aggiungerle
-                insp = sa_inspect(db.engine)
-                existing_cols = [c['name'] for c in insp.get_columns('utenti')] if 'utenti' in insp.get_table_names() else []
-                if 'nome_partner' not in existing_cols:
-                    conn.execute(text("ALTER TABLE utenti ADD COLUMN nome_partner VARCHAR(255)"))
-                    app.logger.info('Colonna nome_partner aggiunta a utenti.')
-                if 'logo_url' not in existing_cols:
-                    conn.execute(text("ALTER TABLE utenti ADD COLUMN logo_url VARCHAR(500)"))
-                    app.logger.info('Colonna logo_url aggiunta a utenti.')
-                conn.commit()
-        app.logger.info('Migrazione Enterprise: colonne utenti verificate.')
-    except Exception as _me:
-        app.logger.warning(f'Migrazione Enterprise pre-create_all (non critica): {_me}')
-
     db.create_all()
     app.logger.info('db.create_all() completato.')
 
