@@ -460,10 +460,19 @@
  <a href="#come-funziona">Come funziona</a>
  <a href="#prezzi">Prezzi</a>
  <a href="#faq">FAQ</a>
+ {% if current_user.is_authenticated %}
+ <a href="/dashboard/home" style="color:#86efac; font-weight:700;">Dashboard</a>
+ <a href="/auth/logout" style="color:#94a3b8;">Esci</a>
+ {% else %}
  <a href="/auth/login">Accedi</a>
  <a href="/auth/register" class="nav-cta">Registrati gratis →</a>
+ {% endif %}
  </div>
+ {% if current_user.is_authenticated %}
+ <a href="/dashboard/home" class="nav-cta nav-mobile-cta" style="display:none;">Dashboard</a>
+ {% else %}
  <a href="/auth/register" class="nav-cta nav-mobile-cta" style="display:none;">Inizia gratis</a>
+ {% endif %}
 </nav>
 
 <!-- TICKER -->
@@ -871,8 +880,13 @@
  <a href="/bandi/">Bandi Disponibili</a>
  <a href="/privacy">Privacy Policy</a>
  <a href="/termini">Termini di Servizio</a>
+ {% if current_user.is_authenticated %}
+ <a href="/dashboard/home">Dashboard</a>
+ <a href="/auth/logout">Esci</a>
+ {% else %}
  <a href="/auth/login">Accedi</a>
  <a href="/auth/register">Registrati</a>
+ {% endif %}
  </div>
  <div class="footer-copy">© 2026 BandoMatch AI — Tutti i diritti riservati</div>
 </footer>

@@ -96,8 +96,8 @@ except Exception as _e:
 
 @app.route('/')
 def index():
-    if current_user.is_authenticated:
-        return redirect(url_for('dashboard.home'))
+    # La landing page è sempre accessibile, anche per utenti loggati.
+    # Il link alla dashboard è disponibile nel menu di navigazione.
     return render_template('landing.html')
 
 
