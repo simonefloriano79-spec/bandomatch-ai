@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, jsonify, current_app
 from flask_login import login_required, current_user
 from sqlalchemy import func
-from models.user import User
+from models.utente import Utente as User
 from models.bando import Bando
 from datetime import datetime, timedelta
 import os
@@ -160,6 +160,68 @@ def scraper():
 
     except Exception as e:
         current_app.logger.error(f'Errore scraper: {str(e)}')
+        return jsonify({'error': str(e)}), 500
+
+
+@admin_bp.route('/bandi/import', methods=['POST'])
+def import_bandi():
+    """Importa bandi in bulk nel DB PostgreSQL. Richiede login."""
+    try:
+        from app import db
+        from datetime import datetime
+        data = request.get_json(silent=True) or {}
+        bandi_list = data.get('bandi', [])
+        if not bandi_list:
+            return jsonify({'error': 'Nessun bando fornito'}), 400
+        nuovi = 0
+        aggiornati = 0
+        errori = 0
+        for bd in bandi_list:
+            try:
+                titolo = (bd.get('titolo') or '')[:500]
+                url = (bd.get('url') or '')[:1000]
+                if not titolo or not url:
+                    errori += 1
+                    continue
+                esistente = Bando.query.filter_by(url=url).first()
+                if not esistente:
+                    esistente = Bando.query.filter_by(titolo=titolo).first()
+                def parse_dt(s):
+                    if not s: return None
+                    for fmt in ['%Y-%m-%dT%H:%M:%S', '%Y-%m-%d']:
+                        try: return datetime.strptime(str(s)[:19], fmt)
+                        except: pass
+                    return None
+                if esistente:
+                    esistente.stato = bd.get('stato', 'APERTO')
+                    esistente.updated_at = datetime.utcnow()
+                    aggiornati += 1
+                else:
+                    nuovo = Bando(
+                        titolo=titolo,
+                        descrizione=bd.get('descrizione'),
+                        url=url,
+                        fonte=(bd.get('fonte') or 'Import')[:255],
+                        stato=bd.get('stato', 'APERTO'),
+                        data_apertura=parse_dt(bd.get('data_apertura')),
+                        data_scadenza=parse_dt(bd.get('data_scadenza')),
+                        regioni_ammesse=bd.get('regioni_ammesse'),
+                        ateco_ammessi=bd.get('ateco_ammessi'),
+                        massimale_agevolazione=bd.get('massimale_agevolazione'),
+                        percentuale_fondo_perduto=bd.get('percentuale_fondo_perduto'),
+                        data_scraping=datetime.utcnow(),
+                    )
+                    db.session.add(nuovo)
+                    nuovi += 1
+            except Exception as e:
+                current_app.logger.warning(f'Errore bando: {e}')
+                errori += 1
+        db.session.commit()
+        totale = Bando.query.count()
+        return jsonify({'success': True, 'nuovi': nuovi, 'aggiornati': aggiornati, 'errori': errori, 'totale_db': totale}), 200
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f'Errore import bandi: {str(e)}')
         return jsonify({'error': str(e)}), 500
 
 
