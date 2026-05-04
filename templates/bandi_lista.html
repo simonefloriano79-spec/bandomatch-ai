@@ -174,13 +174,13 @@
                         </div>
                         <div class="bando-meta">
                             {% if bando.fonte %}<strong>Fonte:</strong> {{ bando.fonte }} &nbsp;·&nbsp; {% endif %}
-                            {% if bando.regione %}<strong>Regione:</strong> {{ bando.regione }} &nbsp;·&nbsp; {% endif %}
-                            {% if bando.categoria %}<strong>Categoria:</strong> {{ bando.categoria }}{% endif %}
+                            {% if bando.regioni_ammesse %}<strong>Regione:</strong> {{ bando.regioni_ammesse[0] if bando.regioni_ammesse else "Nazionale" }} &nbsp;·&nbsp; {% endif %}
+                            {% if bando.fonte %}<strong>Fonte:</strong> {{ bando.fonte }}{% endif %}
                         </div>
                         {% if bando.descrizione %}<p style="font-size:.8rem;color:#64748b;margin-bottom:.6rem;line-height:1.5;">{{ bando.descrizione[:140] }}{% if bando.descrizione|length > 140 %}...{% endif %}</p>{% endif %}
                         <div class="bando-footer">
                             <div>
-                                {% if bando.importo_max %}<span class="bando-valore">💰 fino a €{{ "{:,.0f}".format(bando.importo_max) }}</span>{% endif %}
+                                {% if bando.massimale_agevolazione %}<span class="bando-valore">💰 fino a €{{ "{:,.0f}".format(bando.massimale_agevolazione) }}</span>{% endif %}
                                 {% if bando.data_scadenza %}<span style="font-size:.75rem;color:var(--muted);margin-left:.75rem;">📅 Scad. {{ bando.data_scadenza.strftime('%d/%m/%Y') if bando.data_scadenza else 'N/D' }}</span>{% endif %}
                             </div>
                             <a href="/bandi/{{ bando.id }}" class="bando-link">Dettagli →</a>
