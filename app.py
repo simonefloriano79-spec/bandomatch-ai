@@ -1,5 +1,5 @@
 import os
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for, render_template
 from flask_login import LoginManager, current_user
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
@@ -50,7 +50,7 @@ with app.app_context():
 def index():
     if current_user.is_authenticated:
         return redirect(url_for('dashboard.home'))
-    return redirect(url_for('auth.login'))
+    return render_template('landing.html')
 
 @app.errorhandler(404)
 def not_found(error):
