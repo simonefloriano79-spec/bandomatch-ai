@@ -14,6 +14,12 @@ class Utente(UserMixin, db.Model):
     piano = db.Column(db.String(50), default='free', nullable=False)  # free, starter, pro, enterprise
     attivo = db.Column(db.Boolean, default=True, nullable=False)
     data_registrazione = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    # Stripe
+    stripe_subscription_id = db.Column(db.String(255), nullable=True)
+    stripe_customer_id     = db.Column(db.String(255), nullable=True)
+    # Campi Enterprise: white-label e branding partner
+    nome_partner = db.Column(db.String(255), nullable=True)   # Es. "CNA Abruzzo"
+    logo_url     = db.Column(db.String(500), nullable=True)   # URL logo partner per PDF white-label
 
     # Relazioni
     profilo_aziendale = db.relationship(

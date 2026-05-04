@@ -100,9 +100,11 @@ class _NumberedCanvas(pdfgen_canvas.Canvas):
                              f'Pagina {page_num} di {num_pages}')
 
 
-def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
+def genera_dossier(utente, analisi, bandi_compatibili: list,
+                   logo_url: str = None, nome_partner: str = None) -> bytes:
     """
     Genera il PDF Dossier Premium per BandoMatch AI.
+    Se nome_partner è specificato, il PDF è white-label con il brand del partner.
     """
     buf = io.BytesIO()
     doc = SimpleDocTemplate(
@@ -135,13 +137,16 @@ def genera_dossier(utente, analisi, bandi_compatibili: list) -> bytes:
                                   textColor=colors.HexColor('#9a3412'),
                                   leading=14, spaceAfter=2, bulletIndent=10, leftIndent=20)
 
-    # ── HEADER ────────────────────────────────────────────────────────────────
+    # ── HEADER (white-label se nome_partner presente) ─────────────────────────────────────────────────
+    brand_name = nome_partner or 'BandoMatch AI'
+    sub_title  = ('Dossier Bandi Premium' if not nome_partner
+                  else 'Dossier Bandi Premium<br/><font size="8" color="#475569">powered by BandoMatch AI</font>')
     header_data = [[
-        Paragraph('<font color="white"><b>BandoMatch AI</b></font>',
+        Paragraph(f'<font color="white"><b>{brand_name}</b></font>',
                   ParagraphStyle('lt', fontName='Helvetica-Bold', fontSize=24,
                                  textColor=BIANCO)),
         Paragraph(
-            f'<font color="#94a3b8">Dossier Bandi Premium</font><br/>'
+            f'<font color="#94a3b8">{sub_title}</font><br/>'
             f'<font color="#64748b" size="8">Generato il '
             f'{datetime.now().strftime("%d/%m/%Y %H:%M")}</font>',
             ParagraphStyle('rt', fontName='Helvetica', fontSize=12,

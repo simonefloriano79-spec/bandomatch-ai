@@ -12,8 +12,9 @@ stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET')
 
 PIANI = {
-    'premium': {'price': 990, 'name': 'Premium', 'stripe_price_id': os.getenv('STRIPE_PREMIUM_PRICE_ID', 'price_premium')},
-    'pro': {'price': 2990, 'name': 'Pro', 'stripe_price_id': os.getenv('STRIPE_PRO_PRICE_ID', 'price_pro')}
+    'premium':    {'price': 990,   'name': 'Premium',    'stripe_price_id': os.getenv('STRIPE_PREMIUM_PRICE_ID',    'price_premium')},
+    'pro':        {'price': 2990,  'name': 'Pro',         'stripe_price_id': os.getenv('STRIPE_PRO_PRICE_ID',        'price_pro')},
+    'enterprise': {'price': 29900, 'name': 'Enterprise',  'stripe_price_id': os.getenv('STRIPE_ENTERPRISE_PRICE_ID', 'price_enterprise')},
 }
 
 

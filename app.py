@@ -38,13 +38,15 @@ from blueprints.dashboard import dashboard_bp
 from blueprints.scraper import scraper_bp
 from blueprints.analisi import analisi_bp
 from blueprints.admin import admin_bp
+from blueprints.enterprise import enterprise_bp
 
-app.register_blueprint(auth_bp,      url_prefix='/auth')
-app.register_blueprint(bandi_bp,     url_prefix='/bandi')
-app.register_blueprint(dashboard_bp, url_prefix='/dashboard')
-app.register_blueprint(scraper_bp,   url_prefix='/scraper')
-app.register_blueprint(analisi_bp,   url_prefix='/analisi')
-app.register_blueprint(admin_bp,     url_prefix='/admin')
+app.register_blueprint(auth_bp,       url_prefix='/auth')
+app.register_blueprint(bandi_bp,      url_prefix='/bandi')
+app.register_blueprint(dashboard_bp,  url_prefix='/dashboard')
+app.register_blueprint(scraper_bp,    url_prefix='/scraper')
+app.register_blueprint(analisi_bp,    url_prefix='/analisi')
+app.register_blueprint(admin_bp,      url_prefix='/admin')
+app.register_blueprint(enterprise_bp, url_prefix='/enterprise')
 
 with app.app_context():
     db.create_all()

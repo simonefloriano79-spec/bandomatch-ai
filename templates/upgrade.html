@@ -23,6 +23,17 @@
  .plan-card.featured { border-color: #00C851; box-shadow: 0 0 30px rgba(0,200,81,0.2); }
  .plan-card.pro { border-color: #7c5cbf; box-shadow: 0 0 30px rgba(124,92,191,0.2); }
  .plan-card.consulenza { border-color: #FFB300; }
+ .plan-card.enterprise { border-color: #0ea5e9; box-shadow: 0 0 30px rgba(14,165,233,0.25); }
+ .badge-enterprise { background: linear-gradient(135deg,#0ea5e9,#6366f1); color: #fff; }
+ .plan-card.enterprise .plan-price { color: #0ea5e9; }
+ .plan-card.enterprise .features li .icon { color: #0ea5e9; }
+ .btn-enterprise { background: linear-gradient(135deg, #0ea5e9, #6366f1); color: #fff; }
+ .coming-soon-banner { background: rgba(14,165,233,0.12); border: 1px solid rgba(14,165,233,0.35); border-radius: 8px; padding: 10px 16px; margin-bottom: 14px; text-align:center; }
+ .coming-soon-banner .cs-label { font-size: 11px; font-weight: 700; color: #0ea5e9; letter-spacing: 1px; text-transform: uppercase; }
+ .coming-soon-banner .cs-price-old { font-size: 13px; color: #8899aa; text-decoration: line-through; }
+ .coming-soon-banner .cs-price-new { font-size: 18px; font-weight: 900; color: #0ea5e9; }
+ .coming-soon-banner .cs-note { font-size: 11px; color: #8899aa; }
+ .check-enterprise { color: #0ea5e9; font-size: 16px; }
  .badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); padding: 4px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; white-space: nowrap; }
  .badge-featured { background: #00C851; color: #fff; }
  .badge-pro { background: #7c5cbf; color: #fff; }
@@ -186,6 +197,32 @@
  <button class="btn-plan btn-pro" onclick="avviaPagamento('pro')"> Attiva Pro — €29,90/mese</button>
  </div>
 
+ <!-- PIANO ENTERPRISE -->
+ <div class="plan-card enterprise">
+ <div class="badge badge-enterprise"> PARTNER ISTITUZIONALI</div>
+ <div class="plan-name">Enterprise</div>
+ <div class="coming-soon-banner">
+ <div class="cs-label"> Coming Soon</div>
+ <div style="margin:4px 0">
+ <span class="cs-price-old">€499/mese</span>&nbsp;
+ <span class="cs-price-new">€299<span style="font-size:13px;font-weight:400;color:#8899aa">/mese</span></span>
+ </div>
+ <div class="cs-note">Prezzo lancio per i primi 6 mesi</div>
+ </div>
+ <div class="plan-desc">Per CNA, CAF, commercialisti e consulenti che gestiscono portafogli di decine o centinaia di aziende clienti</div>
+ <ul class="features">
+ <li><span class="icon"></span> Tutto di Pro</li>
+ <li><span class="icon"></span> Multi-azienda — portafoglio clienti illimitato</li>
+ <li><span class="icon"></span> Dashboard aggregata — tutti i match in un colpo</li>
+ <li><span class="icon"></span> Report white-label con il tuo logo</li>
+ <li><span class="icon"></span> Export massivo Excel per il commercialista</li>
+ <li><span class="icon"></span> Alert prioritari bandi &gt;€100K</li>
+ <li><span class="icon"></span> Account manager dedicato</li>
+ <li><span class="icon"></span> Onboarding guidato 1:1</li>
+ </ul>
+ <button class="btn-plan btn-enterprise" onclick="avviaPagamento('enterprise')"> Richiedi Accesso Anticipato</button>
+ </div>
+
  <!-- CONSULENZA -->
  <div class="plan-card consulenza">
  <div class="plan-name">Consulenza</div>
@@ -213,20 +250,24 @@
  <th>Free</th>
  <th class="highlight">Premium</th>
  <th class="highlight-pro">Pro</th>
+ <th class="highlight-enterprise" style="color:#0ea5e9">Enterprise</th>
  </tr>
  </thead>
  <tbody>
- <tr><td>Analisi visura PDF</td><td>1/mese</td><td class="check">Illimitate</td><td class="check-pro">Illimitate</td></tr>
- <tr><td>Bandi sbloccati</td><td>1 (verde)</td><td class="check">Tutti</td><td class="check-pro">Tutti</td></tr>
- <tr><td>PDF Dossier di Affinità</td><td class="cross"></td><td class="check"></td><td class="check-pro"></td></tr>
- <tr><td>Alert email nuovi bandi</td><td class="cross"></td><td class="check"></td><td class="check-pro"></td></tr>
- <tr><td>Score % compatibilità</td><td class="cross"></td><td class="check"></td><td class="check-pro"></td></tr>
- <tr><td>Simulatore punteggio</td><td class="check">Base</td><td class="check">Avanzato</td><td class="check-pro">Avanzato</td></tr>
- <tr><td>Reverse Matching bandi</td><td class="cross"></td><td class="cross"></td><td class="check-pro"></td></tr>
- <tr><td>Gestione multi-azienda</td><td class="cross"></td><td class="cross"></td><td class="check-pro"></td></tr>
- <tr><td>API accesso</td><td class="cross"></td><td class="cross"></td><td class="check-pro"></td></tr>
- <tr><td>Report white-label</td><td class="cross"></td><td class="cross"></td><td class="check-pro"></td></tr>
- <tr><td>Feedback loop storico</td><td class="cross"></td><td class="check"></td><td class="check-pro">Prioritario</td></tr>
+ <tr><td>Analisi visura PDF</td><td>1/mese</td><td class="check">Illimitate</td><td class="check-pro">Illimitate</td><td class="check-enterprise">Illimitate</td></tr>
+ <tr><td>Bandi sbloccati</td><td>1 (verde)</td><td class="check">Tutti</td><td class="check-pro">Tutti</td><td class="check-enterprise">Tutti</td></tr>
+ <tr><td>PDF Dossier di Affinità</td><td class="cross"></td><td class="check"></td><td class="check-pro"></td><td class="check-enterprise"></td></tr>
+ <tr><td>Alert email nuovi bandi</td><td class="cross"></td><td class="check"></td><td class="check-pro"></td><td class="check-enterprise">Prioritari</td></tr>
+ <tr><td>Score % compatibilità</td><td class="cross"></td><td class="check"></td><td class="check-pro"></td><td class="check-enterprise"></td></tr>
+ <tr><td>Simulatore punteggio</td><td class="check">Base</td><td class="check">Avanzato</td><td class="check-pro">Avanzato</td><td class="check-enterprise">Avanzato</td></tr>
+ <tr><td>Reverse Matching bandi</td><td class="cross"></td><td class="cross"></td><td class="check-pro"></td><td class="check-enterprise"></td></tr>
+ <tr><td>Gestione multi-azienda</td><td class="cross"></td><td class="cross"></td><td class="cross"></td><td class="check-enterprise">Illimitata</td></tr>
+ <tr><td>Dashboard aggregata clienti</td><td class="cross"></td><td class="cross"></td><td class="cross"></td><td class="check-enterprise"></td></tr>
+ <tr><td>Export massivo Excel</td><td class="cross"></td><td class="cross"></td><td class="cross"></td><td class="check-enterprise"></td></tr>
+ <tr><td>Report white-label (logo partner)</td><td class="cross"></td><td class="cross"></td><td class="cross"></td><td class="check-enterprise"></td></tr>
+ <tr><td>Alert prioritari &gt;€100K</td><td class="cross"></td><td class="cross"></td><td class="cross"></td><td class="check-enterprise"></td></tr>
+ <tr><td>API accesso</td><td class="cross"></td><td class="cross"></td><td class="check-pro"></td><td class="check-enterprise"></td></tr>
+ <tr><td>Feedback loop storico</td><td class="cross"></td><td class="check"></td><td class="check-pro">Prioritario</td><td class="check-enterprise">Prioritario</td></tr>
  </tbody>
  </table>
  </div>
@@ -267,6 +308,15 @@ function avviaPagamento(piano) {
  pro: 'https://buy.stripe.com/eVqbIU4kt31M2mT7XBgfu01',
  consulenza: 'https://buy.stripe.com/7sY14g4kt1XI4v12Dhgfu02'
  };
+ if (piano === 'enterprise') {
+ // Coming soon: raccoglie interesse via email
+ const email = prompt('Lascia la tua email per ricevere accesso anticipato al piano Enterprise:');
+ if (email && email.includes('@')) {
+ window.location.href = 'mailto:info@bandomatch.it?subject=Richiesta%20Accesso%20Enterprise&body=Email%3A%20' + encodeURIComponent(email);
+ alert('Grazie! Ti contatteremo entro 24 ore con tutti i dettagli del piano Enterprise.');
+ }
+ return;
+ }
  const url = links[piano];
  if (url) {
  window.location.href = url;

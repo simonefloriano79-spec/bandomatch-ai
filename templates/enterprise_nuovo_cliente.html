@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nuovo Cliente — BandoMatch AI Enterprise</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0D1B2A; color:#e0e0e0; font-family:'Segoe UI',sans-serif; }
+nav { background:#1a2a3a; padding:16px 32px; display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #0ea5e9; }
+nav .brand { font-size:20px; font-weight:800; color:#0ea5e9; text-decoration:none; }
+nav a { color:#8899aa; text-decoration:none; font-size:14px; margin-left:20px; }
+.container { max-width:700px; margin:0 auto; padding:40px 24px; }
+h1 { font-size:26px; font-weight:900; color:#fff; margin-bottom:32px; }
+.form-card { background:#1a2a3a; border-radius:12px; padding:32px; border:1px solid #2a3a4a; }
+.form-group { margin-bottom:20px; }
+label { display:block; font-size:13px; color:#8899aa; margin-bottom:6px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+input, select, textarea { width:100%; background:#0f172a; border:1px solid #2a3a4a; border-radius:8px; padding:12px 14px; color:#e0e0e0; font-size:14px; outline:none; transition:border-color 0.2s; }
+input:focus, select:focus, textarea:focus { border-color:#0ea5e9; }
+textarea { resize:vertical; min-height:80px; }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.btn-submit { width:100%; padding:14px; background:linear-gradient(135deg,#0ea5e9,#6366f1); color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:700; cursor:pointer; margin-top:8px; }
+.btn-submit:hover { opacity:0.9; }
+.btn-back { display:inline-block; color:#8899aa; text-decoration:none; font-size:14px; margin-bottom:24px; }
+.btn-back:hover { color:#fff; }
+.flash-error { background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.4); border-radius:8px; padding:12px 16px; margin-bottom:16px; color:#ef4444; font-size:14px; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/enterprise" class="brand">BandoMatch AI Enterprise</a>
+  <div>
+    <a href="/enterprise">Dashboard</a>
+    <a href="/enterprise/clienti">Clienti</a>
+  </div>
+</nav>
+
+<div class="container">
+  <a href="/enterprise/clienti" class="btn-back">← Torna ai clienti</a>
+  <h1>Aggiungi Cliente al Portafoglio</h1>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+    <div class="flash-error">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <div class="form-card">
+    <form method="post">
+      <div class="form-group">
+        <label>Ragione Sociale *</label>
+        <input type="text" name="ragione_sociale" placeholder="Es. ROSSI S.R.L." required>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Partita IVA</label>
+          <input type="text" name="partita_iva" placeholder="12345678901" maxlength="11">
+        </div>
+        <div class="form-group">
+          <label>Codice Fiscale</label>
+          <input type="text" name="codice_fiscale" placeholder="RSSMRA80A01H501Z" maxlength="16">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Email Referente</label>
+          <input type="email" name="email_cliente" placeholder="referente@azienda.it">
+        </div>
+        <div class="form-group">
+          <label>Codice ATECO</label>
+          <input type="text" name="ateco" placeholder="Es. 62.01.00">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Regione</label>
+          <select name="regione">
+            <option value="">— Seleziona —</option>
+            <option>Abruzzo</option><option>Basilicata</option><option>Calabria</option>
+            <option>Campania</option><option>Emilia-Romagna</option><option>Friuli-Venezia Giulia</option>
+            <option>Lazio</option><option>Liguria</option><option>Lombardia</option>
+            <option>Marche</option><option>Molise</option><option>Piemonte</option>
+            <option>Puglia</option><option>Sardegna</option><option>Sicilia</option>
+            <option>Toscana</option><option>Trentino-Alto Adige</option><option>Umbria</option>
+            <option>Valle d'Aosta</option><option>Veneto</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Forma Giuridica</label>
+          <select name="forma_giuridica">
+            <option value="">— Seleziona —</option>
+            <option>SRL</option><option>SRLS</option><option>SPA</option>
+            <option>SNC</option><option>SAS</option><option>Ditta Individuale</option>
+            <option>Cooperativa</option><option>Associazione</option><option>Altro</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Note interne (visibili solo a te)</label>
+        <textarea name="note" placeholder="Es. Cliente acquisito tramite CNA, priorità alta per bandi digitalizzazione..."></textarea>
+      </div>
+      <button type="submit" class="btn-submit"> Aggiungi al Portafoglio</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>

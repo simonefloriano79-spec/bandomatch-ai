@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Impostazioni Partner — BandoMatch AI Enterprise</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0D1B2A; color:#e0e0e0; font-family:'Segoe UI',sans-serif; }
+nav { background:#1a2a3a; padding:16px 32px; display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #0ea5e9; }
+nav .brand { font-size:20px; font-weight:800; color:#0ea5e9; text-decoration:none; }
+nav a { color:#8899aa; text-decoration:none; font-size:14px; margin-left:20px; }
+.container { max-width:700px; margin:0 auto; padding:40px 24px; }
+h1 { font-size:26px; font-weight:900; color:#fff; margin-bottom:8px; }
+.subtitle { color:#8899aa; font-size:14px; margin-bottom:32px; }
+.form-card { background:#1a2a3a; border-radius:12px; padding:32px; border:1px solid #2a3a4a; }
+.form-group { margin-bottom:20px; }
+label { display:block; font-size:13px; color:#8899aa; margin-bottom:6px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; }
+input { width:100%; background:#0f172a; border:1px solid #2a3a4a; border-radius:8px; padding:12px 14px; color:#e0e0e0; font-size:14px; outline:none; transition:border-color 0.2s; }
+input:focus { border-color:#0ea5e9; }
+.hint { font-size:12px; color:#64748b; margin-top:6px; }
+.btn-submit { width:100%; padding:14px; background:linear-gradient(135deg,#0ea5e9,#6366f1); color:#fff; border:none; border-radius:8px; font-size:15px; font-weight:700; cursor:pointer; margin-top:8px; }
+.preview-box { background:#0f172a; border-radius:8px; padding:16px; margin-top:20px; border:1px solid #2a3a4a; }
+.preview-box h4 { font-size:13px; color:#8899aa; margin-bottom:12px; text-transform:uppercase; }
+.preview-header { background:#0f172a; border-radius:6px; padding:14px 18px; display:flex; justify-content:space-between; align-items:center; border:1px solid #1e293b; }
+.preview-logo { font-size:13px; color:#0ea5e9; font-weight:700; }
+.preview-title { font-size:11px; color:#64748b; }
+.flash-ok { background:rgba(34,197,94,0.15); border:1px solid rgba(34,197,94,0.4); border-radius:8px; padding:12px 16px; margin-bottom:16px; color:#22c55e; font-size:14px; }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/enterprise" class="brand">BandoMatch AI Enterprise</a>
+  <div>
+    <a href="/enterprise">Dashboard</a>
+    <a href="/enterprise/clienti">Clienti</a>
+    <a href="/enterprise/impostazioni">Impostazioni</a>
+  </div>
+</nav>
+
+<div class="container">
+  <h1>Impostazioni Partner</h1>
+  <p class="subtitle">Configura il branding white-label: il tuo nome e logo appariranno nei PDF Dossier generati per i tuoi clienti.</p>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+    <div class="flash-ok">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+
+  <div class="form-card">
+    <form method="post">
+      <div class="form-group">
+        <label>Nome Partner / Studio / Associazione</label>
+        <input type="text" name="nome_partner" value="{{ nome_partner }}" placeholder="Es. CNA Abruzzo, Studio Rossi & Associati">
+        <div class="hint">Apparirà nell'intestazione del PDF Dossier al posto di "BandoMatch AI"</div>
+      </div>
+      <div class="form-group">
+        <label>URL Logo (immagine PNG/JPG)</label>
+        <input type="url" name="logo_url" value="{{ logo_url }}" placeholder="https://tuosito.it/logo.png">
+        <div class="hint">Inserisci l'URL diretto all'immagine del tuo logo (larghezza consigliata: 200px)</div>
+      </div>
+
+      <!-- Anteprima -->
+      <div class="preview-box">
+        <h4>Anteprima intestazione PDF</h4>
+        <div class="preview-header">
+          <div class="preview-logo" id="preview-nome">{{ nome_partner or 'Il tuo nome partner' }}</div>
+          <div class="preview-title">Dossier Bandi Premium<br><span style="font-size:10px;color:#475569">powered by BandoMatch AI</span></div>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit"> Salva Impostazioni</button>
+    </form>
+  </div>
+</div>
+
+<script>
+document.querySelector('input[name="nome_partner"]').addEventListener('input', function() {
+  document.getElementById('preview-nome').textContent = this.value || 'Il tuo nome partner';
+});
+</script>
+</body>
+</html>
