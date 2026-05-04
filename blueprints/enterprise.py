@@ -48,7 +48,7 @@ def dashboard():
         return guard
 
     clienti = (ClienteEnterprise.query
-               .filter_by(utente_id=current_user.id, attivo=True)
+               .filter_by(partner_id=current_user.id, attivo=True)
                .order_by(ClienteEnterprise.data_aggiornamento.desc())
                .all())
 
@@ -87,7 +87,7 @@ def lista_clienti():
         return guard
 
     clienti = (ClienteEnterprise.query
-               .filter_by(utente_id=current_user.id, attivo=True)
+               .filter_by(partner_id=current_user.id, attivo=True)
                .order_by(ClienteEnterprise.ragione_sociale)
                .all())
     return render_template('enterprise_clienti.html', clienti=clienti,
@@ -105,7 +105,7 @@ def nuovo_cliente():
     if request.method == 'POST':
         try:
             cliente = ClienteEnterprise(
-                utente_id       = current_user.id,
+                partner_id      = current_user.id,
                 ragione_sociale = request.form.get('ragione_sociale', '').strip(),
                 codice_fiscale  = request.form.get('codice_fiscale', '').strip() or None,
                 partita_iva     = request.form.get('partita_iva', '').strip() or None,
@@ -163,7 +163,7 @@ def aggiorna_match_cliente(cliente_id: int):
         return guard
 
     cliente = ClienteEnterprise.query.filter_by(
-        id=cliente_id, utente_id=current_user.id, attivo=True
+        id=cliente_id, partner_id=current_user.id, attivo=True
     ).first_or_404()
 
     # Cerca l'analisi più recente per questo utente con la stessa ragione sociale
@@ -260,7 +260,7 @@ def export_excel():
         return redirect(url_for('enterprise.dashboard'))
 
     clienti = (ClienteEnterprise.query
-               .filter_by(utente_id=current_user.id, attivo=True)
+               .filter_by(partner_id=current_user.id, attivo=True)
                .order_by(ClienteEnterprise.ragione_sociale)
                .all())
 
@@ -403,7 +403,7 @@ def alert_prioritari():
         return jsonify({'error': 'Enterprise only'}), 403
 
     clienti_alert = (ClienteEnterprise.query
-                     .filter_by(utente_id=current_user.id, attivo=True)
+                     .filter_by(partner_id=current_user.id, attivo=True)
                      .filter(ClienteEnterprise.valore_potenziale >= 100_000)
                      .order_by(ClienteEnterprise.valore_potenziale.desc())
                      .all())

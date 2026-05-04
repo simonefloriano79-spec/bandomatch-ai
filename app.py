@@ -49,43 +49,30 @@ app.register_blueprint(admin_bp,      url_prefix='/admin')
 app.register_blueprint(enterprise_bp, url_prefix='/enterprise')
 
 with app.app_context():
-    db.create_all()
-    # Migrazione sicura: aggiunge colonne Enterprise se non esistono (PostgreSQL + SQLite)
+    # ── Migrazione sicura Enterprise (PRIMA di create_all) ──────────────────
+    # Aggiunge colonne nome_partner e logo_url alla tabella utenti se non esistono.
+    # Questo previene errori 500 su Railway quando il DB e' gia' esistente.
     try:
-        from sqlalchemy import text
+        from sqlalchemy import text, inspect as sa_inspect
         with db.engine.connect() as conn:
             dialect = db.engine.dialect.name
             if dialect == 'postgresql':
-                conn.execute(text(
-                    "ALTER TABLE utenti ADD COLUMN IF NOT EXISTS nome_partner VARCHAR(255)"
-                ))
-                conn.execute(text(
-                    "ALTER TABLE utenti ADD COLUMN IF NOT EXISTS logo_url VARCHAR(500)"
-                ))
-                conn.execute(text("""
-                    CREATE TABLE IF NOT EXISTS clienti_enterprise (
-                        id SERIAL PRIMARY KEY,
-                        partner_id INTEGER NOT NULL REFERENCES utenti(id) ON DELETE CASCADE,
-                        ragione_sociale VARCHAR(255) NOT NULL,
-                        partita_iva VARCHAR(11),
-                        codice_fiscale VARCHAR(16),
-                        email_cliente VARCHAR(255),
-                        ateco VARCHAR(20),
-                        regione VARCHAR(100),
-                        forma_giuridica VARCHAR(100),
-                        note TEXT,
-                        bandi_verdi_ultimo INTEGER DEFAULT 0,
-                        bandi_gialli_ultimo INTEGER DEFAULT 0,
-                        valore_potenziale FLOAT DEFAULT 0.0,
-                        ultima_analisi_id INTEGER,
-                        ultima_analisi_data TIMESTAMP,
-                        data_creazione TIMESTAMP DEFAULT NOW()
-                    )
-                """))
+                # Verifica se le colonne esistono prima di aggiungerle
+                insp = sa_inspect(db.engine)
+                existing_cols = [c['name'] for c in insp.get_columns('utenti')] if 'utenti' in insp.get_table_names() else []
+                if 'nome_partner' not in existing_cols:
+                    conn.execute(text("ALTER TABLE utenti ADD COLUMN nome_partner VARCHAR(255)"))
+                    app.logger.info('Colonna nome_partner aggiunta a utenti.')
+                if 'logo_url' not in existing_cols:
+                    conn.execute(text("ALTER TABLE utenti ADD COLUMN logo_url VARCHAR(500)"))
+                    app.logger.info('Colonna logo_url aggiunta a utenti.')
                 conn.commit()
-            app.logger.info('Migrazione Enterprise applicata con successo.')
+        app.logger.info('Migrazione Enterprise: colonne utenti verificate.')
     except Exception as _me:
-        app.logger.warning(f'Migrazione Enterprise (non critica): {_me}')
+        app.logger.warning(f'Migrazione Enterprise pre-create_all (non critica): {_me}')
+
+    db.create_all()
+    app.logger.info('db.create_all() completato.')
 
 # Avvia lo scheduler APScheduler per scraping bandi giornaliero alle 06:00 UTC
 # Wrappato in try/except per evitare che un errore dello scheduler faccia crashare l'app

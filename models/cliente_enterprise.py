@@ -16,7 +16,8 @@ class ClienteEnterprise(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     # Utente Enterprise proprietario del portafoglio
-    utente_id = db.Column(
+    # Nota: il campo si chiama partner_id sia nel modello che nella tabella SQL
+    partner_id = db.Column(
         db.Integer,
         db.ForeignKey('utenti.id', ondelete='CASCADE'),
         nullable=False,
@@ -64,7 +65,7 @@ class ClienteEnterprise(db.Model):
     def to_dict(self):
         return {
             'id':                   self.id,
-            'utente_id':            self.utente_id,
+            'partner_id':           self.partner_id,
             'ragione_sociale':      self.ragione_sociale,
             'codice_fiscale':       self.codice_fiscale,
             'partita_iva':          self.partita_iva,
