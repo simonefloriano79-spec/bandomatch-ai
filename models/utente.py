@@ -3,8 +3,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from typing import Dict, Any, Optional
 
-db = SQLAlchemy()
-
 
 class Utente(db.Model):
     """Modello Utente con gestione autenticazione e piano"""
