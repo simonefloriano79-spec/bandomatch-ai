@@ -1,252 +1,228 @@
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
+from flask_login import login_required, current_user
+from functools import wraps
+from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
-from flask import Blueprint, request, jsonify
-from datetime import datetime
-from sqlalchemy.exc import IntegrityError
+from app import db
+from models.utente import Utente as User
 from models.bando import Bando
-from extensions import db
-import logging
 
-scraper_bp = Blueprint('scraper', __name__, url_prefix='/api/v1/scraper')
-logger = logging.getLogger(__name__)
+scraper_bp = Blueprint('scraper', __name__, url_prefix='/scraper')
 
-@scraper_bp.route('/run', methods=['POST'])
-def run_scraper():
-    """
-    Scrape bandi from invitalia.it and save to database.
-    Expected JSON payload:
-    {
-        "url": "https://www.invitalia.it/...",
-        "category": "optional_category"
-    }
-    """
-    try:
-        data = request.get_json()
-        
-        if not data or 'url' not in data:
-            return jsonify({
-                'success': False,
-                'error': 'Missing required field: url'
-            }), 400
-        
-        url = data.get('url')
-        category = data.get('category', 'General')
-        
-        # Validate URL
-        if not url.startswith('https://www.invitalia.it'):
-            return jsonify({
-                'success': False,
-                'error': 'URL must be from invitalia.it'
-            }), 400
-        
-        # Fetch page
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-        }
-        response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()
-        
-        # Parse HTML
-        soup = BeautifulSoup(response.content, 'html.parser')
-        
-        # Extract bandi from page
-        bandi_data = _extract_bandi(soup, category)
-        
-        if not bandi_data:
-            return jsonify({
-                'success': True,
-                'message': 'No bandi found on page',
-                'count': 0
-            }), 200
-        
-        # Save to database
-        saved_count = _save_bandi_to_db(bandi_data)
-        
-        return jsonify({
-            'success': True,
-            'message': f'Successfully scraped and saved {saved_count} bandi',
-            'count': saved_count,
-            'bandi': bandi_data[:10]  # Return first 10 for preview
-        }), 200
-        
-    except requests.exceptions.RequestException as e:
-        logger.error(f'Request error during scraping: {str(e)}')
-        return jsonify({
-            'success': False,
-            'error': f'Failed to fetch URL: {str(e)}'
-        }), 502
+def admin_only(f):
+    """Decorator per verificare se l'utente è admin."""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not current_user.is_authenticated:
+            flash('Accesso negato. Effettua il login.', 'danger')
+            return redirect(url_for('auth.login'))
+        if not current_user.is_admin:
+            flash('Accesso negato. Solo amministratori.', 'danger')
+            return redirect(url_for('home'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+@scraper_bp.route('/', methods=['GET', 'POST'])
+@login_required
+@admin_only
+def scraper_dashboard():
+    """Dashboard per il trigger manuale dello scraping."""
+    last_scrape = None
+    total_bandi = db.session.query(Bando).count()
     
+    try:
+        last_scrape_record = db.session.query(Bando).order_by(Bando.creato_il.desc()).first()
+        if last_scrape_record:
+            last_scrape = last_scrape_record.creato_il
     except Exception as e:
-        logger.error(f'Unexpected error during scraping: {str(e)}')
+        flash(f'Errore nel recupero dati: {str(e)}', 'danger')
+    
+    return render_template('scraper/dashboard.html', 
+                         last_scrape=last_scrape,
+                         total_bandi=total_bandi)
+
+@scraper_bp.route('/trigger', methods=['POST'])
+@login_required
+@admin_only
+def trigger_scraping():
+    """Endpoint per avviare lo scraping manuale."""
+    try:
+        results = scrape_bandi()
+        flash(f'Scraping completato: {results["added"]} bandi aggiunti, {results["updated"]} aggiornati.', 'success')
+        return redirect(url_for('scraper.scraper_dashboard'))
+    except Exception as e:
+        flash(f'Errore durante lo scraping: {str(e)}', 'danger')
+        return redirect(url_for('scraper.scraper_dashboard'))
+
+@scraper_bp.route('/trigger-json', methods=['POST'])
+@login_required
+@admin_only
+def trigger_scraping_json():
+    """Endpoint JSON per avviare lo scraping manuale."""
+    try:
+        results = scrape_bandi()
         return jsonify({
-            'success': False,
-            'error': f'Internal server error: {str(e)}'
+            'status': 'success',
+            'message': 'Scraping completato',
+            'added': results['added'],
+            'updated': results['updated'],
+            'timestamp': datetime.now().isoformat()
+        }), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'error',
+            'message': str(e),
+            'timestamp': datetime.now().isoformat()
         }), 500
 
-
-def _extract_bandi(soup, category):
+def scrape_bandi():
     """
-    Extract bandi information from BeautifulSoup object.
-    Targets common Invitalia page structures.
+    Scrape dei bandi da fonte esterna.
+    Restituisce dict con conteggio dei bandi aggiunti e aggiornati.
     """
-    bandi_list = []
+    added = 0
+    updated = 0
     
     try:
-        # Try to find bandi in common container structures
-        # Method 1: Look for div with bando/notice classes
-        bando_containers = soup.find_all('div', class_=lambda x: x and ('bando' in x.lower() or 'notice' in x.lower()))
-        
-        if not bando_containers:
-            # Method 2: Look for article elements
-            bando_containers = soup.find_all('article')
-        
-        if not bando_containers:
-            # Method 3: Look for specific invitalia patterns
-            bando_containers = soup.find_all('div', class_=lambda x: x and ('call' in x.lower() or 'grant' in x.lower()))
-        
-        for container in bando_containers:
-            bando_info = _parse_bando_container(container, category)
-            if bando_info and bando_info.get('titolo'):
-                bandi_list.append(bando_info)
-        
-        return bandi_list
-    
-    except Exception as e:
-        logger.error(f'Error extracting bandi: {str(e)}')
-        return []
-
-
-def _parse_bando_container(container, category):
-    """
-    Parse individual bando container and extract relevant information.
-    """
-    try:
-        bando_info = {}
-        
-        # Extract title
-        title_elem = container.find(['h1', 'h2', 'h3', 'h4', 'a'])
-        titolo = title_elem.get_text(strip=True) if title_elem else None
-        
-        if not titolo or len(titolo) < 5:
-            return None
-        
-        bando_info['titolo'] = titolo[:500]
-        
-        # Extract description/body
-        desc_elem = container.find(['p', 'div'], class_=lambda x: x and ('desc' in x.lower() or 'summary' in x.lower()))
-        if not desc_elem:
-            desc_elem = container.find('p')
-        
-        descrizione = desc_elem.get_text(strip=True) if desc_elem else ''
-        bando_info['descrizione'] = descrizione[:2000]
-        
-        # Extract URL
-        link_elem = container.find('a', href=True)
-        if link_elem:
-            href = link_elem['href']
-            if not href.startswith('http'):
-                href = 'https://www.invitalia.it' + href if href.startswith('/') else 'https://www.invitalia.it/' + href
-            bando_info['url'] = href
-        
-        # Extract deadline (look for common patterns)
-        deadline_text = container.get_text()
-        deadline_date = _extract_deadline(deadline_text)
-        if deadline_date:
-            bando_info['scadenza'] = deadline_date
-        
-        # Set category
-        bando_info['categoria'] = category
-        
-        # Set source
-        bando_info['fonte'] = 'invitalia.it'
-        
-        return bando_info
-    
-    except Exception as e:
-        logger.error(f'Error parsing bando container: {str(e)}')
-        return None
-
-
-def _extract_deadline(text):
-    """
-    Extract deadline date from text using common patterns.
-    Returns datetime object or None.
-    """
-    import re
-    from dateutil import parser as date_parser
-    
-    try:
-        # Common Italian date patterns
-        patterns = [
-            r'scadenza[:\s]+([0-9]{1,2}[/-][0-9]{1,2}[/-][0-9]{2,4})',
-            r'deadline[:\s]+([0-9]{1,2}[/-][0-9]{1,2}[/-][0-9]{2,4})',
-            r'entro il[\s]+([0-9]{1,2}[\s]+(gennaio|febbraio|marzo|aprile|maggio|giugno|luglio|agosto|settembre|ottobre|novembre|dicembre)[\s]+[0-9]{4})',
-            r'([0-9]{1,2}[/-][0-9]{1,2}[/-][0-9]{4})'
+        # Esempio: scraping da una fonte pubblica (adattare l'URL e il parsing)
+        # Questo è un template generico
+        sources = [
+            'https://www.bandosmartly.it/api/bandi',  # Placeholder
         ]
         
-        for pattern in patterns:
-            match = re.search(pattern, text, re.IGNORECASE)
-            if match:
-                date_str = match.group(1)
-                try:
-                    parsed_date = date_parser.parse(date_str, dayfirst=True)
-                    return parsed_date
-                except:
-                    continue
+        for source_url in sources:
+            try:
+                response = requests.get(source_url, timeout=10)
+                response.raise_for_status()
+                
+                # Parsing della risposta (adattare in base alla fonte)
+                data = response.json() if source_url.endswith('/api/bandi') else parse_html(response.text)
+                
+                for item in data:
+                    bando = process_bando_item(item)
+                    if bando:
+                        if bando.get('is_new'):
+                            added += 1
+                        else:
+                            updated += 1
+            
+            except requests.exceptions.RequestException as e:
+                # Continua con altre fonti se una fallisce
+                print(f'Errore durante il scraping di {source_url}: {str(e)}')
+                continue
         
-        return None
+        db.session.commit()
+        return {'added': added, 'updated': updated}
     
     except Exception as e:
-        logger.error(f'Error extracting deadline: {str(e)}')
-        return None
+        db.session.rollback()
+        raise Exception(f'Errore durante lo scraping: {str(e)}')
 
-
-def _save_bandi_to_db(bandi_list):
+def parse_html(html_content):
     """
-    Save scraped bandi to database, avoiding duplicates.
-    Returns count of successfully saved records.
+    Parse HTML dalla risposta.
+    Restituisce lista di dict con dati dei bandi.
     """
-    saved_count = 0
+    soup = BeautifulSoup(html_content, 'html.parser')
+    bandi = []
     
     try:
-        for bando_data in bandi_list:
-            try:
-                # Check if bando already exists by title and fonte
-                existing = Bando.query.filter_by(
-                    titolo=bando_data.get('titolo'),
-                    fonte=bando_data.get('fonte')
-                ).first()
-                
-                if existing:
-                    logger.info(f'Bando already exists: {bando_data.get("titolo")}')
-                    continue
-                
-                # Create new bando
-                new_bando = Bando(
-                    titolo=bando_data.get('titolo'),
-                    descrizione=bando_data.get('descrizione', ''),
-                    url=bando_data.get('url'),
-                    categoria=bando_data.get('categoria', 'General'),
-                    fonte=bando_data.get('fonte', 'invitalia.it'),
-                    scadenza=bando_data.get('scadenza'),
-                    data_creazione=datetime.utcnow()
-                )
-                
-                db.session.add(new_bando)
-                db.session.commit()
-                saved_count += 1
-                logger.info(f'Saved bando: {new_bando.titolo}')
-            
-            except IntegrityError as e:
-                db.session.rollback()
-                logger.warning(f'Integrity error saving bando: {str(e)}')
-            
-            except Exception as e:
-                db.session.rollback()
-                logger.error(f'Error saving bando: {str(e)}')
+        # Adattare i selettori CSS in base alla struttura HTML della fonte
+        bandi_elements = soup.find_all('div', class_='bando-item')
         
-        return saved_count
+        for elemento in bandi_elements:
+            try:
+                titolo = elemento.find('h2', class_='bando-title')
+                descrizione = elemento.find('p', class_='bando-description')
+                scadenza = elemento.find('span', class_='bando-scadenza')
+                
+                if titolo:
+                    bandi.append({
+                        'titolo': titolo.text.strip(),
+                        'descrizione': descrizione.text.strip() if descrizione else '',
+                        'scadenza': scadenza.text.strip() if scadenza else '',
+                    })
+            except Exception as e:
+                print(f'Errore nel parsing di elemento bando: {str(e)}')
+                continue
     
     except Exception as e:
-        logger.error(f'Error in batch save operation: {str(e)}')
-        return saved_count
+        print(f'Errore nel parsing HTML: {str(e)}')
+    
+    return bandi
+
+def process_bando_item(item):
+    """
+    Processa un singolo item di bando.
+    Aggiunge o aggiorna il database.
+    Restituisce dict con info sull'azione effettuata.
+    """
+    try:
+        # Estrai i dati dall'item (adattare in base alla struttura)
+        titolo = item.get('titolo') or item.get('title')
+        descrizione = item.get('descrizione') or item.get('description', '')
+        scadenza_str = item.get('scadenza') or item.get('deadline', '')
+        url = item.get('url', '')
+        
+        if not titolo:
+            return None
+        
+        # Converti la data di scadenza
+        scadenza = parse_date(scadenza_str) if scadenza_str else None
+        
+        # Cerca se il bando esiste già (per URL o titolo)
+        bando_esistente = None
+        if url:
+            bando_esistente = db.session.query(Bando).filter_by(url=url).first()
+        
+        if not bando_esistente:
+            bando_esistente = db.session.query(Bando).filter_by(titolo=titolo).first()
+        
+        if bando_esistente:
+            # Aggiorna il bando esistente
+            bando_esistente.descrizione = descrizione
+            bando_esistente.scadenza = scadenza
+            bando_esistente.aggiornato_il = datetime.now()
+            db.session.add(bando_esistente)
+            return {'is_new': False, 'bando_id': bando_esistente.id}
+        else:
+            # Crea un nuovo bando
+            nuovo_bando = Bando(
+                titolo=titolo,
+                descrizione=descrizione,
+                scadenza=scadenza,
+                url=url,
+                creato_il=datetime.now(),
+                aggiornato_il=datetime.now()
+            )
+            db.session.add(nuovo_bando)
+            db.session.flush()  # Per ottenere l'ID
+            return {'is_new': True, 'bando_id': nuovo_bando.id}
+    
+    except Exception as e:
+        print(f'Errore nel processamento dell\'item: {str(e)}')
+        return None
+
+def parse_date(date_string):
+    """
+    Converte una stringa di data in oggetto datetime.
+    Supporta formati comuni.
+    """
+    if not date_string:
+        return None
+    
+    formats = [
+        '%d/%m/%Y',
+        '%Y-%m-%d',
+        '%d-%m-%Y',
+        '%d.%m.%Y',
+    ]
+    
+    for fmt in formats:
+        try:
+            return datetime.strptime(date_string.strip(), fmt)
+        except ValueError:
+            continue
+    
+    return None
