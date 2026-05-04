@@ -69,7 +69,7 @@ def lista_bandi():
         categorie = [c[0] for c in categorie]
 
         return render_template(
-            'bandi/lista.html',
+            'bandi_lista.html',
             bandi=bandi,
             page=page,
             total_pages=total_pages,
@@ -93,7 +93,7 @@ def dettaglio_bando(bando_id):
         bando = Bando.query.get_or_404(bando_id)
         
         return render_template(
-            'bandi/dettaglio.html',
+            'dettaglio_bando.html',
             bando=bando
         )
 
