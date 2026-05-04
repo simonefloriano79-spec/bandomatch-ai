@@ -56,26 +56,28 @@ app.register_blueprint(admin_bp,      url_prefix='/admin')
 app.register_blueprint(enterprise_bp, url_prefix='/enterprise')
 
 with app.app_context():
-    # ── Migrazione sicura Enterprise ─────────────────────────────────────────
-    # Aggiunge le colonne nome_partner e logo_url alla tabella utenti se non
-    # esistono ancora. Usa una connessione raw per evitare che SQLAlchemy
-    # tenti di caricare il modello prima che le colonne esistano.
+    # ── Migrazione sicura: aggiunge TUTTE le colonne mancanti alla tabella utenti ──
+    # Necessario perche' db.create_all() non aggiunge colonne a tabelle esistenti.
+    # Usa ADD COLUMN IF NOT EXISTS (PostgreSQL 9.6+) per idempotenza.
     try:
         from sqlalchemy import text as _sql_text
         with db.engine.connect() as _conn:
             if db.engine.dialect.name == 'postgresql':
-                _conn.execute(_sql_text(
-                    "ALTER TABLE utenti ADD COLUMN IF NOT EXISTS "
-                    "nome_partner VARCHAR(255)"
-                ))
-                _conn.execute(_sql_text(
-                    "ALTER TABLE utenti ADD COLUMN IF NOT EXISTS "
-                    "logo_url VARCHAR(500)"
-                ))
+                _migrazioni = [
+                    "ALTER TABLE utenti ADD COLUMN IF NOT EXISTS stripe_subscription_id VARCHAR(255)",
+                    "ALTER TABLE utenti ADD COLUMN IF NOT EXISTS stripe_customer_id VARCHAR(255)",
+                    "ALTER TABLE utenti ADD COLUMN IF NOT EXISTS nome_partner VARCHAR(255)",
+                    "ALTER TABLE utenti ADD COLUMN IF NOT EXISTS logo_url VARCHAR(500)",
+                ]
+                for _sql in _migrazioni:
+                    try:
+                        _conn.execute(_sql_text(_sql))
+                    except Exception as _col_err:
+                        app.logger.warning(f'Migrazione colonna (non critica): {_col_err}')
                 _conn.commit()
-                app.logger.info('Migrazione Enterprise: colonne nome_partner/logo_url verificate.')
+                app.logger.info('Migrazione utenti: tutte le colonne verificate.')
     except Exception as _me:
-        app.logger.warning(f'Migrazione Enterprise (non critica): {_me}')
+        app.logger.warning(f'Migrazione utenti (non critica): {_me}')
     # ─────────────────────────────────────────────────────────────────────────
     db.create_all()
     app.logger.info('db.create_all() completato.')
