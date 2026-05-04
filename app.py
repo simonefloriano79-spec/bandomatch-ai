@@ -100,6 +100,12 @@ def index():
         return redirect(url_for('dashboard.home'))
     return render_template('landing.html')
 
+
+@app.route('/upgrade')
+def upgrade():
+    """Pagina prezzi e piani di abbonamento."""
+    return render_template('upgrade.html')
+
 @app.route('/sys/debug-login')
 def debug_login():
     """Endpoint temporaneo per diagnosticare l'errore 500 sul login."""
