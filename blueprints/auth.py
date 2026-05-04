@@ -1,171 +1,188 @@
-from flask import Blueprint, request, jsonify, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy.exc import IntegrityError
+from datetime import datetime
 from models.utente import Utente as User
 from app import db
-import re
 
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
 
-def validate_email(email):
-    """Validate email format"""
-    pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-    return re.match(pattern, email) is not None
 
-def validate_password(password):
-    """Validate password strength (min 8 chars, at least 1 upper, 1 lower, 1 digit)"""
-    if len(password) < 8:
-        return False, "Password must be at least 8 characters long"
-    if not any(c.isupper() for c in password):
-        return False, "Password must contain at least one uppercase letter"
-    if not any(c.islower() for c in password):
-        return False, "Password must contain at least one lowercase letter"
-    if not any(c.isdigit() for c in password):
-        return False, "Password must contain at least one digit"
-    return True, "Password is valid"
-
-@auth_bp.route('/register', methods=['POST'])
+@auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
-    """Register a new user"""
-    try:
-        data = request.get_json()
-        
-        if not data:
-            return jsonify({
-                'success': False,
-                'message': 'Request body must be JSON'
-            }), 400
-        
-        email = data.get('email', '').strip().lower()
-        password = data.get('password', '')
-        
-        # Validation
-        if not email:
-            return jsonify({
-                'success': False,
-                'message': 'Email is required'
-            }), 400
-        
-        if not password:
-            return jsonify({
-                'success': False,
-                'message': 'Password is required'
-            }), 400
-        
-        if not validate_email(email):
-            return jsonify({
-                'success': False,
-                'message': 'Invalid email format'
-            }), 400
-        
-        is_valid, message = validate_password(password)
-        if not is_valid:
-            return jsonify({
-                'success': False,
-                'message': message
-            }), 400
-        
-        # Check if user already exists
-        existing_user = User.query.filter_by(email=email).first()
-        if existing_user:
-            return jsonify({
-                'success': False,
-                'message': 'Email already registered'
-            }), 409
-        
-        # Create new user
-        hashed_password = generate_password_hash(password)
-        new_user = User(email=email, password=hashed_password)
-        
-        db.session.add(new_user)
-        db.session.commit()
-        
-        return jsonify({
-            'success': True,
-            'message': 'User registered successfully',
-            'user_id': new_user.id
-        }), 201
+    """Registrazione nuovo utente"""
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
     
-    except IntegrityError:
-        db.session.rollback()
-        return jsonify({
-            'success': False,
-            'message': 'Email already exists'
-        }), 409
-    
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({
-            'success': False,
-            'message': f'Registration failed: {str(e)}'
-        }), 500
-
-@auth_bp.route('/login', methods=['POST'])
-def login():
-    """Login user"""
-    try:
-        data = request.get_json()
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+        confirm_password = request.form.get('confirm_password', '')
         
-        if not data:
-            return jsonify({
-                'success': False,
-                'message': 'Request body must be JSON'
-            }), 400
-        
-        email = data.get('email', '').strip().lower()
-        password = data.get('password', '')
-        
+        # Validazione
         if not email or not password:
-            return jsonify({
-                'success': False,
-                'message': 'Email and password are required'
-            }), 400
+            flash('Email e password sono obbligatorie', 'error')
+            return redirect(url_for('auth.register'))
         
-        # Find user by email
-        user = User.query.filter_by(email=email).first()
+        if password != confirm_password:
+            flash('Le password non corrispondono', 'error')
+            return redirect(url_for('auth.register'))
         
-        if not user or not check_password_hash(user.password, password):
-            return jsonify({
-                'success': False,
-                'message': 'Invalid email or password'
-            }), 401
+        if len(password) < 8:
+            flash('La password deve avere almeno 8 caratteri', 'error')
+            return redirect(url_for('auth.register'))
         
-        if not user.is_active:
-            return jsonify({
-                'success': False,
-                'message': 'Account is disabled'
-            }), 403
+        # Controlla se email esiste
+        try:
+            user_exists = User.query.filter_by(email=email).first()
+            if user_exists:
+                flash('Questa email è già registrata', 'error')
+                return redirect(url_for('auth.register'))
+            
+            # Crea nuovo utente
+            new_user = User(
+                email=email,
+                password_hash=generate_password_hash(password),
+                piano='free',
+                attivo=True,
+                data_registrazione=datetime.utcnow()
+            )
+            
+            db.session.add(new_user)
+            db.session.commit()
+            
+            flash('Registrazione completata! Accedi con le tue credenziali', 'success')
+            return redirect(url_for('auth.login'))
         
-        # Login user
-        login_user(user, remember=True)
-        
-        return jsonify({
-            'success': True,
-            'message': 'Login successful',
-            'user_id': user.id,
-            'email': user.email
-        }), 200
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Errore durante la registrazione: {str(e)}', 'error')
+            return redirect(url_for('auth.register'))
     
-    except Exception as e:
-        return jsonify({
-            'success': False,
-            'message': f'Login failed: {str(e)}'
-        }), 500
+    return render_template('auth/register.html')
 
-@auth_bp.route('/logout', methods=['GET'])
+
+@auth_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    """Login utente"""
+    if current_user.is_authenticated:
+        return redirect(url_for('main.index'))
+    
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+        password = request.form.get('password', '')
+        remember_me = request.form.get('remember_me') is not None
+        
+        # Validazione
+        if not email or not password:
+            flash('Email e password sono obbligatorie', 'error')
+            return redirect(url_for('auth.login'))
+        
+        try:
+            # Cerca utente
+            user = User.query.filter_by(email=email).first()
+            
+            if not user:
+                flash('Email o password errati', 'error')
+                return redirect(url_for('auth.login'))
+            
+            # Verifica password
+            if not check_password_hash(user.password_hash, password):
+                flash('Email o password errati', 'error')
+                return redirect(url_for('auth.login'))
+            
+            # Controlla se account è attivo
+            if not user.attivo:
+                flash('Il tuo account è disattivato. Contatta il supporto', 'warning')
+                return redirect(url_for('auth.login'))
+            
+            # Login utente
+            login_user(user, remember=remember_me)
+            flash(f'Benvenuto, {user.email}!', 'success')
+            
+            # Reindirizza a next page se presente
+            next_page = request.args.get('next')
+            if next_page and next_page.startswith('/'):
+                return redirect(next_page)
+            
+            return redirect(url_for('main.index'))
+        
+        except Exception as e:
+            flash(f'Errore durante il login: {str(e)}', 'error')
+            return redirect(url_for('auth.login'))
+    
+    return render_template('auth/login.html')
+
+
+@auth_bp.route('/logout')
 @login_required
 def logout():
-    """Logout user"""
+    """Logout utente"""
     try:
         logout_user()
-        return jsonify({
-            'success': True,
-            'message': 'Logout successful'
-        }), 200
+        flash('Logout completato', 'success')
+    except Exception as e:
+        flash(f'Errore durante il logout: {str(e)}', 'error')
+    
+    return redirect(url_for('auth.login'))
+
+
+@auth_bp.route('/profile')
+@login_required
+def profile():
+    """Profilo utente"""
+    try:
+        user = User.query.get(current_user.id)
+        if not user:
+            flash('Utente non trovato', 'error')
+            return redirect(url_for('auth.logout'))
+        
+        return render_template('auth/profile.html', user=user)
     
     except Exception as e:
-        return jsonify({
-            'success': False,
-            'message': f'Logout failed: {str(e)}'
-        }), 500
+        flash(f'Errore nel caricamento del profilo: {str(e)}', 'error')
+        return redirect(url_for('main.index'))
+
+
+@auth_bp.route('/profile/update', methods=['POST'])
+@login_required
+def update_profile():
+    """Aggiorna profilo utente"""
+    try:
+        user = User.query.get(current_user.id)
+        if not user:
+            flash('Utente non trovato', 'error')
+            return redirect(url_for('auth.logout'))
+        
+        new_email = request.form.get('email', '').strip().lower()
+        new_password = request.form.get('new_password', '')
+        current_password = request.form.get('current_password', '')
+        
+        # Verifica password attuale se si vuole cambiarla
+        if new_password:
+            if not current_password or not check_password_hash(user.password_hash, current_password):
+                flash('Password attuale errata', 'error')
+                return redirect(url_for('auth.profile'))
+            
+            if len(new_password) < 8:
+                flash('La nuova password deve avere almeno 8 caratteri', 'error')
+                return redirect(url_for('auth.profile'))
+            
+            user.password_hash = generate_password_hash(new_password)
+        
+        # Aggiorna email se cambiata
+        if new_email and new_email != user.email:
+            email_exists = User.query.filter_by(email=new_email).first()
+            if email_exists:
+                flash('Questa email è già in uso', 'error')
+                return redirect(url_for('auth.profile'))
+            user.email = new_email
+        
+        db.session.commit()
+        flash('Profilo aggiornato con successo', 'success')
+        return redirect(url_for('auth.profile'))
+    
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Errore durante l\'aggiornamento: {str(e)}', 'error')
+        return redirect(url_for('auth.profile'))
