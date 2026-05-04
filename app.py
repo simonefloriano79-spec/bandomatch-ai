@@ -61,14 +61,6 @@ try:
 except Exception as _e:
     app.logger.error(f"Scheduler non avviato (non critico): {_e}")
 
-@app.route('/debug/env')
-def debug_env():
-    """Endpoint debug temporaneo — mostra CRON_SECRET mascherato."""
-    import json
-    secret = os.getenv('CRON_SECRET', 'bandomatch2026secret')
-    masked = secret[:3] + '***' + secret[-3:] if len(secret) > 6 else '***'
-    return json.dumps({'cron_secret_masked': masked, 'len': len(secret), 'deploy': 'v5_fix_fallback'}), 200, {'Content-Type': 'application/json'}
-
 @app.route('/')
 def index():
     if current_user.is_authenticated:
